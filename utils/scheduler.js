@@ -48,7 +48,7 @@ let scheduler = {
         let queues = []
         let will_queues = []
         if(fs.existsSync(scheduler.taskFile)){
-            let taskJson = fs.readFileSync(scheduler.taskFile)
+            let taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
             queues = JSON.parse(taskJson)
         }
         for(let task of queues){

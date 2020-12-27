@@ -1,26 +1,7 @@
-const _request = require('../../../utils/request')
 const { scheduler } = require('../../../utils/scheduler')
 var start = async (params) => {
-  const { cookies, options } = params
-
-  const request = _request(cookies)
-
-  let result = ''
-  if (!('appid' in options) || !options['appid']) {
-    throw new Error("需要提供appid")
-  }
-  if (options['user']) {
-    if (!('password' in options) || !options['password']) {
-      throw new Error("需要提供登陆密码")
-    }
-    result = await require('./init')(request, options)
-    if (result.code !== '0') {
-      throw new Error('登陆失败:' + result.dsc)
-    }
-    console.log('登录成功')
-  } else if (!cookies) {
-    throw new Error("需要提供登录信息，使用密码账号或者cookies")
-  }
+  const { options } = params
+  const request = await require('./init')(params)
 
   // 每日签到积分
   await scheduler.regTask('dailysignin', async () => {

@@ -1,4 +1,5 @@
-const Qs = require("qs");
+const _request = require('../../../utils/request')
+const { getCookies, saveCookies } = require('../../../utils/util')
 var crypto = require('crypto');
 var moment = require('moment');
 moment.locale('zh-cn');
@@ -30,7 +31,7 @@ transParams = (data) => {
 };
 
 var chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-function generateMixed (n) {
+function generateMixed(n) {
   let res = "";
   for (var i = 0; i < n; i++) {
     var id = Math.ceil(Math.random() * 61);
@@ -39,31 +40,58 @@ function generateMixed (n) {
   return res;
 }
 
-module.exports = (axios, options) => {
-  const useragent = `okhttp/4.4.0`
-  const deviceId = generateMixed(15)
-  var data = {
-    // ChinaunicomMobileBusiness
-    'appId': options.appid,
-    'deviceBrand': 'samsung',
-    'deviceCode': deviceId,
-    'deviceId': deviceId,
-    'deviceModel': 'SM-G977N',
-    'deviceOS': 'android7.1.2',
-    'isRemberPwd': 'true',
-    'keyVersion': '',
-    'mobile': rsapublicKeyEncode(options.user),
-    'netWay': 'Wifi',
-    'password': rsapublicKeyEncode(options.password),
-    'pip': '172.16.70.15',
-    'provinceChanel': 'general',
-    'simCount': '0',
-    'timestamp': moment().format('YYYYMMDDHHmmss'),
-    'version': `android@${unicom_version}`,
-    'yw_code': ''
+module.exports = async (params) => {
+  const { cookies, options } = params
+  const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+  let savedCookies = await getCookies('unicom_' + options.user)
+  if (!savedCookies) {
+    savedCookies = cookies
   }
-  return new Promise((resolve, reject) => {
-    axios.request({
+  const axios = _request(savedCookies)
+  const { data, config } = await axios.request({
+    baseURL: 'https://m.client.10010.com',
+    headers: {
+      "user-agent": useragent,
+      "referer": "https://m.client.10010.com",
+      "origin": "https://m.client.10010.com"
+    },
+    url: `/mobileService/customer/query/getMyUnicomDateTotle.htm`,
+    method: 'post'
+  })
+  if (Object.prototype.toString.call(data) !== '[object Object]' || !data || !('phone' in data)) {
+    console.log('cookies凭据访问失败，将使用账户密码登录')
+    if (!('appid' in options) || !options['appid']) {
+      throw new Error("需要提供appid")
+    }
+    if (options['user']) {
+      if (!('password' in options) || !options['password']) {
+        throw new Error("需要提供登陆密码")
+      }
+    } else if (!cookies) {
+      throw new Error("需要提供登录信息，使用密码账号或者cookies")
+    }
+    const deviceId = generateMixed(15)
+    var params = {
+      // ChinaunicomMobileBusiness
+      'appId': options.appid,
+      'deviceBrand': 'samsung',
+      'deviceCode': deviceId,
+      'deviceId': deviceId,
+      'deviceModel': 'SM-G977N',
+      'deviceOS': 'android7.1.2',
+      'isRemberPwd': 'true',
+      'keyVersion': '',
+      'mobile': rsapublicKeyEncode(options.user),
+      'netWay': 'Wifi',
+      'password': rsapublicKeyEncode(options.password),
+      'pip': '172.16.70.15',
+      'provinceChanel': 'general',
+      'simCount': '0',
+      'timestamp': moment().format('YYYYMMDDHHmmss'),
+      'version': `android@${unicom_version}`,
+      'yw_code': ''
+    }
+    const { data, config } = await axios.request({
       baseURL: 'https://m.client.10010.com',
       headers: {
         "user-agent": useragent,
@@ -72,9 +100,15 @@ module.exports = (axios, options) => {
       },
       url: `/mobileService/login.htm`,
       method: 'post',
-      data: transParams(data)
-    }).then(res => {
-      resolve(res.data)
-    }).catch(console.log)
-  })
+      data: transParams(params)
+    })
+    if (data.code !== '0') {
+      throw new Error('登陆失败:' + data.dsc)
+    }
+    savedCookies = ''
+  }
+  await saveCookies('unicom_' + options.user, savedCookies, config.jar)
+
+  console.log('获得登录状态成功')
+  return request
 }

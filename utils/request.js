@@ -2,7 +2,6 @@ const axios = require('axios');
 const axiosCookieJarSupport = require('axios-cookiejar-support').default;
 const tough = require('tough-cookie');
 axiosCookieJarSupport(axios);
-const cookieJar = new tough.CookieJar();
 
 const err = (error) => {
   return Promise.reject(error)
@@ -24,7 +23,7 @@ module.exports = (cookies) => {
     headers: {
       cookie: parseCookie(cookies)
     },
-    jar: cookieJar,
+    jar: new tough.CookieJar(),
     withCredentials: true
   })
   service.interceptors.request.use(async config => {
