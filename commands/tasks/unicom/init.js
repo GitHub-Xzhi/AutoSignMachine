@@ -110,5 +110,5 @@ module.exports = async (params) => {
   await saveCookies('unicom_' + options.user, savedCookies, config.jar)
 
   console.log('获得登录状态成功')
-  return request
+  return axios
 }
