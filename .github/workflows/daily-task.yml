@@ -1,0 +1,76 @@
+name: daily-task
+
+
+on:
+  
+  push: # push触发
+    branches: [ main ]
+  workflow_dispatch: # 手动触发
+  schedule: # 计划任务触发
+    - cron: '10 5 * * *' # cron表达式，Actions时区是UTC时间，所以要往前推8个小时,如上表示每天13点10分
+    
+
+jobs:
+  daily-task:
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    env:
+      ENABLE_52POJIE: ${{secrets.ENABLE_52POJIE}}
+      ENABLE_BILIBILI: ${{secrets.ENABLE_BILIBILI}}
+      ENABLE_IQIYI: ${{secrets.ENABLE_IQIYI}}
+    
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12]
+        node-registry: ['https://registry.npmjs.org']
+
+    steps:
+    
+    # 检出
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    # 设置服务器时区为东八区 
+    - name: Set time zone
+      run: sudo timedatectl set-timezone 'Asia/Shanghai'
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: ${{ matrix.node-registry }}
+
+    # 安装依赖
+    - name: Install dependencies
+      run: npm install
+       
+    # 运行 52pojie 签到任务
+    - name: Run 52pojie daily task
+      if: ${{ env.ENABLE_52POJIE }}
+      env:
+        htVD_2132_auth: ${{secrets.htVD_2132_auth}}
+        htVD_2132_saltkey: ${{secrets.htVD_2132_saltkey}}
+      run: node index.js 52pojie --htVD_2132_auth=${htVD_2132_auth} --htVD_2132_saltkey=${htVD_2132_saltkey}
+
+    # 运行 bilibili 签到任务
+    - name: Run bilibili daily task
+      if: ${{ env.ENABLE_BILIBILI }}
+      env:
+        DedeUserID: ${{secrets.USERID}}
+        SESSDATA: ${{secrets.SESSDATA}}
+        bili_jct: ${{secrets.BILIJCT}}
+        otherConfigs: ${{secrets.OTHERCONFIGS}}
+      run: node index.js bilibili --DedeUserID=${DedeUserID} --SESSDATA=${SESSDATA} --bili_jct=${bili_jct} ${otherConfigs}
+
+    # 运行 iqiyi 签到任务
+    - name: Run iqiyi daily task
+      if: ${{ env.ENABLE_IQIYI }}
+      env:
+        P00001: ${{secrets.P00001}}
+        P00PRU: ${{secrets.P00PRU}}
+        QC005: ${{secrets.QC005}}
+        dfp: ${{secrets.DFP}}
+      run: node index.js iqiyi --P00001=${P00001} --P00PRU=${P00PRU} --QC005=${QC005} --dfp=${dfp}
+
