@@ -78,7 +78,7 @@ var start = async (params) => {
 
   // 每日评论积分
   await scheduler.regTask('dailycomment', async () => {
-    // await require('./commentSystem').commentTask(request, options).catch(console.log)
+    await require('./commentSystem').commentTask(request, options).catch(console.log)
   })
 }
 module.exports = {
