@@ -53,6 +53,18 @@ module.exports = async (axios, params) => {
     url: `/mobileService/customer/query/getMyUnicomDateTotle.htm`,
     method: 'post'
   })
+
+  let token_online
+  let appId
+  axios.defaults.headers.cookie.split('; ').forEach(item => {
+    if (item.indexOf('token_online') === 0) {
+      token_online = item.split("=").pop()
+    }
+    if (item.indexOf('appId') === 0) {
+      appId = item.split("=").pop()
+    }
+  })
+
   if (Object.prototype.toString.call(data) !== '[object Object]' || !data || !('phone' in data)) {
     console.log('cookies凭据访问失败，将使用账户密码登录')
     if (!('appid' in options) || !options['appid']) {
@@ -68,7 +80,7 @@ module.exports = async (axios, params) => {
     const deviceId = generateMixed(15)
     var params = {
       // ChinaunicomMobileBusiness
-      'appId': options.appid,
+      'appId': appId || options.appid,
       'deviceBrand': 'samsung',
       'deviceCode': deviceId,
       'deviceId': deviceId,
@@ -100,18 +112,12 @@ module.exports = async (axios, params) => {
     if (data.code !== '0') {
       throw new Error('登陆失败:' + data.dsc)
     }
-    cookies = 'token_online=' + data.token_online
+    cookies = 'token_online=' + data.token_online + '; appId=' + data.appId
     await saveCookies('unicom_' + options.user, cookies, config.jar)
   } else {
-    let token_online
-    axios.defaults.headers.cookie.split('; ').forEach(item => {
-      if (item.indexOf('token_online') === 0) {
-        token_online = item.split("=").pop()
-      }
-    })
     const deviceId = generateMixed(15)
     var params = {
-      'appId': options.appid,
+      'appId': appId || options.appid,
       'deviceBrand': 'samsung',
       'deviceCode': deviceId,
       'deviceId': deviceId,
@@ -135,6 +141,10 @@ module.exports = async (axios, params) => {
       method: 'post',
       data: transParams(params)
     })
+    if (data.code !== '0') {
+      console.log(data.dsc)
+    }
+    cookies += '; token_online=' + data.token_online + '; appId=' + data.appId
     await saveCookies('unicom_' + options.user, cookies, config.jar)
   }
 
