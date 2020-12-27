@@ -286,10 +286,14 @@ module.exports = {
         body:"methodType=signin"
       }).then(res => {
         let result = res.data
-        if(result.respCode!=='0000'){
-          console.log(result.respDesc)
+        if(result){
+          if(result.respCode!=='0000'){
+            console.log('娱乐中心每日签到失败', result.respDesc)
+          } else {
+            console.log('娱乐中心每日签到获得+'+result.currentIntegral)
+          }
         } else {
-          console.log('签到获得+'+result.currentIntegral)
+          console.log('娱乐中心每日签到失败')
         }
         resolve()
       }).catch(reject)

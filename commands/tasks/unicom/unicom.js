@@ -1,7 +1,20 @@
 const { scheduler } = require('../../../utils/scheduler')
+const { getCookies, saveCookies } = require('../../../utils/util')
+const _request = require('../../../utils/request')
+
 var start = async (params) => {
-  const { options } = params
-  const request = await require('./init')(params)
+  const { cookies, options } = params
+
+  let savedCookies = await getCookies('unicom_' + options.user)
+  if (!savedCookies) {
+    savedCookies = cookies
+  }
+  const request = _request(savedCookies)
+
+  await require('./init')(request, {
+    ...params,
+    cookies:savedCookies
+  })
 
   // 每日签到积分
   await scheduler.regTask('dailysignin', async () => {
@@ -65,7 +78,7 @@ var start = async (params) => {
 
   // 每日评论积分
   await scheduler.regTask('dailycomment', async () => {
-    await require('./commentSystem').commentTask(request, options).catch(console.log)
+    // await require('./commentSystem').commentTask(request, options).catch(console.log)
   })
 }
 module.exports = {

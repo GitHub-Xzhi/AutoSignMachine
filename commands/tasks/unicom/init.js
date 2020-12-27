@@ -1,4 +1,3 @@
-const _request = require('../../../utils/request')
 const { getCookies, saveCookies } = require('../../../utils/util')
 var crypto = require('crypto');
 var moment = require('moment');
@@ -40,14 +39,10 @@ function generateMixed(n) {
   return res;
 }
 
-module.exports = async (params) => {
-  const { cookies, options } = params
+module.exports = async (axios, params) => {
+  let { cookies, options } = params
   const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-  let savedCookies = await getCookies('unicom_' + options.user)
-  if (!savedCookies) {
-    savedCookies = cookies
-  }
-  const axios = _request(savedCookies)
+
   const { data, config } = await axios.request({
     baseURL: 'https://m.client.10010.com',
     headers: {
@@ -105,10 +100,43 @@ module.exports = async (params) => {
     if (data.code !== '0') {
       throw new Error('登陆失败:' + data.dsc)
     }
-    savedCookies = ''
+    cookies = 'token_online=' + data.token_online
+    await saveCookies('unicom_' + options.user, cookies, config.jar)
+  } else {
+    let token_online
+    axios.defaults.headers.cookie.split('; ').forEach(item => {
+      if (item.indexOf('token_online') === 0) {
+        token_online = item.split("=").pop()
+      }
+    })
+    const deviceId = generateMixed(15)
+    var params = {
+      'appId': options.appid,
+      'deviceBrand': 'samsung',
+      'deviceCode': deviceId,
+      'deviceId': deviceId,
+      'deviceModel': 'SM-G977N',
+      'deviceOS': 'android7.1.2',
+      'netWay': 'Wifi',
+      'platformToken': '0867442035025655300000391200CN01',
+      'pushPlatform': 'samsung',
+      'reqtime': new Date().getTime(),
+      'token_online': token_online,
+      'version': `android@${unicom_version}`,
+    }
+    const { data, config } = await axios.request({
+      baseURL: 'https://m.client.10010.com',
+      headers: {
+        "user-agent": useragent,
+        "referer": "https://m.client.10010.com",
+        "origin": "https://m.client.10010.com"
+      },
+      url: `/mobileService/onLine.htm`,
+      method: 'post',
+      data: transParams(params)
+    })
+    await saveCookies('unicom_' + options.user, cookies, config.jar)
   }
-  await saveCookies('unicom_' + options.user, savedCookies, config.jar)
 
   console.log('获得登录状态成功')
-  return axios
 }
