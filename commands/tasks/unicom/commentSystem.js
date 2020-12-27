@@ -23,7 +23,7 @@ module.exports = {
         pageSize: 10,
         reqChannel: '00'
       })
-    }).catch(console.log)
+    }).catch(err => console.log('获取文章数据失败'))
     if (!result || result.data.code !== '0000') {
       throw new Error('获取文章数据失败')
     }
