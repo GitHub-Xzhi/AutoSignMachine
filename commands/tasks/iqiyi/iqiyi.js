@@ -12,7 +12,7 @@ var start = async (params) => {
     throw new Error("需要提供_dfp参数")
   }
 
-  const request = _request(cookies)
+  const request = _request(cookies, false)
 
   let userinfo = await require('./init')(request)
 
@@ -34,6 +34,11 @@ var start = async (params) => {
     // 访问热点首页
     await scheduler.regTask('dailyFeed', async () => {
       await require('./dailyFeed')(request)
+    })
+
+    // 每日观看视频30分钟3次
+    await scheduler.regTask('dailyWatchVideo', async () => {
+      await require('./dailyWatchVideo').reportPlayTime(request)
     })
   } else {
     console.log('非vip会员跳过vip签到任务')

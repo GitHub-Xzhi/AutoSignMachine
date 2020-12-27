@@ -9,7 +9,7 @@ var start = async (params) => {
   if (!savedCookies) {
     savedCookies = cookies
   }
-  const request = _request(savedCookies)
+  const request = _request(savedCookies, true)
 
   await require('./init')(request, {
     ...params,

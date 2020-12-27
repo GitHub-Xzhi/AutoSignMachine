@@ -17,13 +17,13 @@ var parseCookie = function (cookies) {
   }
   return cookie
 }
-module.exports = (cookies) => {
+module.exports = (cookies, useJar) => {
   const service = axios.create({
     timeout: 6000,
     headers: {
       cookie: parseCookie(cookies)
     },
-    jar: new tough.CookieJar(),
+    jar: useJar ? new tough.CookieJar() : null,
     withCredentials: true
   })
   service.interceptors.request.use(async config => {
