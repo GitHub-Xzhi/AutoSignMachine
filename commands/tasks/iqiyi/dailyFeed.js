@@ -82,7 +82,7 @@ module.exports = async (axios) => {
       "referer": "https://www.iqiyi.com",
       "origin": "https://www.iqiyi.com"
     },
-    url: "".concat("https://community.iqiyi.com/openApi/task/complete", "?").concat(w(a), "&sign=").concat(c),
+    url: "".concat("https://community.iqiyi.com/openApi/score/getReward", "?").concat(w(a), "&sign=").concat(c),
     method: 'post'
   })
   data = res.data.data

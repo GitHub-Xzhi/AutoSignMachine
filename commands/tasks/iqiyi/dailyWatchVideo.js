@@ -1,3 +1,33 @@
+var crypto = require('crypto');
+function k(e, t) {
+  var a = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}
+    , n = a.split
+    , c = void 0 === n ? "|" : n
+    , r = a.sort
+    , s = void 0 === r || r
+    , o = a.splitSecretKey
+    , i = void 0 !== o && o
+    , l = s ? Object.keys(t).sort() : Object.keys(t)
+    , u = l.map((function (e) {
+      return "".concat(e, "=").concat(t[e])
+    }
+    )).join(c) + (i ? c : "") + e;
+  return g(u)
+}
+function g(e) {
+  return crypto.createHash("md5").update(e, "utf8").digest("hex")
+}
+
+function w() {
+  var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
+    , t = [];
+  return Object.keys(e).forEach((function (a) {
+    t.push("".concat(a, "=").concat(e[a]))
+  }
+  )),
+    t.join("&")
+}
+
 module.exports = {
   getRndVideo: async (axios) => {
     return new Promise((resolve, reject) => {
@@ -19,7 +49,7 @@ module.exports = {
   },
   reportPlayTime: async (axios) => {
     let videos = await module.exports.getRndVideo(axios)
-    let i = 0
+    let isComplete = false
     for (let video of videos) {
       let res = await axios.get(video.playUrl)
       let str = res.data.substr(res.data.indexOf("param['tvid']") + 15, 30)
@@ -36,8 +66,8 @@ module.exports = {
         continue
       }
       let history = JSON.parse(res.data)
-      let videoPlayTime = (history.data&&history.data.videoPlayTime)? history.data.videoPlayTime : 1
-      console.log('videoPlayTime',videoPlayTime)
+      let videoPlayTime = (history.data && history.data.videoPlayTime) ? history.data.videoPlayTime : 1
+      console.log('videoPlayTime', videoPlayTime)
       do {
         let report = `https://l-rcd.iqiyi.com/apis/qiyirc/setrc.php?tvId=${tvid}&terminalId=11&agent_type=1&videoPlayTime=${videoPlayTime}`
         videoPlayTime = videoPlayTime + 300 + parseInt(Math.random() * 30)
@@ -53,15 +83,66 @@ module.exports = {
           continue
         }
         console.log('上报播放时长', video.name, videoPlayTime)
-        //https://pcw-api.iqiyi.com/meme/switchStatus?cid=10&albumid=4762157826043700&tvid=4762157826043700
         await new Promise((resolve, reject) => {
-          setTimeout(resolve, 5 * 1000)
+          setTimeout(resolve, 20 * 1000)
         })
       } while (videoPlayTime <= 35 * 60)
-      i = i + 1;
-      if (i > 5) {
-        break
+
+      let P00001 = undefined
+      let P00PRU = undefined
+      let dfp = undefined
+      axios.defaults.headers.cookie.split('; ').forEach(item => {
+        if (item.indexOf('P00001') === 0) {
+          P00001 = item.split("=").pop()
+        }
+        if (item.indexOf('P00PRU') === 0) {
+          P00PRU = item.split("=").pop()
+        }
+        if (item.indexOf('_dfp') === 0) {
+          dfp = item.split("=").pop().split("@")[0]
+        }
+      })
+      var a = {
+        'agenttype': '1',
+        'agentversion': '0',
+        'appKey': 'basic_pcw',
+        'appver': '0',
+        'authCookie': P00001,
+        'srcplatform': '1',
+        'typeCode': 'point',
+        'userId': P00PRU,
+        'verticalCode': 'iQIYI'
       }
+      console.log('查询观看视频任务状态')
+      var c = k("UKobMjDMsDoScuWOfp6F", a, {
+        split: "|",
+        sort: !0,
+        splitSecretKey: !0
+      })
+
+      res = await axios.request({
+        headers: {
+          "referer": "https://www.iqiyi.com",
+          "origin": "https://www.iqiyi.com"
+        },
+        url: "".concat("https://community.iqiyi.com/openApi/task/list", "?").concat(w(a), "&sign=").concat(c),
+        method: 'post'
+      })
+
+      if (res.data.code !== 'A00000') {
+        console.log(res.data.message)
+        continue
+      } else {
+        let it = res.data.data[0].find(i => i.channelCode === 'view_pcw')
+        console.log('任务进度：已完成', it.processCount, '次')
+        if (it.processCount >= 3) {
+          isComplete = true
+          break
+        }
+      }
+    }
+    if (!isComplete) {
+      throw new Error('本次执行尚未完成视频观看任务，等待下次尝试')
     }
   },
 }
