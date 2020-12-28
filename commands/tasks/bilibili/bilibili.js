@@ -1,13 +1,19 @@
 const _request = require('../../../utils/request')
-const {scheduler} = require('../../../utils/scheduler')
+const { scheduler } = require('../../../utils/scheduler')
+const { getCookies, saveCookies } = require('../../../utils/util')
 var start = async (params) => {
   const { cookies, options } = params
-  if (!cookies) {
-    throw new Error("需要提供登录信息，使用密码账号或者cookies")
+
+  let savedCookies = await getCookies('bilibili_' + options.username)
+  if (!savedCookies) {
+    savedCookies = cookies
   }
-  const request = _request(cookies)
+  const request = _request(savedCookies, true)
   
-  let userInfo = await require('./init')(request)
+  let userInfo = await require('./init')(request, {
+    ...params,
+    cookies:savedCookies
+  })
   // 每日观看分享视频
   await scheduler.regTask('watchAndShareVideo', async () => {
     let dailyTaskStatus = await require('./dailyTaskStatus')(request)
@@ -22,7 +28,7 @@ var start = async (params) => {
     let dailyTaskStatus = await require('./dailyTaskStatus')(request)
     if (!dailyTaskStatus.coins) {
       await require('./AddCoinsForVideo')(request, options)
-    }else {
+    } else {
       console.log('每日视频投币已完成')
     }
   })
@@ -33,7 +39,7 @@ var start = async (params) => {
   // 直播签到
   await scheduler.regTask('LiveSign', async () => {
     let SignInfo = await require('./LiveGetSignInfo')(request)
-    if(!SignInfo.status){
+    if (!SignInfo.status) {
       await require('./LiveSign')(request)
     } else {
       console.log('今日已进行直播签到')
@@ -42,7 +48,7 @@ var start = async (params) => {
   // 银瓜子兑换硬币
   await scheduler.regTask('ExchangeSilver2Coin', async () => {
     let WalletInfo = await require('./myWallet')(request)
-    if(WalletInfo.silver>=700){
+    if (WalletInfo.silver >= 700) {
       await require('./ExchangeSilver2Coin')(request)
     } else {
       console.log('银瓜子不足700无法兑换为硬币')

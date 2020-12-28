@@ -21,7 +21,7 @@ const rsapublicKeyEncode = function (data) {
   return crypted;
 };
 
-transParams = (data) => {
+var transParams = (data) => {
   let params = new URLSearchParams();
   for (let item in data) {
     params.append(item, data['' + item + '']);
@@ -30,7 +30,7 @@ transParams = (data) => {
 };
 
 var chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-function generateMixed(n) {
+function generateMixed (n) {
   let res = "";
   for (var i = 0; i < n; i++) {
     var id = Math.ceil(Math.random() * 61);

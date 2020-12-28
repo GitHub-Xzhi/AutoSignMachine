@@ -12,6 +12,14 @@ exports.builder = function (yargs) {
       describe: 'cookies',
       type: 'string'
     })
+    .option('username', {
+      describe: '登陆账号',
+      type: 'string'
+    })
+    .option('password', {
+      describe: '登陆密码',
+      type: 'string'
+    })
     .option('NumberOfCoins', {
       describe: '视频投币的目标数量',
       default: 5,
@@ -44,11 +52,13 @@ exports.handler = async function (argv) {
     options: {
       NumberOfCoins: argv.NumberOfCoins,
       CoinsForVideo: argv.CoinsForVideo,
-      SelectLike: argv.SelectLike
+      SelectLike: argv.SelectLike,
+      username: argv.username,
+      password: argv.password,
     }
   }).catch(err => console.log("bilibili签到任务:", err.message))
   let hasTasks = await scheduler.hasWillTask(command)
-  if(hasTasks){
+  if (hasTasks) {
     scheduler.execTask(command).catch(err => console.log("bilibili签到任务:", err.message)).finally(() => {
       console.log('全部任务执行完毕！')
     })
