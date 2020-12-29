@@ -15,7 +15,7 @@ var fetchVideo = (axios) => {
       if (result.code === 0) {
         resolve(result.data[Math.floor(Math.random() * result.data.length)])
       } else {
-        throw new Error('获取随机视频失败')
+        throw new Error('获取随机视频失败', result.message)
       }
     }).catch(reject)
   })
