@@ -115,5 +115,141 @@ module.exports = {
     //     } else {
     //         console.log('娱乐中心：宝箱领取失败')
     //     }
-    // }
+    // },
+    recordGame: async (axios, options) => {
+        const { gameId } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'record',
+            'deviceType': 'Android',
+            'taskId': '0',
+            'gameId': gameId
+        }
+        let { data } = await axios.request({
+            baseURL: 'https://m.client.10010.com/',
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `/producGameApp`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+        } else {
+            console.log('记录失败')
+        }
+    },
+    recordGame1: async (axios, options) => {
+        const { gameId } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'iOSTaskRecord',
+            'gameId': gameId
+        }
+        let { data } = await axios.request({
+            baseURL: 'https://m.client.10010.com/',
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `/producGameApp`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+        } else {
+            console.log('记录失败')
+        }
+    },
+    gameverify: async (axios, options) => {
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let jwt = undefined
+        axios.defaults.headers.cookie.split('; ').forEach(item => {
+            if (item.indexOf('jwt') === 0) {
+                jwt = item.split("=").pop()
+            }
+        })
+        let { data } = await axios.request({
+            baseURL: 'https://m.client.10010.com/',
+            headers: {
+                "user-agent": "okhttp/4.4.0",
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `/game/verify`,
+            method: 'post',
+            data: {
+                "extInfo": jwt,
+                "auth": {
+                    "uin": options.user,
+                    "sig": jwt
+                }
+            }
+        })
+        if (data) {
+            if (data.respCode !== 0) {
+                console.log(data.errorMessage)
+            }
+        } else {
+            console.log('记录失败')
+        }
+    },
+    timeTaskQuery: async (axios, options) => {
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'timeTaskQuery',
+            'deviceType': 'Android',
+            'clientVersion': '8.0100'
+        }
+        let { data } = await axios.request({
+            baseURL: 'https://m.client.10010.com/',
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `/producGameApp`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+            return data.data.filter(g => g.state === '0')
+        } else {
+            console.log('记录失败')
+        }
+    },
+    gameFlowGet: async (axios, options) => {
+        // TODO 未知游戏时长上报
+        const { gameId } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'userNumber': options.user,
+            'methodType': 'flowGet',
+            'gameId': gameId,
+            'deviceType': 'Android',
+            'clientVersion': '8.0100',
+        }
+        let { data } = await axios.request({
+            baseURL: 'https://m.client.10010.com/',
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `/producGameApp`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+        } else {
+            console.log('记录失败')
+        }
+    }
 }

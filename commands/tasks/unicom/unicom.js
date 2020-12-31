@@ -80,6 +80,26 @@ var start = async (params) => {
     })
   })
 
+  // 每日游戏时长-天天领取流量包
+  await scheduler.regTask('dailygameflow', async () => {
+    // let games = await require('./producGame').timeTaskQuery(request, options)
+    // for (let game of games) {
+    //   await require('./producGame').recordGame(request, {
+    //     ...options,
+    //     gameId: game.gameId
+    //   })
+    //   await require('./producGame').recordGame1(request, {
+    //     ...options,
+    //     gameId: game.gameId
+    //   })
+    //   await require('./producGame').gameverify(request, options)
+    //   await require('./producGame').gameFlowGet(request, {
+    //     ...options,
+    //     gameId: game.gameId
+    //   })
+    // }
+  })
+
   // await require('./integral').getflDetail(request, options)
   // await require('./integral').getTxDetail(request, options)
   // await require('./integral').getDxDetail(request, options)
