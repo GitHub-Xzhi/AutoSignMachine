@@ -48,6 +48,11 @@ var start = async (params) => {
     await require('./integral').dxIntegralEveryDay(request, options)
   })
 
+  // 每日游戏楼层宝箱
+  await scheduler.regTask('dailygamebox', async () => {
+    await require('./integral').gamebox(request, options)
+  })
+
   // 每日免费抽奖
   await scheduler.regTask('dailylottery', async () => {
     await require('./integral').dailylottery(request, options)
