@@ -1,4 +1,4 @@
-transParams = (data) => {
+var transParams = (data) => {
   let params = new URLSearchParams();
   for (let item in data) {
     params.append(item, data['' + item + '']);

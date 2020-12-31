@@ -53,9 +53,9 @@ var start = async (params) => {
     await require('./integral').dailylottery(request, options)
   })
 
-  // 每日娱乐中心打开签到
-  await scheduler.regTask('gameSignin', async () => {
-    await require('./integral').gameSignin(request, options)
+  // 每日娱乐中心打卡
+  await scheduler.regTask('producGame', async () => {
+    await require('./producGame').gameSignin(request, options)
   })
 
   // 每日沃之树
