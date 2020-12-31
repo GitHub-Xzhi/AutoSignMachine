@@ -1,5 +1,5 @@
 const _request = require('../../../utils/request')
-const {scheduler} = require('../../../utils/scheduler')
+const { scheduler } = require('../../../utils/scheduler')
 var start = async (params) => {
   const { cookies, options } = params
   if (!('P00001' in cookies) || !cookies['P00001']) {
@@ -21,16 +21,28 @@ var start = async (params) => {
     await require('./signPoint')(request)
   })
 
+  // 日常任务
+  await scheduler.regTask('dailyTask', async () => {
+    let { tasks } = await require('./dailyTask').getTasks(request)
+    let { daily } = tasks
+    await require('./dailyTask').joinTasks(request, daily)
+    await require('./dailyTask').completeTasks(request, daily)
+  })
+
   // vip 用户成长值签到
   if (userinfo.vipInfo.status === '1') {
     // vip签到任务
     await scheduler.regTask('signVip', async () => {
-      await require('./signVip')(request)
+      let isSign = await require('./signVip').querySignInfo(request)
+      if (isSign) {
+        await require('./signVip').vipSign(request)
+      }
     })
     // 浏览会员俱乐部任务
     await scheduler.regTask('dailyBrowserClub', async () => {
       await require('./dailyBrowserClub')(request)
     })
+
     // 访问热点首页
     await scheduler.regTask('dailyFeed', async () => {
       await require('./dailyFeed')(request)
@@ -38,7 +50,7 @@ var start = async (params) => {
 
     // 每日观看视频30分钟3次
     await scheduler.regTask('dailyWatchVideo', async () => {
-      await require('./dailyWatchVideo').reportPlayTime(request)
+      // await require('./dailyWatchVideo').reportPlayTime(request)
     })
   } else {
     console.log('非vip会员跳过vip签到任务')
