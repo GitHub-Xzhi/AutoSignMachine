@@ -13,7 +13,7 @@ var start = async (params) => {
 
   await require('./init')(request, {
     ...params,
-    cookies:savedCookies
+    cookies: savedCookies
   })
 
   // 每日签到积分
