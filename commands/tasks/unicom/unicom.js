@@ -65,11 +65,15 @@ var start = async (params) => {
 
   // 每日沃之树
   await scheduler.regTask('dailywoTree', async () => {
-    result = await require('./woTree').getStatus(request, options)
-    await require('./woTree').takeFlow(request, {
-      options,
-      flowChangeList: result.flowChangeList
-    })
+    let i = 2
+    do {
+      // 普通 - 看视频 似乎是分开的两次
+      result = await require('./woTree').getStatus(request, options)
+      await require('./woTree').takeFlow(request, {
+        options,
+        flowChangeList: result.flowChangeList
+      })
+    } while (i--)
     await require('./woTree').takePop(request, {
       options,
       popList: result.popList
