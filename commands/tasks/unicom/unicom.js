@@ -60,9 +60,9 @@ var start = async (params) => {
   })
 
   // 每日豪礼大派送抽奖
-  // await scheduler.regTask('jflottery', async () => {
+  await scheduler.regTask('jflottery', async () => {
     await require('./jflottery').timesDraw(request, options)
-  // })
+  })
 
   // 每日娱乐中心打卡
   await scheduler.regTask('producGame', async () => {
