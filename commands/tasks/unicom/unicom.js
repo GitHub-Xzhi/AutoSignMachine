@@ -24,6 +24,7 @@ var start = async (params) => {
     if (result.status === '0000') {
       if (result.data.todaySigned === '1') {
         result = await require('./integral').daySign(request, options)
+        await require('./integral').todaySign(request, options)
         if (result.status === '0000') {
           console.log('积分签到成功+' + (result.data.newCoin - integralTotal) + '积分', '总积分:' + result.data.newCoin)
         } else {
@@ -82,22 +83,66 @@ var start = async (params) => {
 
   // 每日游戏时长-天天领取流量包
   await scheduler.regTask('dailygameflow', async () => {
-    // let games = await require('./producGame').timeTaskQuery(request, options)
-    // for (let game of games) {
-    //   await require('./producGame').recordGame(request, {
-    //     ...options,
-    //     gameId: game.gameId
-    //   })
-    //   await require('./producGame').recordGame1(request, {
-    //     ...options,
-    //     gameId: game.gameId
-    //   })
-    //   await require('./producGame').gameverify(request, options)
-    //   await require('./producGame').gameFlowGet(request, {
-    //     ...options,
-    //     gameId: game.gameId
-    //   })
-    // }
+    let allgames = await require('./producGame').popularGames(request, options)
+    let games = await require('./producGame').timeTaskQuery(request, options)
+    games = allgames.filter(g => games.map(i => i.gameId).indexOf(g.id) !== -1)
+    console.log('剩余', games.length)
+    for (let game of games) {
+      console.log(game.name)
+      let { appInfo } = await require('./producGame').gameInfo(request, {
+        ...options,
+        game
+      })
+      await require('./producGame').UseUserApp(request, {
+        ...options,
+        game,
+        app: appInfo
+      })
+      await require('./producGame').recordGame(request, {
+        ...options,
+        gameId: game.gameId
+      })
+      await require('./producGame').recordGame1(request, {
+        ...options,
+        gameId: game.gameId
+      })
+      await require('./producGame').gameverify(request, {
+        ...options,
+        game
+      })
+      await require('./producGame').reportTransfer(request, {
+        ...options,
+        game,
+        app: appInfo,
+        action: 'click'
+      })
+      let i = 30
+      do {
+        await require('./producGame').gameReportTime(request, {
+          ...options,
+          game
+        })
+        await new Promise((resolve, reject) => {
+          setTimeout(resolve, 15 * 1000)
+        })
+      } while (i--)
+
+      await require('./producGame').reportTransfer(request, {
+        ...options,
+        game,
+        app: appInfo,
+        action: 'close'
+      })
+
+      await new Promise((resolve, reject) => {
+        setTimeout(resolve, 30 * 1000)
+      })
+
+      await require('./producGame').gameFlowGet(request, {
+        ...options,
+        gameId: game.gameId
+      })
+    }
   })
 
   // await require('./integral').getflDetail(request, options)
