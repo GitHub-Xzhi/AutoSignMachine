@@ -6,7 +6,7 @@ moment.locale('zh-cn');
 
 const randomDate = (startDate, endDate) => {
     let date = new Date(+startDate + Math.random() * (endDate - startDate));
-    let hour = date.getHours() + Math.random() * (23 - date.getHours()) | 0;
+    let hour = date.getHours() + Math.random() * (20 - date.getHours()) | 0;
     let minute = 0 + Math.random() * (59 - 0) | 0;
     let second = 0 + Math.random() * (59 - 0) | 0;
     date.setHours(hour);
