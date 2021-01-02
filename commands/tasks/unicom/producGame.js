@@ -1,6 +1,7 @@
 // TODO !!!!! 签名算法暂未知
 // 娱乐中心
 const fs = require('fs')
+const path = require('path')
 
 var transParams = (data) => {
     let params = new URLSearchParams();
@@ -249,8 +250,489 @@ module.exports = {
             console.log('记录失败')
         }
     },
+    reportTimeEvent: async (axios, options) => {
+        const { game, app, action, launchid } = options
+
+        let launchtime = options.launchtime
+
+        let jwt = undefined
+        axios.defaults.headers.cookie.split('; ').forEach(item => {
+            if (item.indexOf('jwt') === 0) {
+                jwt = item.split("=").pop()
+            }
+        })
+        let buf_tpl = await new Promise((resolve, reject) => {
+            fs.readFile(path.resolve(path.join(__dirname, './reportTimeEvent.bin')), function (err, bytesRead) {
+                if (err) throw err;
+                resolve(bytesRead);
+            })
+        })
+        var buf = buf_tpl.slice(0, 0x85)
+
+        // user
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x9B)])
+
+        // appid
+        let appid = game.gameCode
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xB3)])
+
+        // launchid
+        // let launchid = new Date().getTime()
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xE2)])
+
+        // launch time
+        time = launchtime + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x37A)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x390)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3A8)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3DA)])
+
+        // loaded time
+        time = launchtime + 45 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x6A7)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x6BD)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x6D5)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x709)])
+
+        // launch_result
+        time = launchtime + 50 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x9D7)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x9ED)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xA05)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xA35)])
+
+        // appcreate time
+        time = launchtime + 60 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xCCD)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xCE3)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xCFB)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xD2A)])
+
+        // onlaunch time
+        time = launchtime + 70 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xFC2)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xFD8)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0xFF0)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1022)])
+
+        // apponloaded time
+        time = launchtime + 80 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x12EF)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1305)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x131D)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1351)])
+
+        // launch_result time
+        time = launchtime + 90 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x161F)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1635)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x164D)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1682)])
+
+        // fpsPerformance time
+        time = launchtime + 100 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x191B)])
+
+        // uid
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1931)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1949)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1979)])
+
+        // apponshow time
+        time = launchtime + 200 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1C11)])
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1C27)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1C3F)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1C79)])
+
+        // request_result time
+        time = launchtime + 210 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1F29)])
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1F3F)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1F57)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x1F91)])
+
+        // request_result time
+        time = launchtime + 220 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2241)])
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2257)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x226F)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x22A9)])
+
+        // request_result time
+        time = launchtime + 230 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x255D)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2573)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x258B)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x25C5)])
+
+        // request_result time
+        time = launchtime + 240 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2873)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2889)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x28A1)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x28DB)])
+
+        // request_result time
+        time = launchtime + 250 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2B89)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2B9F)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2BB7)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2BED)])
+
+        // web_socket_open time
+        time = launchtime + 200 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2E9B)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2EB1)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2EC9)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x2F03)])
+
+        // web_socket_open time
+        time = launchtime + 210 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x31B1)])
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x31C7)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x31DF)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3219)])
+
+        // web_socket_open time
+        time = launchtime + 223 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x34C7)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x34DD)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x34F5)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x352F)])
+
+        // web_socket_open time
+        time = launchtime + 300 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x37DD)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x37F3)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x380B)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3849)])
+
+        // web_socket_open time
+        time = launchtime + 253 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3AE1)])
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3AF7)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3B0F)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3B46)])
+
+        // staytime
+        time = new Date().getTime() + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3DE3)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3DF9)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3E11)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x3E46)])
+
+        // web_socket_open time
+        time = launchtime + 300 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x40E2)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x40F8)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4110)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4148)])
+
+        // memoryPerformance time
+        time = launchtime + 350 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x43E5)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x43FB)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4413)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4446)])
+
+        // memoryGrowth time
+        time = launchtime + 360 + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x46E3)])
+
+
+        // uin
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x46F9)])
+
+        // appid
+        buf_tmp = Buffer.from(appid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4711)])
+
+        // launchid
+        buf_tmp = Buffer.from(launchid)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4741)])
+
+        // apponhide time
+        time = new Date().getTime() + ''
+        buf_tmp = Buffer.from(time)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x49D2)])
+
+
+        // custom
+        buf_tmp = Buffer.from(`${options.user}_0101180709792_111872`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4A1C)])
+
+        // user
+        buf_tmp = Buffer.from(`${options.user}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4A2A)])
+
+        // jwt
+        buf_tmp = Buffer.from(`${jwt}`)
+        buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x4B06 + 1)])
+
+        let res = await axios.request({
+            headers: {
+                "user-agent": "okhttp/4.4.0"
+            },
+            url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=398869370&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=1609563639&Signature=Rb5qMy2IDStlH2nzEd2ivrZvLJIVfCVBtuYfFBMXp3E%3D`,
+            method: 'post',
+            responseType: 'arrayBuffer',
+            data: buf
+        }, {
+            jar: null
+        }).catch(err => console.log(err))
+        console.log(Buffer.from(res.data))
+
+        // let result = Buffer.from(res.data).toString('base64')
+        // let pre = Buffer.from([0x08, 0xB4, 0x01]).toString('base64')
+        // if (result === pre) {
+        //     console.log('reportTransfer成功')
+        // }
+
+        console.log('reportTimeEvent完成')
+
+        // await new Promise((resolve, reject) => {
+        //     fs.writeFile('./reportTime_bin', buf, function (err) {
+        //         if (err) throw err;
+        //         resolve();
+        //     })
+        // })
+    },
     reportTransfer: async (axios, options) => {
         const { game, app, action } = options
+        let launchid = options.launchid
 
         let jwt = undefined
         axios.defaults.headers.cookie.split('; ').forEach(item => {
@@ -277,12 +759,12 @@ module.exports = {
         buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x12D)])
 
         // launchid
-        let launchid = '1609500082682'
+        launchid = launchid || new Date().getTime() + ''
         buf_tmp = Buffer.from(launchid)
         buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x145)])
 
         // appid
-        let appid = '1111029926'
+        let appid = game.gameCode
         buf_tmp = Buffer.from(appid)
         buf = Buffer.concat([buf, buf_tmp, buf_tpl.slice(buf.length + buf_tmp.length, 0x160)])
 
@@ -379,6 +861,8 @@ module.exports = {
         //         resolve();
         //     })
         // })
+
+        return launchid
     },
     UseUserApp: async (axios, options) => {
 
