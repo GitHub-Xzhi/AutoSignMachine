@@ -1,0 +1,65 @@
+var crypto = require('crypto');
+var sign = (data) => {
+  let str = 'integralofficial&'
+  let params = []
+  data.forEach((v, i) => {
+    if (v) {
+      params.push('arguments' + (i + 1) + v)
+    }
+  });
+  return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
+}
+let account = {
+  yhTaskId: "6c54032f662c4d2bb576872ed408232c",
+  yhChannel: "GGPD",
+  accountChannel: "517050707",
+  accountUserName: "517050707",
+  accountPassword: "123456",
+  accountToken: "4640b530b3f7481bb5821c6871854ce5",
+}
+var dailyTTliulan = {
+  query: async (request, options) => {
+    let params = {
+      'arguments1': 'AC20200814162815', // acid
+      'arguments2': account.yhChannel, // yhChannel
+      'arguments3': account.yhTaskId, // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': account.accountChannel,
+      'netWay': 'Wifi',
+      'version': `android@8.0100`,
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    return await require('./taskcallback').query(request, {
+      ...options,
+      params
+    })
+  },
+  doTask: async (request, options) => {
+    let timesFlag = await dailyTTliulan.query(request, options)
+    if (timesFlag) {
+      console.log('手厅浏览有礼发积分: 今日已完成')
+      return
+    }
+    let params = {
+      'arguments1': 'AC20200814162815', // acid
+      'arguments2': account.yhChannel, // yhChannel
+      'arguments3': account.yhTaskId, // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': account.accountChannel,
+      'arguments7': account.accountUserName,
+      'arguments8': account.accountPassword,
+      'arguments9': account.accountToken,
+      'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
+      'netWay': 'Wifi',
+      'remark': '手厅浏览有礼发积分',
+      'version': `android@8.0100`,
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    await require('./taskcallback').doTask(request, {
+      ...options,
+      params
+    })
+  }
+}
+
+module.exports = dailyTTliulan

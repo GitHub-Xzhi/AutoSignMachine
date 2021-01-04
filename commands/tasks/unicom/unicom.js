@@ -59,6 +59,12 @@ var start = async (params) => {
     await require('./integral').dailylottery(request, options)
   })
 
+  // 每日浏览活动
+  await scheduler.regTask('dailyLiuLan', async () => {
+    await require('./dailyVideo').doTask(request, options)
+    await require('./dailyTTliulan').doTask(request, options)
+  })
+
   // 每日豪礼大派送抽奖
   await scheduler.regTask('jflottery', async () => {
     await require('./jflottery').timesDraw(request, options)
