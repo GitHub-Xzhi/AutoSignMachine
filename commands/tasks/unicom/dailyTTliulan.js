@@ -35,8 +35,8 @@ var dailyTTliulan = {
     })
   },
   doTask: async (request, options) => {
-    let timesFlag = await dailyTTliulan.query(request, options)
-    if (timesFlag) {
+    let num = await dailyTTliulan.query(request, options)
+    if (!num) {
       console.log('手厅浏览有礼发积分: 今日已完成')
       return
     }

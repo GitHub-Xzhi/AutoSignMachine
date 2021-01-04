@@ -52,8 +52,8 @@ var taskcallback = {
             data: transParams(params)
         })
         if (data.code === '0000') {
-            console.log(data.timeflag === '1' ? '今日参加活动已达上限' : '活动可参加')
-            return data.timeflag
+            console.log(data.timeflag === '1' ? `今日参加活动已达上限(${data.achieve}/${data.allocation}次)` : `活动可参加(${data.achieve}/${data.allocation}次)`)
+            return parseInt(data.allocation) - parseInt(data.achieve)
         } else {
             console.log('查询出错', data.desc)
             return false

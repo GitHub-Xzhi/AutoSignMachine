@@ -35,8 +35,8 @@ var dailyVideo = {
     })
   },
   doTask: async (request, options) => {
-    let timesFlag = await dailyVideo.query(request, options)
-    if (timesFlag) {
+    let num = await dailyVideo.query(request, options)
+    if (!num) {
       console.log('签到看视频得积分: 今日已完成')
       return
     }
