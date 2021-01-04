@@ -108,6 +108,9 @@ var IsDonatedCoinsForVideo = (axios, video) => {
       url: `https://api.bilibili.com/x/web-interface/archive/coins?aid=${video.aid}`,
       method: 'get'
     }).then(res => {
+      if(!res.data.data){
+        throw new Error('获取视频投币状态失败')
+      }
       resolve(res.data.data.multiply)
     }).catch(reject)
   })

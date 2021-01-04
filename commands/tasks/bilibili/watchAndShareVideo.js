@@ -5,7 +5,7 @@ var fetchVideo = (axios) => {
     let rid = rids[Math.floor(Math.random() * rids.length)]
     let day = days[Math.floor(Math.random() * days.length)]
     axios.request({
-      headers:{
+      headers: {
         "referer": "https://www.bilibili.com",
         "origin": "https://www.bilibili.com",
       },
@@ -15,7 +15,7 @@ var fetchVideo = (axios) => {
       if (result.code === 0) {
         resolve(result.data[Math.floor(Math.random() * result.data.length)])
       } else {
-        throw new Error('获取随机视频失败', result.message)
+        throw new Error('获取随机视频失败' + result.message)
       }
     }).catch(reject)
   })
@@ -25,7 +25,7 @@ var WatchVideo = (axios, videoInfo) => {
   return new Promise((resolve, reject) => {
     let playedTime = Math.floor(Math.random() * 90)
     axios.request({
-      headers:{
+      headers: {
         "referer": "https://www.bilibili.com",
         "origin": "https://www.bilibili.com",
       },
@@ -45,7 +45,7 @@ var WatchVideo = (axios, videoInfo) => {
 var ShareVideo = (axios, videoInfo, bili_jct) => {
   return new Promise((resolve, reject) => {
     axios.request({
-      headers:{
+      headers: {
         "referer": "https://www.bilibili.com",
         "origin": "https://www.bilibili.com",
       },
