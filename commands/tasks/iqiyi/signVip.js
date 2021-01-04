@@ -59,7 +59,7 @@ var sign = {
     if (data.code === 'A00000') {
       let { isSign, continueSignDaysSum, todayGrowth } = data.data
       console.log(isSign === 'yes' ? `今日已签到，连续签到${continueSignDaysSum}天，成长值+${todayGrowth}` : '今日还未签到')
-      return isSign === 'yes'
+      return isSign !== 'yes'
     } else {
       console.log(data.msg)
     }
