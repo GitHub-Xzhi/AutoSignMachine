@@ -35,7 +35,7 @@ var dailyVideo = {
     })
   },
   doTask: async (request, options) => {
-    let num = await dailyVideo.query(request, options)
+    let { num, jar } = await dailyVideo.query(request, options)
     if (!num) {
       console.log('签到看视频得积分: 今日已完成')
       return
@@ -59,7 +59,8 @@ var dailyVideo = {
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
       await require('./taskcallback').doTask(request, {
         ...options,
-        params
+        params,
+        jar
       })
     } while (--num)
   }

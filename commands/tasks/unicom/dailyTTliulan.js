@@ -35,7 +35,7 @@ var dailyTTliulan = {
     })
   },
   doTask: async (request, options) => {
-    let num = await dailyTTliulan.query(request, options)
+    let { num, jar } = await dailyTTliulan.query(request, options)
     if (!num) {
       console.log('手厅浏览有礼发积分: 今日已完成')
       return
@@ -59,7 +59,8 @@ var dailyTTliulan = {
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
       await require('./taskcallback').doTask(request, {
         ...options,
-        params
+        params,
+        jar
       })
     } while (--num)
   }

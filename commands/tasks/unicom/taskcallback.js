@@ -15,7 +15,7 @@ function encryption (data, key) {
     var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
     cipher.setAutoPadding(true);
     return Buffer.concat([cipher.update(data), cipher.final()]).toString(cipherEncoding);
-} 是
+}
 
 //data 是你的准备解密的字符串,key是你的密钥
 function decryption (data, key) {
@@ -37,7 +37,7 @@ var taskcallback = {
     query: async (axios, options) => {
         let { params } = options
         const useragent = `okhttp/4.4.0`
-        let { data } = await axios.request({
+        let { data, config } = await axios.request({
             baseURL: 'https://m.client.10010.com/',
             headers: {
                 "user-agent": useragent,
@@ -50,20 +50,20 @@ var taskcallback = {
         })
         if (data.code === '0000') {
             console.log(data.timeflag === '1' ? `今日参加活动已达上限(${data.achieve}/${data.allocation}次)` : `活动可参加(${data.achieve}/${data.allocation}次)`)
-            return parseInt(data.allocation) - parseInt(data.achieve)
+            return {
+                num: parseInt(data.allocation) - parseInt(data.achieve),
+                jar: config.jar
+            }
         } else {
             console.log('查询出错', data.desc)
             return false
         }
     },
     reward: async (axios, options) => {
-        let { params } = options
-        let ecs_token = undefined
-        axios.defaults.headers.cookie.split('; ').forEach(item => {
-            if (item.indexOf('ecs_token') === 0) {
-                ecs_token = item.split("=").pop()
-            }
-        })
+        let { params, jar } = options
+        let cookiesJson = jar.toJSON()
+        let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
+        ecs_token = ecs_token.value
         if (!ecs_token) {
             throw new Error('ecs_token缺失')
         }
