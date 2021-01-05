@@ -189,8 +189,8 @@ var taskcallback = {
             data: message
         })
         data = res.data
-        s = a(data.message.substr(1, 16))
-        console.log(decryption(data.message.replace(/\n/g, '').substr(17), s))
+        // s = a(data.message.substr(1, 16))
+        // console.log(decryption(data.message.replace(/\n/g, '').substr(17), s))
         if ('code' in data) {
             throw new Error('获取激励信息出错')
         }
