@@ -30,7 +30,7 @@ var transParams = (data) => {
 };
 
 var chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-function generateMixed(n) {
+function generateMixed (n) {
   let res = "";
   for (var i = 0; i < n; i++) {
     var id = Math.ceil(Math.random() * 61);
@@ -43,7 +43,7 @@ module.exports = async (axios, params) => {
   let { cookies, options } = params
   const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
 
-  const {data,config} = await axios.request({
+  const { data, config } = await axios.request({
     baseURL: 'https://m.client.10010.com',
     headers: {
       "user-agent": useragent,

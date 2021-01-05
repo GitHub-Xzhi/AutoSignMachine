@@ -22,6 +22,14 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
+function encryption (data, key) {
+  var iv = "";
+  var cipherEncoding = 'base64';
+  var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
+  cipher.setAutoPadding(true);
+  return Buffer.concat([cipher.update(data), cipher.final()]).toString(cipherEncoding);
+}
+
 var dailyVideoFreeGoods = {
   getGoodsList: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
@@ -59,7 +67,7 @@ var dailyVideoFreeGoods = {
     // 随机商品 似乎限制只能有三次参与机会  这里采用随机商品，每个商品一次的方式
     let num = 3
     do {
-      let good = goods[Math.floor(Math.random() * goods.length + 1)]
+      let good = goods[Math.floor(Math.random() * goods.length)]
 
       console.log('开始处理', good.goodsName)
       params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
@@ -96,10 +104,11 @@ var dailyVideoFreeGoods = {
       let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
       ecs_token = ecs_token.value
 
+      let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
 
       let p = {
         'channelId': 'LT_channel',
-        'phone': '7Qz7dlmmU29EN2T88bx4ZQ==',
+        'phone': phone,
         'token': ecs_token,
         'sourceCode': 'lt_freeTake'
       }
@@ -137,7 +146,7 @@ var dailyVideoFreeGoods = {
         data: transParams({
           'channelId': 'LT_channel',
           'id': good.id,
-          'phone': '7Qz7dlmmU29EN2T88bx4ZQ==',
+          'phone': phone,
           'sourceCode': 'lt_freeTake',
           'token': ecs_token
         })
@@ -156,7 +165,7 @@ var dailyVideoFreeGoods = {
           'code': '',
           'flag': '',
           'id': good.id,
-          "phone": '7Qz7dlmmU29EN2T88bx4ZQ==',
+          "phone": phone,
           'sourceCode': 'lt_freeTake',
           'taskId': '',
           'token': ecs_token,
