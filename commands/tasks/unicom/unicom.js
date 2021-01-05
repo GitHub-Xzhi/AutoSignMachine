@@ -64,6 +64,7 @@ var start = async (params) => {
     await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+    await require('./dailyBookRead').doTask(request, options)
   })
 
   // 每日豪礼大派送抽奖
