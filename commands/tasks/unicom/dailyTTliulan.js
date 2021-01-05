@@ -40,25 +40,28 @@ var dailyTTliulan = {
       console.log('手厅浏览有礼发积分: 今日已完成')
       return
     }
-    let params = {
-      'arguments1': 'AC20200814162815', // acid
-      'arguments2': account.yhChannel, // yhChannel
-      'arguments3': account.yhTaskId, // yhTaskId menuId
-      'arguments4': new Date().getTime(), // time
-      'arguments6': account.accountChannel,
-      'arguments7': account.accountUserName,
-      'arguments8': account.accountPassword,
-      'arguments9': account.accountToken,
-      'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
-      'netWay': 'Wifi',
-      'remark': '手厅浏览有礼发积分',
-      'version': `android@8.0100`,
-    }
-    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-    await require('./taskcallback').doTask(request, {
-      ...options,
-      params
-    })
+    do {
+      console.log('第', num, '次')
+      let params = {
+        'arguments1': 'AC20200814162815', // acid
+        'arguments2': account.yhChannel, // yhChannel
+        'arguments3': account.yhTaskId, // yhTaskId menuId
+        'arguments4': new Date().getTime(), // time
+        'arguments6': account.accountChannel,
+        'arguments7': account.accountUserName,
+        'arguments8': account.accountPassword,
+        'arguments9': account.accountToken,
+        'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
+        'netWay': 'Wifi',
+        'remark': '手厅浏览有礼发积分',
+        'version': `android@8.0100`,
+      }
+      params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+      await require('./taskcallback').doTask(request, {
+        ...options,
+        params
+      })
+    } while (--num)
   }
 }
 

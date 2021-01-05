@@ -63,6 +63,7 @@ var start = async (params) => {
   await scheduler.regTask('dailyLiuLan', async () => {
     await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
+    await require('./dailyVideoBook').doTask(request, options)
   })
 
   // 每日豪礼大派送抽奖

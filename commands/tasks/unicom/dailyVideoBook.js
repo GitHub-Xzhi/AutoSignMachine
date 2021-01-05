@@ -1,4 +1,7 @@
 var crypto = require('crypto');
+
+//阅读打卡看视频得积分
+
 var sign = (data) => {
   let str = 'integralofficial&'
   let params = []
@@ -10,7 +13,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 let account = {
-  yhTaskId: "734225b6ec9946cca3bcdc6a6e14fc1f",
+  yhTaskId: "2f2a13e527594a31aebfde5af673524f",
   yhChannel: "GGPD",
   accountChannel: "517050707",
   accountUserName: "517050707",
@@ -20,7 +23,7 @@ let account = {
 var dailyVideo = {
   query: async (request, options) => {
     let params = {
-      'arguments1': 'AC20200624091508', // acid
+      'arguments1': 'AC20200521222721', // acid
       'arguments2': account.yhChannel, // yhChannel
       'arguments3': account.yhTaskId, // yhTaskId menuId
       'arguments4': new Date().getTime(), // time
@@ -37,13 +40,13 @@ var dailyVideo = {
   doTask: async (request, options) => {
     let num = await dailyVideo.query(request, options)
     if (!num) {
-      console.log('签到看视频得积分: 今日已完成')
+      console.log('阅读打卡看视频得积分: 今日已完成')
       return
     }
     do {
       console.log('第', num, '次')
       let params = {
-        'arguments1': 'AC20200624091508', // acid
+        'arguments1': 'AC20200521222721', // acid
         'arguments2': account.yhChannel, // yhChannel
         'arguments3': account.yhTaskId, // yhTaskId menuId
         'arguments4': new Date().getTime(), // time
@@ -53,7 +56,7 @@ var dailyVideo = {
         'arguments9': '',
         'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
         'netWay': 'Wifi',
-        'remark': '签到看视频得积分',
+        'remark': '阅读打卡看视频得积分',
         'version': `android@8.0100`,
       }
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
