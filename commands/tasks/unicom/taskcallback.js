@@ -64,8 +64,6 @@ var taskcallback = {
                 ecs_token = item.split("=").pop()
             }
         })
-        ecs_token = "eyJkYXRhIjoiNWVjMzc1MzNjZDhiYmJhZTEwYWQ1NDMzYjIyNDJkODc1YThhMjBiZmJjYWIwZDNhOTI4NTNkYTcwODBmZGRlYjFlMWU3ZTI2NDcwODI2ZWVkYzRlMjEwZjRlMDNmZDRjMDBkZDRlOTBkNGNjOTM4N2JmOGIxNGIxZGMyMWUxZDYxMjQ4M2UzZTY3NTQyODEzNjBkMDAyMzBkMWM4N2JjZjhiOWIzZGNhYmRmZWZjY2VjM2FjYjBmNTdmNDUxNjhmIiwidmVyc2lvbiI6IjAwIn0="
-
         if (!ecs_token) {
             throw new Error('ecs_token缺失')
         }
