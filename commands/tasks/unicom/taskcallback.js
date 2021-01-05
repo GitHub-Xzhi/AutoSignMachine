@@ -67,8 +67,8 @@ var taskcallback = {
         if (!ecs_token) {
             throw new Error('ecs_token缺失')
         }
-        let orderId = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
-        let codeId = 945535616
+        let orderId = params.orderId || crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
+        let codeId = parseInt(params.codeId || 945535616)
         let app_id = "5049584"
         let media_extra = [
             ecs_token,
@@ -78,32 +78,13 @@ var taskcallback = {
             params.arguments2,
             orderId,// orderId
             codeId, //codeId
-            '阅读打卡看视频得积分',
+            params.remark,
             'Wifi'
         ]
 
         var data = {
             "oversea_version_type": 0,
-            "reward_name": "android-阅读打卡看视频得积分-激励视频",
-            "reward_amount": 1,
-            "network": 4,
-            "latitude": 26.611618041992188,
-            "longitude": 106.63582611083984,
-            "sdk_version": "3.3.0.3",
-            "user_agent": "Mozilla\/5.0 (Linux; Android 9; VKY-AL00 Build\/HUAWEIVKY-AL00; wv) AppleWebKit\/537.36 (KHTML, like Gecko) Version\/4.0 Chrome\/86.0.4240.198 Mobile Safari\/537.36",
-            "extra": {},
-            "media_extra": encodeURI(media_extra.join('|')),
-            "video_duration": 29.487,
-            "play_start_ts": new Date().getTime() - 32 * 1000,
-            "play_end_ts": 0,
-            "duration": 29487,
-            "user_id": app_id, // app_id
-            "trans_id": crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
-        }
-
-        data = {
-            "oversea_version_type": 0,
-            "reward_name": "android-阅读打卡看视频得积分-激励视频",
+            "reward_name": `android-${params.remark}-激励视频`,
             "reward_amount": 1,
             "network": 4,
             // "latitude": 26.611770629882812,
@@ -202,7 +183,6 @@ var taskcallback = {
     },
     // 提交任务
     doTask: async (axios, options) => {
-
         let result = await taskcallback.reward(axios, options)
         let params = options.params
         params['orderId'] = result['orderId']

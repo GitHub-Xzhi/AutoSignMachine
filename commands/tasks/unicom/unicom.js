@@ -71,6 +71,11 @@ var start = async (params) => {
     await require('./dailyBookRead').doTask(request, options)
   })
 
+  // 每日免费拿产品抽奖活动
+  await scheduler.regTask('dailyVideoFreeGoods', async () => {
+    await require('./dailyVideoFreeGoods').doTask(request, options)
+  })
+
   // 每日豪礼大派送抽奖
   await scheduler.regTask('jflottery', async () => {
     await require('./jflottery').timesDraw(request, options)

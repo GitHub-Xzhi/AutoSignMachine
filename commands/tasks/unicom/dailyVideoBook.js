@@ -58,6 +58,7 @@ var dailyVideo = {
         'netWay': 'Wifi',
         'remark': '阅读打卡看视频得积分',
         'version': `android@8.0100`,
+        'codeId': 945535616
       }
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
       await require('./taskcallback').doTask(request, {
