@@ -140,7 +140,7 @@ module.exports = {
         })
         result = res.data
         if (result.code !== 0) {
-            throw new Error("豪礼大派送抽奖:" + result.message)
+            console.log("豪礼大派送抽奖:", result.message)
         } else {
             console.log('豪礼大派送抽奖:', result.consumptionV1Infos.gameResult.prizeStatus)
         }
