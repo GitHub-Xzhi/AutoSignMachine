@@ -77,6 +77,11 @@ var start = async (params) => {
     await require('./dailyVideoFreeGoods').doTask(request, options)
   })
 
+  // 每日刮刮卡抽奖活动
+  await scheduler.regTask('dailyVideoFreeGoods', async () => {
+    await require('./dailyVideoScratchcard').doTask(request, options)
+  })
+
   // 每日豪礼大派送抽奖
   await scheduler.regTask('jflottery', async () => {
     await require('./jflottery').timesDraw(request, options)
