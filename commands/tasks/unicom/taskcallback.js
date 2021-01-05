@@ -186,6 +186,7 @@ var taskcallback = {
         let result = await taskcallback.reward(axios, options)
         let params = options.params
         params['orderId'] = result['orderId']
+        delete params.codeId
         const useragent = `okhttp/4.4.0`
         let { data } = await axios.request({
             baseURL: 'https://m.client.10010.com/',
