@@ -64,6 +64,10 @@ var start = async (params) => {
     await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+  })
+
+  // 每日读书打卡活动
+  await scheduler.regTask('dailyBookRead', async () => {
     await require('./dailyBookRead').doTask(request, options)
   })
 
