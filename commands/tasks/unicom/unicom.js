@@ -64,6 +64,7 @@ var start = async (params) => {
     await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+    await require('./dailyVideoBook').giftBoints(request, options)
   })
 
   // 每日读书打卡活动
