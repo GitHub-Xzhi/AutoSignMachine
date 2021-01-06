@@ -111,7 +111,7 @@ var dailyTurntablePage = {
         break
       }
 
-      if (isLookVideo) {
+      if (!playCounts && isLookVideo) {
 
         let params = {
           'arguments1': '',

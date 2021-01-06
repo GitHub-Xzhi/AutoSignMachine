@@ -155,7 +155,7 @@ var dailyYYY = {
         'type': '免费',
       }
 
-      if (advertTimes) {
+      if (!freeTimes && advertTimes) {
         let params = {
           'arguments1': '',
           'arguments2': '',
