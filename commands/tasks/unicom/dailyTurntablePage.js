@@ -8,7 +8,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w () {
+function w() {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -28,7 +28,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption (data, key) {
+function encryption(data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -188,7 +188,10 @@ var dailyTurntablePage = {
         console.log('提交任务成功，获得', good.giftName)
         if (result.data.data.lookVideoDouble) {
           console.log('提交积分翻倍')
-          await dailyTurntablePage.lookVideoDouble(axios, options)
+          await dailyTurntablePage.lookVideoDouble(axios, {
+            ...options,
+            jar: result.config.jar
+          })
         }
       }
 
@@ -198,6 +201,7 @@ var dailyTurntablePage = {
     } while (playCounts || isLookVideo)
   },
   lookVideoDouble: async (axios, options) => {
+    const { jar } = options
     let params = {
       'arguments1': 'AC20200716103629', // acid
       'arguments2': 'GGPD', // yhChannel
