@@ -151,7 +151,7 @@ var dailyYYY = {
 
       let p1 = {
         'activityId': activity.activityId,
-        'currentTimes': (1 + 4) - advertTimes,
+        'currentTimes': advertTimes + freeTimes,
         'type': '免费',
       }
 
@@ -180,9 +180,19 @@ var dailyYYY = {
           jar: jar1
         })
 
+
+        result = await axios.request({
+          headers: {
+            "user-agent": useragent,
+            "referer": `https://img.client.10010.com/`,
+          },
+          url: `https://m.jf.10010.com/jf-order/avoidLogin/forActive/yyyqd?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=20210106103424&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkwx&userNumber=${options.user}`,
+          method: 'GET'
+        })
+
         p1 = {
           'activityId': activity.activityId,
-          'currentTimes': (1 + 4) - advertTimes,
+          'currentTimes': advertTimes + freeTimes,
           'type': '广告',
           'orderId': params['orderId'],
           'phoneType': 'android',
@@ -212,6 +222,7 @@ var dailyYYY = {
           throw new Error(res.data.data.result)
         }
       }
+
       let t = {
         activityId: activity.activityId,
         resultId: res.data.data.resultId
