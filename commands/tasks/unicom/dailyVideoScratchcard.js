@@ -143,7 +143,7 @@ var dailyVideoScratchcard = {
         result = await axios.request({
           headers: {
             "user-agent": useragent,
-            "referer": `:https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardItemPage`,
+            "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardItemPage`,
             "origin": "https://wxapp.msmds.cn"
           },
           url: `https://wxapp.msmds.cn/jplus/h5/channelScratchCard/doScratchCard?` + w(a),

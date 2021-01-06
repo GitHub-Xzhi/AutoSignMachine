@@ -82,6 +82,11 @@ var start = async (params) => {
     await require('./dailyVideoScratchcard').doTask(request, options)
   })
 
+  // 每日幸运转盘活动
+  await scheduler.regTask('dailyTurntablePage', async () => {
+    await require('./dailyTurntablePage').doTask(request, options)
+  })
+
   // 每日豪礼大派送抽奖
   await scheduler.regTask('jflottery', async () => {
     await require('./jflottery').timesDraw(request, options)
