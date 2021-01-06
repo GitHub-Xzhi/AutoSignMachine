@@ -63,13 +63,13 @@ var start = async (params) => {
   await scheduler.regTask('dailyLiuLan', async () => {
     await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
-    await require('./dailyVideoBook').doTask(request, options)
-    await require('./dailyVideoBook').giftBoints(request, options)
   })
 
   // 每日读书打卡活动
   await scheduler.regTask('dailyBookRead', async () => {
     await require('./dailyBookRead').doTask(request, options)
+    await require('./dailyVideoBook').doTask(request, options)
+    await require('./dailyVideoBook').giftBoints(request, options)
   })
 
   // 每日免费拿产品抽奖活动
