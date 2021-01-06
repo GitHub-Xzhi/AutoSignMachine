@@ -13,7 +13,7 @@ if [ ${enable_iqiyi} ];then
 fi
 
 if [ ${enable_unicom} ];then
-  echo "10 13 * * *       node /AutoSignMachine/index.js unicom --cookies ${cookies} --user ${user} --password ${password}" >> /etc/crontabs/root
+  echo "10 13 * * *       node /AutoSignMachine/index.js unicom --cookies ${cookies} --user ${user} --password ${password} --appid ${appid}" >> /etc/crontabs/root
 fi
 
 /usr/sbin/crond -c /etc/crontabs -f

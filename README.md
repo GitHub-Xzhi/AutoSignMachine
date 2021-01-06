@@ -95,8 +95,7 @@ docker run \
 * **每天自动获取积分**
 
 ```sh
-node index.js unicom --cookies "UT_S=android7.1.2; devicedId=35********67; login_type=01;**************"
-node index.js unicom --user 131*******12 --pasword 11****11
+node index.js unicom --user 131*******12 --pasword 11****11 --appid f7af****ebb
 ```
 
 ### docker部署
@@ -109,9 +108,9 @@ docker run \
   -d \
   --label traefik.enable=false \
   -e enable_unicom=true \
-  -e cookies="UT_S=android7.1.2; devicedId=35********67; login_type=01;**************" \
   -e user=131*******12 \
   -e pasword=11****11 \
+  -e appid=f7af****ebb \
   auto-sign-machine:latest
 ```
 
