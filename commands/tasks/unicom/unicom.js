@@ -90,6 +90,7 @@ var start = async (params) => {
   // 每日摇一摇抽奖活动
   await scheduler.regTask('dailyYYY', async () => {
     await require('./dailyYYY').doTask(request, options)
+    await require('./dailyYYQ').doTask(request, options)
   })
 
   // 每日豪礼大派送抽奖
