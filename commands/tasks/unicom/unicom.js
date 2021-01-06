@@ -78,13 +78,18 @@ var start = async (params) => {
   })
 
   // 每日刮刮卡抽奖活动
-  await scheduler.regTask('dailyVideoFreeGoods', async () => {
+  await scheduler.regTask('dailyVideoScratchcard', async () => {
     await require('./dailyVideoScratchcard').doTask(request, options)
   })
 
   // 每日幸运转盘活动
   await scheduler.regTask('dailyTurntablePage', async () => {
     await require('./dailyTurntablePage').doTask(request, options)
+  })
+
+  // 每日摇一摇抽奖活动
+  await scheduler.regTask('dailyYYY', async () => {
+    await require('./dailyYYY').doTask(request, options)
   })
 
   // 每日豪礼大派送抽奖

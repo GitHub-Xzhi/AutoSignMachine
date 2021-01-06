@@ -44,7 +44,7 @@ exports.handler = async function (argv) {
     }
   }).catch(err => console.log("unicom任务:", err.message))
   let hasTasks = await scheduler.hasWillTask(command)
-  if(hasTasks){
+  if (hasTasks) {
     scheduler.execTask(command).catch(err => console.log("unicom任务:", err.message)).finally(() => {
       console.log('全部任务执行完毕！')
     })

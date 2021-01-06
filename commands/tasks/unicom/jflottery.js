@@ -27,11 +27,6 @@ var secretkeyArray = function () {
 }
 
 var encrypt = function (word, keyStr) {
-    // const cipher = crypto.createCipher('aes-128-ecb', keyStr);
-    // cipher.setAutoPadding(crypto.constants.RSA_PKCS1_PADDING)
-    // var crypted = cipher.update(word, 'utf8', 'base64');
-    // return crypted;
-
     var key = CryptoJS.enc.Utf8.parse(keyStr);
     var srcs = CryptoJS.enc.Utf8.parse(word);
     var encrypted = CryptoJS.AES.encrypt(srcs, key, {
@@ -39,7 +34,15 @@ var encrypt = function (word, keyStr) {
         padding: CryptoJS.pad.Pkcs7
     });
     return encrypted.toString();
+}
 
+var decrypt = function (word, keyStr) {
+    var key = CryptoJS.enc.Utf8.parse(keyStr);
+    var decrypted = CryptoJS.AES.decrypt(word, key, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
 module.exports = {

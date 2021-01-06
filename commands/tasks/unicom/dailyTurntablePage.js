@@ -110,25 +110,27 @@ var dailyTurntablePage = {
         console.log('没有游戏次数')
         break
       }
-      let params = {
-        'arguments1': '',
-        'arguments2': '',
-        'arguments3': '',
-        'arguments4': new Date().getTime(),
-        'arguments6': '',
-        'arguments7': '',
-        'arguments8': '',
-        'arguments9': '',
-        'netWay': 'Wifi',
-        'remark': '签到小游戏买什么都省转盘抽奖',
-        'version': `android@8.0100`,
-        'codeId': 945535695
-      }
-      params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-      params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
-      params['arguments4'] = new Date().getTime()
 
       if (isLookVideo) {
+
+        let params = {
+          'arguments1': '',
+          'arguments2': '',
+          'arguments3': '',
+          'arguments4': new Date().getTime(),
+          'arguments6': '',
+          'arguments7': '',
+          'arguments8': '',
+          'arguments9': '',
+          'netWay': 'Wifi',
+          'remark': '签到小游戏买什么都省转盘抽奖',
+          'version': `android@8.0100`,
+          'codeId': 945535695
+        }
+        params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+        params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
+        params['arguments4'] = new Date().getTime()
+
         result = await require('./taskcallback').reward(axios, {
           ...options,
           params,
