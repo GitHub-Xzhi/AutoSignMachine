@@ -128,7 +128,7 @@ var dailyTurntablePage = {
       params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
       params['arguments4'] = new Date().getTime()
 
-      if (lookVideoDouble) {
+      if (isLookVideo) {
         result = await require('./taskcallback').reward(axios, {
           ...options,
           params,
