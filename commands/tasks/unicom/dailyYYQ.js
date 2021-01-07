@@ -255,7 +255,7 @@ var dailyYYQ = {
       console.log('签到小游戏买扭蛋机2: 今日已完成')
       return
     }
-    let params = {
+    params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel
       'arguments3': '', // yhTaskId menuId
