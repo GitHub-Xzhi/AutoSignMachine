@@ -255,30 +255,27 @@ var dailyYYQ = {
       console.log('签到小游戏买扭蛋机2: 今日已完成')
       return
     }
-    do {
-      console.log('第', num, '次')
-      let params = {
-        'arguments1': 'AC20200611152252', // acid
-        'arguments2': 'GGPD', // yhChannel
-        'arguments3': '', // yhTaskId menuId
-        'arguments4': new Date().getTime(), // time
-        'arguments6': '',
-        'arguments7': '',
-        'arguments8': '',
-        'arguments9': '',
-        'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
-        'netWay': 'Wifi',
-        'remark': '签到小游戏买扭蛋机2',
-        'version': `android@8.0100`,
-        'codeId': 945535686
-      }
-      params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-      await require('./taskcallback').doTask(request, {
-        ...options,
-        params,
-        jar
-      })
-    } while (--num)
+    let params = {
+      'arguments1': 'AC20200611152252', // acid
+      'arguments2': 'GGPD', // yhChannel
+      'arguments3': '', // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': '',
+      'arguments7': '',
+      'arguments8': '',
+      'arguments9': '',
+      'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
+      'netWay': 'Wifi',
+      'remark': '签到小游戏买扭蛋机2',
+      'version': `android@8.0100`,
+      'codeId': 945535686
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    await require('./taskcallback').doTask(axios, {
+      ...options,
+      params,
+      jar
+    })
   },
   lookVideoDoubleResult: async (axios, options) => {
     let { Authorization, activityId, winningRecordId } = options

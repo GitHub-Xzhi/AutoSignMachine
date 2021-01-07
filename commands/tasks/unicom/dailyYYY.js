@@ -142,6 +142,7 @@ var dailyYYY = {
       let Authorization = result.data.token.access_token
       freeTimes = activity.activityTimesInfo.freeTimes
       advertTimes = activity.activityTimesInfo.advertTimes
+      let currentTimes = (1 + 4) - (freeTimes + advertTimes) + 1
       console.log("已消耗机会", (1 + 4) - (freeTimes + advertTimes), "剩余免费机会", freeTimes, '看视频广告机会', advertTimes)
 
       if (!freeTimes && !advertTimes) {
@@ -151,13 +152,13 @@ var dailyYYY = {
 
       let p1 = {
         'activityId': activity.activityId,
-        'currentTimes': advertTimes + freeTimes,
+        'currentTimes': currentTimes,
         'type': '免费',
       }
 
       if (!freeTimes && advertTimes) {
         let params = {
-          'arguments1': '',
+          'arguments1': 'AC20200611152252',
           'arguments2': '',
           'arguments3': '',
           'arguments4': new Date().getTime(),
@@ -166,7 +167,8 @@ var dailyYYY = {
           'arguments8': '',
           'arguments9': '',
           'netWay': 'Wifi',
-          'remark': '到小游戏摇摇乐不倒翁',
+          'remark1': '签到小游戏摇摇乐不倒翁',
+          'remark': '签到小游戏翻倍得积分',
           'version': `android@8.0100`,
           'codeId': 945689604
         }
@@ -192,7 +194,7 @@ var dailyYYY = {
 
         p1 = {
           'activityId': activity.activityId,
-          'currentTimes': advertTimes + freeTimes,
+          'currentTimes': currentTimes,
           'type': '广告',
           'orderId': params['orderId'],
           'phoneType': 'android',
@@ -211,8 +213,9 @@ var dailyYYY = {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         jar: null,
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/consumptionGameTimes?activityId=${p1.activityId}&currentTimes=${p1.currentTimes}&type=%E5%B9%BF%E5%91%8A&orderId=${p1.orderId}&phoneType=android&version=8.01`,
-        method: 'get'
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/consumptionGameTimes`,
+        method: 'get',
+        params: transParams(p1)
       }).catch(err => console.log(err))
 
       if (res.data.code !== 0) {
@@ -284,30 +287,28 @@ var dailyYYY = {
       console.log('签到小游戏买什么都省转盘抽奖: 今日已完成')
       return
     }
-    do {
-      console.log('第', num, '次')
-      let params = {
-        'arguments1': 'AC20200611152252', // acid
-        'arguments2': 'GGPD', // yhChannel
-        'arguments3': '627292f1243148159c58fd58917c3e67', // yhTaskId menuId
-        'arguments4': new Date().getTime(), // time
-        'arguments6': '',
-        'arguments7': '',
-        'arguments8': '',
-        'arguments9': '',
-        'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
-        'netWay': 'Wifi',
-        'remark': '签到小游戏摇摇乐不倒翁',
-        'version': `android@8.0100`,
-        'codeId': 945689604
-      }
-      params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-      await require('./taskcallback').doTask(request, {
-        ...options,
-        params,
-        jar
-      })
-    } while (--num)
+
+    let params = {
+      'arguments1': 'AC20200611152252', // acid
+      'arguments2': 'GGPD', // yhChannel
+      'arguments3': '627292f1243148159c58fd58917c3e67', // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': '',
+      'arguments7': '',
+      'arguments8': '',
+      'arguments9': '',
+      'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
+      'netWay': 'Wifi',
+      'remark': '签到小游戏摇摇乐不倒翁',
+      'version': `android@8.0100`,
+      'codeId': 945689604
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    await require('./taskcallback').doTask(axios, {
+      ...options,
+      params,
+      jar
+    })
   },
   lookVideoDoubleResult: async (axios, options) => {
     let { Authorization, activityId, winningRecordId } = options
