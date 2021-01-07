@@ -56,6 +56,9 @@ var dailyCheapStorePage = {
         'sourceCode': 'lt_cheapStore'
       })
     })
+    result.data.data.list.forEach(g => {
+      console.log('已有【' + g.giftName + '】碎片', `(${g.haveCount}/${g.limitCode})`)
+    })
     return result.data.data
   },
   doTask: async (axios, options) => {
@@ -95,13 +98,20 @@ var dailyCheapStorePage = {
 
     let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
     let playCounts = 0
+
+    await dailyCheapStorePage.getBottle(axios, {
+      ...options,
+      jar: jar1,
+      searchParams,
+      ecs_token
+    })
+
     do {
       let res = await dailyCheapStorePage.getGoodsList(axios, {
         ...options,
         ecs_token,
         phone
       })
-
 
       playCounts = res.playCounts
 
@@ -138,18 +148,164 @@ var dailyCheapStorePage = {
       } else {
         let data = result.data.data
         let good = res.list.find(f => f.giftId === data.giftId)
-        console.log('提交任务成功，获得', good.giftName, '商品碎片x' + data.fragmentCount, data.desc + data.playCounts)
+        console.log('提交任务成功，获得', good.giftName, '累计商品碎片x' + data.fragmentCount, data.desc + data.playCounts)
         playCounts = data.playCounts
+      }
+
+      // 存在能量瓶
+      if (res.bottleCount) {
+        await dailyCheapStorePage.bottleExpend(axios, {
+          ...options,
+          jar: jar1,
+          searchParams,
+          ecs_token
+        })
+        playCounts = 6 * res.bottleCount + playCounts
       }
 
       if (playCounts) {
         console.log('等待15秒再继续')
         await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
-      } else {
-        throw new Error('进入下一轮的尝试等待期')
       }
 
     } while (playCounts)
+
+    throw new Error('进入下一轮的尝试等待期')
+  },
+  getBottleState: async (axios, options) => {
+    const { jar, searchParams, ecs_token } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
+    let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
+
+    let a = {
+      'channelId': 'LT_channel',
+      "phone": phone,
+      'isDetails': 'false',
+      'token': ecs_token,
+      'sourceCode': 'lt_cheapStore'
+    }
+    result = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+        "origin": "https://wxapp.msmds.cn"
+      },
+      url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/add`,
+      method: 'POST',
+      data: transParams(a)
+    })
+    console.log(JSON.stringify(result.data))
+    if (result.data.code !== 200) {
+      console.log('查询能量瓶状态失败', result.data.msg)
+    } else {
+      if (result.data.data.status === 1) {
+        if ('times' in result.data.data) {
+          let m = moment(new Date(result.data.data.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试'
+          console.log(result.data.data.text)
+          return false
+        }
+      } else {
+        return true
+      }
+    }
+    return false
+  },
+  // 获取能量瓶
+  getBottle: async (axios, options) => {
+    const { jar, searchParams, ecs_token } = options
+    let state = await dailyCheapStorePage.getBottleState(axios, options)
+    if (!state) {
+      console.log('跳过获取能量瓶')
+      return
+    }
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
+    let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
+    // 每4小时3次
+    let num = 3
+    do {
+      let params = {
+        'arguments1': '',
+        'arguments2': '',
+        'arguments3': '',
+        'arguments4': new Date().getTime(),
+        'arguments6': '',
+        'arguments7': '',
+        'arguments8': '',
+        'arguments9': '',
+        'netWay': 'Wifi',
+        'remark': '签到小游戏买什么都省申请便利店抽奖',
+        'version': `android@8.0100`,
+        'codeId': 945535693
+      }
+      params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+      params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
+      params['arguments4'] = new Date().getTime()
+
+      let result = await require('./taskcallback').reward(axios, {
+        ...options,
+        params,
+        jar
+      })
+
+      let a = {
+        'channelId': 'LT_channel',
+        "phone": phone,
+        'isDetails': 'false',
+        'token': ecs_token,
+        'videoOrderNo': params['orderId'],
+        'sourceCode': 'lt_cheapStore'
+      }
+      result = await axios.request({
+        headers: {
+          "user-agent": useragent,
+          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+          "origin": "https://wxapp.msmds.cn"
+        },
+        url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/add`,
+        method: 'POST',
+        data: transParams(a)
+      })
+      if (result.data.code !== 200) {
+        console.log('提交任务失败', result.data.msg)
+      } else {
+        if (result.data.data.status === 0) {
+          console.log('提交任务成功', `获得能量瓶+${result.data.data.bottleCounts}`)
+        } else {
+          console.log('提交任务成功', `已无法获得能量瓶`, result.data.data.text)
+          break
+        }
+      }
+      console.log('等待5秒再继续')
+      await new Promise((resolve, reject) => setTimeout(resolve, 5 * 1000))
+    } while (--num)
+  },
+  // 能量瓶兑换机会
+  bottleExpend: async (axios, options) => {
+    const { jar, searchParams, ecs_token } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
+    let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
+    let a = {
+      'channelId': 'LT_channel',
+      "phone": phone,
+      'token': ecs_token,
+      'sourceCode': 'lt_cheapStore'
+    }
+    result = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+        "origin": "https://wxapp.msmds.cn"
+      },
+      url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/expend`,
+      method: 'POST',
+      data: transParams(a)
+    })
+
+    if (result.data.code !== 200) {
+      console.log('提交任务失败', result.data.msg)
+    } else {
+      console.log('提交任务成功', `能量瓶兑换抽奖机会成功`)
+    }
   }
 }
 
