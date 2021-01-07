@@ -203,6 +203,7 @@ var dailyVideoBook = {
       'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
       'netWay': 'Wifi',
       'remark': '签到积分翻倍',
+      'remark1': '签到任务读小说赚积分',
       'version': `android@8.0100`,
       'codeId': 945535625
     }
@@ -226,6 +227,7 @@ var dailyVideoBook = {
         'type': 'readNovelDouble'
       })
     })
+    console.log(data.msg)
   }
 }
 
