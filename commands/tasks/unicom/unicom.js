@@ -54,9 +54,9 @@ var start = async (params) => {
     await require('./integral').gamebox(request, options)
   })
 
-  // 每日免费抽奖
-  await scheduler.regTask('dailylottery', async () => {
-    await require('./integral').dailylottery(request, options)
+  // 每日抽奖
+  await scheduler.regTask('dailylotteryintegral', async () => {
+    await require('./dailylotteryintegral').doTask(request, options)
   })
 
   // 首页-游戏-娱乐中心-沃之树
@@ -84,7 +84,6 @@ var start = async (params) => {
 
   // 首页-签到有礼-免费领-浏览领积分
   await scheduler.regTask('dailyLiuLan', async () => {
-    await require('./dailyVideo').doTask(request, options)
     await require('./dailyTTliulan').doTask(request, options)
   })
 
@@ -131,6 +130,16 @@ var start = async (params) => {
   // 首页-签到有礼-免流量得福利-3积分天天拿
   await scheduler.regTask('dailyBookGiftBoints', async () => {
     await require('./dailyVideoBook').giftBoints(request, options)
+  })
+
+  // 首页-签到有礼-赚更多福利-看视频奖励5积分
+  await scheduler.regTask('dailyVideo', async () => {
+    await require('./dailyVideo').doTask(request, options)
+  })
+
+  // 首页-签到有礼-赚更多福利-天天抽好礼
+  await scheduler.regTask('dailylottery', async () => {
+    await require('./dailylottery').doTask(request, options)
   })
 
   // 首页-游戏-娱乐中心-每日打卡
