@@ -161,7 +161,6 @@ var dailyCheapStorePage = {
         let data = result.data.data
         let good = res.list.find(f => f.giftId === data.giftId)
         console.log('提交任务成功，获得', good.giftName, '累计商品碎片x' + data.fragmentCount, data.desc + data.playCounts)
-        playCounts = data.playCounts
       }
 
       if (playCounts) {
