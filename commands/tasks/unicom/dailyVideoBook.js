@@ -137,7 +137,7 @@ var dailyVideoBook = {
       data: transParams({
         'cntindex': cntindex,
         'cntname': cntname,
-        'time': 5
+        'time': 2
       })
     })
     console.log('完成阅读时间上报')
