@@ -106,6 +106,8 @@ var dailyCheapStorePage = {
       ecs_token
     })
 
+    // 每6个小时6次机会，可使用能量瓶兑换机会
+
     do {
       let res = await dailyCheapStorePage.getGoodsList(axios, {
         ...options,
@@ -210,7 +212,7 @@ var dailyCheapStorePage = {
     }
     return false
   },
-  // 获取能量瓶
+  // 获取能量瓶 4个小时只能获取3次能量瓶的机会
   getBottle: async (axios, options) => {
     const { jar, searchParams, ecs_token } = options
     let state = await dailyCheapStorePage.getBottleState(axios, options)
