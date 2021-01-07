@@ -59,51 +59,7 @@ var start = async (params) => {
     await require('./integral').dailylottery(request, options)
   })
 
-  // 每日浏览活动
-  await scheduler.regTask('dailyLiuLan', async () => {
-    await require('./dailyVideo').doTask(request, options)
-    await require('./dailyTTliulan').doTask(request, options)
-  })
-
-  // 每日读书打卡活动
-  await scheduler.regTask('dailyBookRead', async () => {
-    await require('./dailyBookRead').doTask(request, options)
-    await require('./dailyVideoBook').doTask(request, options)
-    await require('./dailyVideoBook').giftBoints(request, options)
-  })
-
-  // 每日免费拿产品抽奖活动
-  await scheduler.regTask('dailyVideoFreeGoods', async () => {
-    await require('./dailyVideoFreeGoods').doTask(request, options)
-  })
-
-  // 每日刮刮卡抽奖活动
-  await scheduler.regTask('dailyVideoScratchcard', async () => {
-    await require('./dailyVideoScratchcard').doTask(request, options)
-  })
-
-  // 每日幸运转盘活动
-  await scheduler.regTask('dailyTurntablePage', async () => {
-    await require('./dailyTurntablePage').doTask(request, options)
-  })
-
-  // 每日摇一摇抽奖活动
-  await scheduler.regTask('dailyYYY', async () => {
-    await require('./dailyYYY').doTask(request, options)
-    await require('./dailyYYQ').doTask(request, options)
-  })
-
-  // 每日豪礼大派送抽奖
-  await scheduler.regTask('jflottery', async () => {
-    await require('./jflottery').timesDraw(request, options)
-  })
-
-  // 每日娱乐中心打卡
-  await scheduler.regTask('producGame', async () => {
-    await require('./producGame').gameSignin(request, options)
-  })
-
-  // 每日沃之树
+  // 首页-游戏-娱乐中心-沃之树
   await scheduler.regTask('dailywoTree', async () => {
     let i = 2
     do {
@@ -118,6 +74,63 @@ var start = async (params) => {
       options,
       popList: result.popList
     })
+  })
+
+  // 首页-小说-阅读越有礼打卡赢话费
+  await scheduler.regTask('dailyBookRead', async () => {
+    await require('./dailyBookRead').doTask(request, options)
+    await require('./dailyVideoBook').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费领-浏览领积分
+  await scheduler.regTask('dailyLiuLan', async () => {
+    await require('./dailyVideo').doTask(request, options)
+    await require('./dailyTTliulan').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费拿-看视频夺宝
+  await scheduler.regTask('dailyVideoFreeGoods', async () => {
+    await require('./dailyVideoFreeGoods').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
+  await scheduler.regTask('jflottery', async () => {
+    await require('./jflottery').timesDraw(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-摇戴森(摇一摇)
+  await scheduler.regTask('dailyYYY', async () => {
+    await require('./dailyYYY').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-华为mate40pro(刮刮乐)
+  await scheduler.regTask('dailyVideoScratchcard', async () => {
+    await require('./dailyVideoScratchcard').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-赢三星Galaxy Z(试试手气)
+  await scheduler.regTask('dailyCheapStorePage', async () => {
+    await require('./dailyCheapStorePage').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-拿iPhone12(摇一摇)
+  await scheduler.regTask('dailyYYQ', async () => {
+    await require('./dailyYYQ').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免费抽-赢Apple Watch(去抽奖)
+  await scheduler.regTask('dailyTurntablePage', async () => {
+    await require('./dailyTurntablePage').doTask(request, options)
+  })
+
+  // 首页-签到有礼-免流量得福利-3积分天天拿
+  await scheduler.regTask('dailyBookGiftBoints', async () => {
+    await require('./dailyVideoBook').giftBoints(request, options)
+  })
+
+  // 首页-游戏-娱乐中心-每日打卡
+  await scheduler.regTask('producGame', async () => {
+    await require('./producGame').gameSignin(request, options)
   })
 
   // 每日游戏时长-天天领取流量包 -- 作废
