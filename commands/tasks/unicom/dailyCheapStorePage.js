@@ -101,6 +101,8 @@ var dailyCheapStorePage = {
 
     // 每6个小时6次机会，可使用能量瓶重置机会
 
+    let tryn = 5
+
     do {
       let res = await dailyCheapStorePage.getGoodsList(axios, {
         ...options,
@@ -133,7 +135,13 @@ var dailyCheapStorePage = {
           })
           playCounts = 6
         } else if (bs === 0) {
-          continue
+          // 防止错误循环
+          tryn = tryn - 1
+          if (!tryn) {
+            break
+          } else {
+            continue
+          }
         }
       }
 
