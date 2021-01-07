@@ -99,7 +99,7 @@ var dailyCheapStorePage = {
     let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
     let playCounts = 0
 
-    // 每6个小时6次机会，可使用能量瓶兑换机会
+    // 每6个小时6次机会，可使用能量瓶重置机会
 
     do {
       let res = await dailyCheapStorePage.getGoodsList(axios, {
