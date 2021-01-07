@@ -203,7 +203,7 @@ var dailyCheapStorePage = {
       if (result.data.data.status === 1) {
         if ('times' in result.data.data) {
           let m = moment(new Date(result.data.data.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试'
-          console.log(result.data.data.text)
+          console.log(result.data.data.text, m)
           return false
         }
       } else {
