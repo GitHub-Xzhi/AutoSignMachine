@@ -111,11 +111,11 @@ var dailyCheapStorePage = {
       playCounts = res.playCounts
 
       if ('times' in res) {
-        let m = moment(new Date(res.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试'
-        throw new Error(m)
+        console.log('每6个小时6次机会', moment(new Date(res.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
       }
 
       if (!playCounts) {// 用完机会再使用能量瓶重置
+        console.log('尝试使用能量瓶重置机会')
         let bs = await dailyCheapStorePage.getBottle(axios, {
           ...options,
           jar: jar1,
