@@ -233,7 +233,7 @@ var dailyYYQ = {
 
       times = times - 1
 
-    } while (freeTimes || advertTimes)
+    } while (times)
   },
   lookVideoDouble: async (axios, options) => {
     let params = {
