@@ -113,6 +113,11 @@ var start = async (params) => {
     await require('./dailyCheapStorePage').doTask(request, options)
   })
 
+  // 首页-签到有礼-免费抽-拆华为Pad(去抽奖)
+  await scheduler.regTask('dailyLKMH', async () => {
+    await require('./dailyLKMH').doTask(request, options)
+  })
+
   // 首页-签到有礼-免费抽-拿iPhone12(摇一摇)
   await scheduler.regTask('dailyYYQ', async () => {
     await require('./dailyYYQ').doTask(request, options)

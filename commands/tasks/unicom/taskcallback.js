@@ -37,7 +37,7 @@ var taskcallback = {
     query: async (axios, options) => {
         let { params } = options
         const useragent = `okhttp/4.4.0`
-        
+
         let { data, config } = await axios.request({
             baseURL: 'https://m.client.10010.com/',
             headers: {
@@ -85,7 +85,7 @@ var taskcallback = {
 
         var data = {
             "oversea_version_type": 0,
-            "reward_name": `android-${params.remark}-激励视频`,
+            "reward_name": `android-${params.remark1 || params.remark}-激励视频`,
             "reward_amount": 1,
             "network": 4,
             // "latitude": 26.611770629882812,

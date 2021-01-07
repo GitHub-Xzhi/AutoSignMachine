@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var CryptoJS = require("crypto-js");
 
-// 摇一摇送好礼
+// 乐开盲盒
 var transParams = (data) => {
   let params = new URLSearchParams();
   for (let item in data) {
@@ -58,7 +58,7 @@ var decrypt = function (word, keyStr) {
 
 
 
-var dailyYYY = {
+var dailyLKMH = {
   doTask: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
     let searchParams = {}
@@ -69,7 +69,7 @@ var dailyYYY = {
         "referer": `https://img.client.10010.com/`,
         "origin": "https://img.client.10010.com"
       },
-      url: `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://m.jf.10010.com/jf-order/avoidLogin/forActive/yyyqd&duanlianjieabc=tbkwx`,
+      url: `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://m.jf.10010.com/jf-order/avoidLogin/forActive/lkmh&duanlianjieabc=tbkBl`,
       method: 'GET',
       transformResponse: (data, headers) => {
         if ('location' in headers) {
@@ -100,64 +100,64 @@ var dailyYYY = {
     let keyrdm = Math.floor(Math.random() * 5)
 
     let params = {
-      activityId: "Ac-9b71780cb87844b9ac3ab5d34b11dd24",
+      activityId: "Ac-f4557b3ac6004a48b1187e32ea343ca8",
       userCookie: jfid,
       userNumber: searchParams.userNumber,
       time: new Date().getTime()
     };
 
     let reqdata = {
-      params: encrypt(JSON.stringify(params), keyArr[keyrdm]) + keyrdm,
-      parKey: keyArr
+      params: encrypt(JSON.stringify(params), "5de7e29919fad4d5")
     }
 
-    // let ff = { "params": "vogRkS7brjqaInNHJv4oumE6HtGp7tbG7ZE9P21hmoaBq/rSwtvFjI/vcw2bNbdFUW1s27XOdaXbcBWHpgDYxmQuMP4aFj0Fy3JYp566sCH+97rQyrJRf1GzslAsSiLQJC4DQawzH+J54FIipKElMw==4", "parKey": ["YTJapEBcsMsMOU1i", "yJI3cV3zUxqZWd5j", "TmLBjGV8hTfZ7rMf", "QqAuodE1Zz9eA84p", "IM9f9CfT8LDK2RQ7"] }
-    // console.log(decrypt(ff.params.substr(0, ff.params.length - 1), ff.parKey[parseInt(ff.params.substr(-1, 1))]))
-    // process.exit(0)
+    let res = await axios.request({
+      baseURL: 'https://m.jf.10010.com/',
+      headers: {
+        "user-agent": useragent,
+        "Authorization": "Bearer null",
+        "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=Ac-f4557b3ac6004a48b1187e32ea343ca8&jump=sign",
+        "origin": "https://img.jf.10010.com",
+        "Content-Type": "application/json"
+      },
+      jar: jar1,
+      url: `/jf-yuech/p/freeLogin`,
+      method: 'post',
+      data: reqdata
+    }).catch(err => console.log(err))
 
-    let freeTimes = 0
-    let advertTimes = 0
+    result = res.data
+    if (result.code !== 0) {
+      throw new Error(result.message)
+    }
+
+    let activity = result.data.activity
+    let Authorization = result.data.token.access_token
+    let times = 3
+
     do {
+      let orderId = ''
+      console.log("第" + times + "次")
 
-      let res = await axios.request({
-        baseURL: 'https://m.jf.10010.com/',
+      res = await axios.request({
         headers: {
+          "Authorization": `Bearer ${Authorization}`,
           "user-agent": useragent,
-          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
-          "origin": "https://img.jf.10010.com",
-          "Content-Type": "application/json"
+          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=" + activity.activityId,
+          "origin": "https://img.jf.10010.com"
         },
-        jar: jar1,
-        url: `/jf-yuech/p/freeLoginRock`,
-        method: 'post',
-        data: reqdata
-      }).catch(err => console.log(err))
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResult/advertFreeGame?activityId=${activity.activityId}`,
+        method: 'get'
+      })
 
-      result = res.data
-      if (result.code !== 0) {
-        throw new Error(result.message)
-      }
-
-      let activity = result.data.activityInfos.activityVOs[0]
-      let Authorization = result.data.token.access_token
-      freeTimes = activity.activityTimesInfo.freeTimes
-      advertTimes = activity.activityTimesInfo.advertTimes
-      console.log("已消耗机会", (1 + 4) - (freeTimes + advertTimes), "剩余免费机会", freeTimes, '看视频广告机会', advertTimes)
-
-      if (!freeTimes && !advertTimes) {
-        console.log('没有游戏次数')
+      if (res.data.code !== 0) {
+        console.log('签到小游戏盲盒: ' + res.data.message)
         break
       }
 
-      let p1 = {
-        'activityId': activity.activityId,
-        'currentTimes': advertTimes + freeTimes,
-        'type': '免费',
-      }
+      if (times < 3) {
 
-      if (!freeTimes && advertTimes) {
         let params = {
-          'arguments1': '',
+          'arguments1': 'AC20200611152252',
           'arguments2': '',
           'arguments3': '',
           'arguments4': new Date().getTime(),
@@ -166,10 +166,12 @@ var dailyYYY = {
           'arguments8': '',
           'arguments9': '',
           'netWay': 'Wifi',
-          'remark': '到小游戏摇摇乐不倒翁',
+          'remark': '签到小游戏翻倍得积分',
+          'remark1': '签到小游戏盲盒',
           'version': `android@8.0100`,
-          'codeId': 945689604
+          'codeId': 945535633
         }
+
         params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
         params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
         params['arguments4'] = new Date().getTime()
@@ -180,52 +182,17 @@ var dailyYYY = {
           jar: jar1
         })
 
-
-        result = await axios.request({
-          headers: {
-            "user-agent": useragent,
-            "referer": `https://img.client.10010.com/`,
-          },
-          url: `https://m.jf.10010.com/jf-order/avoidLogin/forActive/yyyqd?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=20210106103424&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkwx&userNumber=${options.user}`,
-          method: 'GET'
-        })
-
-        p1 = {
-          'activityId': activity.activityId,
-          'currentTimes': advertTimes + freeTimes,
-          'type': '广告',
-          'orderId': params['orderId'],
-          'phoneType': 'android',
-          'version': '8.01'
-        }
+        orderId = params['orderId']
       }
 
       let n = Math.floor(5 * Math.random())
       let i = secretkeyArray()
 
-      res = await axios.request({
-        headers: {
-          "user-agent": useragent,
-          "Authorization": `Bearer ${Authorization}`,
-          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        jar: null,
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/consumptionGameTimes?activityId=${p1.activityId}&currentTimes=${p1.currentTimes}&type=%E5%B9%BF%E5%91%8A&orderId=${p1.orderId}&phoneType=android&version=8.01`,
-        method: 'get'
-      }).catch(err => console.log(err))
-
-      if (res.data.code !== 0) {
-        throw new Error(res.data.message)
-      } else {
-        if (res.data.data.code !== '0') {
-          throw new Error(res.data.data.result)
-        }
-      }
-
       let t = {
-        activityId: activity.activityId,
-        resultId: res.data.data.resultId
+        "activityId": activity.activityId,
+        "version": 8.01,
+        "orderId": orderId,
+        "phoneType": "android"
       }
       params = {
         "params": encrypt(JSON.stringify(t), i[n]) + n,
@@ -235,22 +202,22 @@ var dailyYYY = {
         headers: {
           "Authorization": `Bearer ${Authorization}`,
           "user-agent": useragent,
-          "referer": "https://img.jf.10010.com/",
+          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=" + activity.activityId,
           "origin": "https://img.jf.10010.com"
         },
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/luckDraw`,
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResult/advertLuckDraw`,
         method: 'post',
         data: params
       })
       result = res.data
       if (result.code !== 0) {
-        console.log("摇一摇送好礼:", result.message)
+        console.log("乐开盲盒:", result.message)
       } else {
-        console.log('摇一摇送好礼:', result.data.prizeName)
+        console.log('乐开盲盒:', result.data.prizeName)
         if (result.data.doublingStatus) {
           console.log('提交积分翻倍')
-          await dailyYYY.lookVideoDouble(axios, options)
-          await dailyYYY.lookVideoDoubleResult(axios, {
+          await dailyLKMH.lookVideoDouble(axios, options)
+          await dailyLKMH.lookVideoDoubleResult(axios, {
             ...options,
             Authorization,
             activityId: activity.activityId,
@@ -262,7 +229,9 @@ var dailyYYY = {
       console.log('等待15秒再继续')
       await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
 
-    } while (freeTimes || advertTimes)
+      times = times - 1
+
+    } while (times)
   },
   lookVideoDouble: async (axios, options) => {
     let params = {
@@ -281,7 +250,7 @@ var dailyYYY = {
     })
 
     if (!num) {
-      console.log('签到小游戏买什么都省转盘抽奖: 今日已完成')
+      console.log('签到小游戏盲盒: 今日已完成')
       return
     }
     do {
@@ -297,9 +266,10 @@ var dailyYYY = {
         'arguments9': '',
         'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
         'netWay': 'Wifi',
-        'remark': '签到小游戏摇摇乐不倒翁',
+        'remark': '签到小游戏翻倍得积分',
+        'remark1': '签到小游戏盲盒',
         'version': `android@8.0100`,
-        'codeId': 945689604
+        'codeId': 945535633
       }
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
       await require('./taskcallback').doTask(request, {
@@ -324,11 +294,11 @@ var dailyYYY = {
     })
     result = res.data
     if (result.code !== 0) {
-      console.log("摇一摇送好礼:", result.message)
+      console.log("签到小游戏盲盒:", result.message)
     } else {
-      console.log("摇一摇送好礼:", result.data)
+      console.log("签到小游戏盲盒:", result.data)
     }
   }
 }
 
-module.exports = dailyYYY
+module.exports = dailyLKMH
