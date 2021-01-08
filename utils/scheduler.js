@@ -77,12 +77,16 @@ let scheduler = {
         if (will_queues.length) {
             for (let task of will_queues) {
                 if (task.taskName in tasks) {
-                    await tasks[task.taskName]()
-                    queues[queues.findIndex(q => q.taskName === task.taskName)] = {
-                        ...task,
-                        taskState: 1
+                    try {
+                        await tasks[task.taskName]()
+                        queues[queues.findIndex(q => q.taskName === task.taskName)] = {
+                            ...task,
+                            taskState: 1
+                        }
+                        fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
+                    } catch (err) {
+                        console.log('周期任务：', err)
                     }
-                    fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
                 }
             }
         } else {

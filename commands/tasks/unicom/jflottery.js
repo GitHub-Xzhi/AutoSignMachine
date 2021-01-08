@@ -208,14 +208,14 @@ module.exports = {
             if (result.code !== 0) {
                 console.log("豪礼大派送抽奖:", result.message)
             } else {
-                console.log(result.data)
                 if (result.data.consumptionV1Infos.code !== '0') {
                     console.log("豪礼大派送抽奖:", result.data.consumptionV1Infos.result)
                 } else {
-                    if (result.data.consumptionV1Infos.drawResultPO) {
+                    if (result.data.consumptionV1Infos.gameResult.prizeStatus === '中奖') {
                         console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.drawResultPO.prizeName)
                     } else {
-                        console.log('豪礼大派送抽奖:', '无')
+
+                        console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.gameResult.prizeStatus)
                     }
                 }
             }
