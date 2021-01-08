@@ -208,10 +208,15 @@ module.exports = {
             if (result.code !== 0) {
                 console.log("豪礼大派送抽奖:", result.message)
             } else {
+                console.log(result.data)
                 if (result.data.consumptionV1Infos.code !== '0') {
                     console.log("豪礼大派送抽奖:", result.data.consumptionV1Infos.result)
                 } else {
-                    console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.drawResultPO.prizeName)
+                    if (result.data.consumptionV1Infos.drawResultPO) {
+                        console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.drawResultPO.prizeName)
+                    } else {
+                        console.log('豪礼大派送抽奖:', '无')
+                    }
                 }
             }
 
