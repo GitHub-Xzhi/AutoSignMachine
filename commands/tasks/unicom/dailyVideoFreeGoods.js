@@ -114,7 +114,7 @@ var dailyVideoFreeGoods = {
         'sourceCode': 'lt_freeTake'
       }
 
-      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
+      let timestamp = moment().format('YYYYMMDDHHmmss')
       result = await axios.request({
         baseURL: 'https://m.client.10010.com/',
         headers: {
@@ -154,7 +154,7 @@ var dailyVideoFreeGoods = {
         })
       })
 
-      timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
+      timestamp = moment().format('YYYYMMDDHHmmss')
       result = await axios.request({
         headers: {
           "user-agent": useragent,

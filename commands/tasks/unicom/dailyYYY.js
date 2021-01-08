@@ -181,7 +181,7 @@ var dailyYYY = {
           jar: jar1
         })
 
-        let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
+        let timestamp = moment().format('YYYYMMDDHHmmss')
         result = await axios.request({
           headers: {
             "user-agent": useragent,
