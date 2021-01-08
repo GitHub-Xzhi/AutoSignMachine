@@ -174,12 +174,11 @@ var dailyYYY = {
         params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
         params['arguments4'] = new Date().getTime()
 
-        // result = await require('./taskcallback').reward(axios, {
-        //   ...options,
-        //   params,
-        //   jar: jar1
-        // })
-
+        result = await require('./taskcallback').reward(axios, {
+          ...options,
+          params,
+          jar: jar1
+        })
 
         result = await axios.request({
           headers: {
