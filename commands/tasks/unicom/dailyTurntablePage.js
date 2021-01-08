@@ -9,7 +9,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w () {
+function w() {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -29,7 +29,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption (data, key) {
+function encryption(data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -243,11 +243,17 @@ var dailyTurntablePage = {
         'codeId': 945535695
       }
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-      await require('./taskcallback').doTask(request, {
+      await require('./taskcallback').doTask(axios, {
         ...options,
         params,
         jar
       })
+      
+      if (num) {
+        console.log('等待15秒再继续')
+        await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      }
+
     } while (--num)
   }
 }

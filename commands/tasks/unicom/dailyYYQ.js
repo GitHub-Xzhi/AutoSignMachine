@@ -153,7 +153,7 @@ var dailyYYQ = {
       })
 
       if (res.data.code !== 0) {
-        console('签到小游戏买扭蛋机2: ' + res.data.message)
+        console.log('签到小游戏买扭蛋机2: ' + res.data.message)
         break
       }
 

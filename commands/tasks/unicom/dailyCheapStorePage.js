@@ -9,7 +9,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w () {
+function w() {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -29,7 +29,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption (data, key) {
+function encryption(data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -111,6 +111,7 @@ var dailyCheapStorePage = {
       })
 
       playCounts = res.playCounts
+      console.log('游戏机会:', playCounts)
 
       if ('times' in res) {
         console.log('每6个小时6次机会', moment(new Date(res.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
@@ -138,8 +139,10 @@ var dailyCheapStorePage = {
           // 防止错误循环
           tryn = tryn - 1
           if (!tryn) {
+            console.log('出现错误，重试重置机会超过5次，跳过任务')
             break
           } else {
+            console.log('出现错误，重试重置机会')
             continue
           }
         }
@@ -205,7 +208,6 @@ var dailyCheapStorePage = {
       method: 'POST',
       data: transParams(a)
     })
-    console.log(JSON.stringify(result.data))
     if (result.data.code !== 200) {
       console.log('查询能量瓶状态失败', result.data.msg)
     } else {

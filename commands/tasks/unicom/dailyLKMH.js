@@ -276,7 +276,7 @@ var dailyLKMH = {
         'codeId': 945535633
       }
       params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-      await require('./taskcallback').doTask(request, {
+      await require('./taskcallback').doTask(axios, {
         ...options,
         params,
         jar
