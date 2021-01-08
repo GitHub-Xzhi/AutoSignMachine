@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+var moment = require('moment');
 
 // 签到小游戏买什么都省免费夺宝
 var transParams = (data) => {
@@ -113,11 +114,12 @@ var dailyVideoFreeGoods = {
         'sourceCode': 'lt_freeTake'
       }
 
+      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
       result = await axios.request({
         baseURL: 'https://m.client.10010.com/',
         headers: {
           "user-agent": useragent,
-          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210105131201&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}        `,
+          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}        `,
           "origin": "https://wxapp.msmds.cn"
         },
         url: `https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/getTimes`,
@@ -152,10 +154,11 @@ var dailyVideoFreeGoods = {
         })
       })
 
+      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
       result = await axios.request({
         headers: {
           "user-agent": useragent,
-          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210105131201&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
+          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
           "origin": "https://wxapp.msmds.cn"
         },
         url: `https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/doFreeGoods`,

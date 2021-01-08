@@ -153,10 +153,12 @@ var dailyCheapStorePage = {
         'sourceCode': 'lt_cheapStore'
       }
 
+      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
+
       result = await axios.request({
         headers: {
           "user-agent": useragent,
-          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
           "origin": "https://wxapp.msmds.cn"
         },
         url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/play/luck/draw?` + w(a),
@@ -192,10 +194,11 @@ var dailyCheapStorePage = {
       'token': ecs_token,
       'sourceCode': 'lt_cheapStore'
     }
+    let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
     result = await axios.request({
       headers: {
         "user-agent": useragent,
-        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
         "origin": "https://wxapp.msmds.cn"
       },
       url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/add`,
@@ -262,10 +265,11 @@ var dailyCheapStorePage = {
       'videoOrderNo': params['orderId'],
       'sourceCode': 'lt_cheapStore'
     }
+    let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
     result = await axios.request({
       headers: {
         "user-agent": useragent,
-        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
         "origin": "https://wxapp.msmds.cn"
       },
       url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/add`,
@@ -299,10 +303,11 @@ var dailyCheapStorePage = {
       'token': ecs_token,
       'sourceCode': 'lt_cheapStore'
     }
+    let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
     result = await axios.request({
       headers: {
         "user-agent": useragent,
-        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=20210107104745&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
+        "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/cheapStorePage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkEG&userNumber=${options.user}`,
         "origin": "https://wxapp.msmds.cn"
       },
       url: `https://wxapp.msmds.cn/jplus/api/change/collect/chip/gift/v1/bottle/expend`,

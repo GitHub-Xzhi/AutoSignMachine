@@ -1,5 +1,6 @@
 var crypto = require('crypto');
 var CryptoJS = require("crypto-js");
+var moment = require('moment');
 
 // 摇一摇送好礼
 var transParams = (data) => {
@@ -180,12 +181,13 @@ var dailyYYY = {
           jar: jar1
         })
 
+        let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
         result = await axios.request({
           headers: {
             "user-agent": useragent,
             "referer": `https://img.client.10010.com/`,
           },
-          url: `https://m.jf.10010.com/jf-order/avoidLogin/forActive/yyyqd?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=20210106103424&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkwx&userNumber=${options.user}`,
+          url: `https://m.jf.10010.com/jf-order/avoidLogin/forActive/yyyqd?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbkwx&userNumber=${options.user}`,
           method: 'GET'
         })
 

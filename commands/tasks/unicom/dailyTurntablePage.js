@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+var moment = require('moment');
 
 // 幸运大转盘
 var transParams = (data) => {
@@ -8,7 +9,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w() {
+function w () {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -28,7 +29,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption(data, key) {
+function encryption (data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -143,10 +144,12 @@ var dailyTurntablePage = {
           'videoOrderNo': params['orderId'],
           'sourceCode': 'lt_turntable'
         }
+
+        let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
         result = await axios.request({
           headers: {
             "user-agent": useragent,
-            "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/turntablePage?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=20210106103424&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
+            "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/turntablePage?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
             "origin": "https://wxapp.msmds.cn"
           },
           url: `https://wxapp.msmds.cn/jplus/api/change/luck/draw/gift/v1/liantong/look/video`,
@@ -171,10 +174,11 @@ var dailyTurntablePage = {
         'sourceCode': 'lt_turntable'
       }
 
+      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
       result = await axios.request({
         headers: {
           "user-agent": useragent,
-          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/turntablePage?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=20210106103424&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
+          "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/turntablePage?ticket=${searchParams.ticket}&type=02&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&userNumber=${options.user}`,
           "origin": "https://wxapp.msmds.cn"
         },
         url: `https://wxapp.msmds.cn/jplus/api/change/luck/draw/gift/v1/playLuckDraw?` + w(a),
