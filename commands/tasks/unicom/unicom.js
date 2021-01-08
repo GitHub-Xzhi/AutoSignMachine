@@ -110,7 +110,7 @@ var start = async (params) => {
     await require('./dailyTurntablePage').doTask(request, options)
   })
 
-  // 首页-签到有礼-免流量得福利-3积分天天拿
+  // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
   await scheduler.regTask('dailyBookGiftBoints', async () => {
     await require('./dailyVideoBook').giftBoints(request, options)
   })

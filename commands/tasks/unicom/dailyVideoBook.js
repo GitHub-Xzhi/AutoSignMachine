@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-const { resolve } = require('path');
+const { RSAUtils } = require('./RSAUtils');
 
 //阅读打卡看视频得积分
 
@@ -30,6 +30,17 @@ let account = {
   accountPassword: "123456",
   accountToken: "4640b530b3f7481bb5821c6871854ce5",
 }
+
+function w() {
+  var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
+    , t = [];
+  return Object.keys(e).forEach((function (a) {
+    t.push("".concat(a, "=").concat(encodeURIComponent(e[a])))
+  }
+  )),
+    t.join("&")
+}
+
 var dailyVideoBook = {
   query: async (request, options) => {
     let params = {
@@ -94,7 +105,8 @@ var dailyVideoBook = {
   login: async (axios, options) => {
     const { Authorization } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-    let { data } = await axios.request({
+
+    let { data, config } = await axios.request({
       headers: {
         "user-agent": useragent,
         "AuthorizationClient": `Bearer ${Authorization}`,
@@ -107,7 +119,44 @@ var dailyVideoBook = {
       data: { "phone": options.user }
     })
 
-    return data.message
+    let cookiesJson = config.jar.toJSON()
+    let diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
+    let useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
+    let jar = config.jar
+    if (!useraccount || !diwert) {
+      //密码加密
+      var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
+      var exponent = "010001";
+      var key = RSAUtils.getKeyPair(exponent, '', modulus);
+      let phonenum = RSAUtils.encryptedString(key, options.user);
+
+      let res = await axios.request({
+        headers: {
+          "user-agent": useragent
+        },
+        url: `http://st.woread.com.cn/touchextenernal/common/shouTingLogin.action`,
+        method: 'POST',
+        data: transParams({
+          phonenum
+        })
+      })
+      jar = res.config.jar
+    }
+
+
+    let res = await axios.request({
+      headers: {
+        "user-agent": useragent,
+      },
+      url: `http://st.woread.com.cn/touchextenernal/read/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
+      method: 'GET',
+      jar
+    })
+
+    return {
+      Token: data.message,
+      jar: jar
+    }
   },
   readDetail: async (axios, options) => {
     const { userid, token } = options
@@ -142,10 +191,25 @@ var dailyVideoBook = {
     })
     console.log('完成阅读时间上报')
   },
+  addDrawTimes: async (axios, options) => {
+    let { jar } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://m.iread.wo.cn/`,
+        "origin": "http://m.iread.wo.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/readluchdraw/addDrawTimes.action`,
+      method: 'POST',
+      jar
+    })
+    console.log('阅读打卡上报', data.message)
+  },
   giftBoints: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     let Authorization = await dailyVideoBook.oauthMethod(axios, options)
-    let Token = await dailyVideoBook.login(axios, {
+    let { Token, jar } = await dailyVideoBook.login(axios, {
       ...options,
       Authorization
     })
@@ -153,6 +217,12 @@ var dailyVideoBook = {
     let detail = await dailyVideoBook.readDetail(axios, {
       ...options,
       ...Token
+    })
+
+    await dailyVideoBook.addDrawTimes(axios, {
+      ...options,
+      ...detail,
+      jar
     })
 
     await dailyVideoBook.updatePersonReadtime(axios, {
