@@ -1,3 +1,4 @@
+const { time } = require('console');
 var crypto = require('crypto');
 var CryptoJS = require("crypto-js");
 
@@ -226,10 +227,13 @@ var dailyLKMH = {
         }
       }
 
-      console.log('等待15秒再继续')
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
 
       times = times - 1
+
+      if (times) {
+        console.log('等待15秒再继续')
+        await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      }
 
     } while (times)
   },

@@ -96,6 +96,9 @@ var dailyYYY = {
     let jfid = cookiesJson.cookies.find(i => i.key == '_jf_id')
     jfid = jfid.value
 
+    // let ff = { "params": "vogRkS7brjqaInNHJv4oumE6HtGp7tbG7ZE9P21hmoaBq/rSwtvFjI/vcw2bNbdFUW1s27XOdaXbcBWHpgDYxmQuMP4aFj0Fy3JYp566sCH+97rQyrJRf1GzslAsSiLQJC4DQawzH+J54FIipKElMw==4", "parKey": ["YTJapEBcsMsMOU1i", "yJI3cV3zUxqZWd5j", "TmLBjGV8hTfZ7rMf", "QqAuodE1Zz9eA84p", "IM9f9CfT8LDK2RQ7"] }
+    // console.log(decrypt(ff.params.substr(0, ff.params.length - 1), ff.parKey[parseInt(ff.params.substr(-1, 1))]))
+    // process.exit(0)
     let keyArr = secretkeyArray()
     let keyrdm = Math.floor(Math.random() * 5)
 
@@ -111,38 +114,31 @@ var dailyYYY = {
       parKey: keyArr
     }
 
-    // let ff = { "params": "vogRkS7brjqaInNHJv4oumE6HtGp7tbG7ZE9P21hmoaBq/rSwtvFjI/vcw2bNbdFUW1s27XOdaXbcBWHpgDYxmQuMP4aFj0Fy3JYp566sCH+97rQyrJRf1GzslAsSiLQJC4DQawzH+J54FIipKElMw==4", "parKey": ["YTJapEBcsMsMOU1i", "yJI3cV3zUxqZWd5j", "TmLBjGV8hTfZ7rMf", "QqAuodE1Zz9eA84p", "IM9f9CfT8LDK2RQ7"] }
-    // console.log(decrypt(ff.params.substr(0, ff.params.length - 1), ff.parKey[parseInt(ff.params.substr(-1, 1))]))
-    // process.exit(0)
+    let res = await axios.request({
+      baseURL: 'https://m.jf.10010.com/',
+      headers: {
+        "user-agent": useragent,
+        "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
+        "origin": "https://img.jf.10010.com",
+        "Content-Type": "application/json"
+      },
+      jar: jar1,
+      url: `/jf-yuech/p/freeLoginRock`,
+      method: 'post',
+      data: reqdata
+    }).catch(err => console.log(err))
 
-    let freeTimes = 0
-    let advertTimes = 0
+    result = res.data
+    if (result.code !== 0) {
+      throw new Error(result.message)
+    }
+
+    let activity = result.data.activityInfos.activityVOs[0]
+    let Authorization = result.data.token.access_token
+    let freeTimes = activity.activityTimesInfo.freeTimes
+    let advertTimes = activity.activityTimesInfo.advertTimes
+
     do {
-
-      let res = await axios.request({
-        baseURL: 'https://m.jf.10010.com/',
-        headers: {
-          "user-agent": useragent,
-          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
-          "origin": "https://img.jf.10010.com",
-          "Content-Type": "application/json"
-        },
-        jar: jar1,
-        url: `/jf-yuech/p/freeLoginRock`,
-        method: 'post',
-        data: reqdata
-      }).catch(err => console.log(err))
-
-      result = res.data
-      if (result.code !== 0) {
-        throw new Error(result.message)
-      }
-
-      let activity = result.data.activityInfos.activityVOs[0]
-      let Authorization = result.data.token.access_token
-      freeTimes = activity.activityTimesInfo.freeTimes
-      advertTimes = activity.activityTimesInfo.advertTimes
-      let currentTimes = (1 + 4) - (freeTimes + advertTimes) + 1
       console.log("已消耗机会", (1 + 4) - (freeTimes + advertTimes), "剩余免费机会", freeTimes, '看视频广告机会', advertTimes)
 
       if (!freeTimes && !advertTimes) {
@@ -150,9 +146,11 @@ var dailyYYY = {
         break
       }
 
+      let currentTimes = (1 + 4) - (freeTimes + advertTimes) + 1
+
       let p1 = {
         'activityId': activity.activityId,
-        'currentTimes': currentTimes,
+        'currentTimes': freeTimes,
         'type': '免费',
       }
 
@@ -176,11 +174,11 @@ var dailyYYY = {
         params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
         params['arguments4'] = new Date().getTime()
 
-        result = await require('./taskcallback').reward(axios, {
-          ...options,
-          params,
-          jar: jar1
-        })
+        // result = await require('./taskcallback').reward(axios, {
+        //   ...options,
+        //   params,
+        //   jar: jar1
+        // })
 
 
         result = await axios.request({
@@ -194,16 +192,16 @@ var dailyYYY = {
 
         p1 = {
           'activityId': activity.activityId,
-          'currentTimes': currentTimes,
+          'currentTimes': advertTimes,
           'type': '广告',
           'orderId': params['orderId'],
           'phoneType': 'android',
           'version': '8.01'
         }
+        advertTimes--
+      } else {
+        freeTimes--
       }
-
-      let n = Math.floor(5 * Math.random())
-      let i = secretkeyArray()
 
       res = await axios.request({
         headers: {
@@ -230,6 +228,10 @@ var dailyYYY = {
         activityId: activity.activityId,
         resultId: res.data.data.resultId
       }
+
+      let n = Math.floor(5 * Math.random())
+      let i = secretkeyArray()
+
       params = {
         "params": encrypt(JSON.stringify(t), i[n]) + n,
         "parKey": i
@@ -249,10 +251,13 @@ var dailyYYY = {
       if (result.code !== 0) {
         console.log("摇一摇送好礼:", result.message)
       } else {
-        console.log('摇一摇送好礼:', result.data.prizeName)
+        console.log('摇一摇送好礼:', result.data.status === '中奖' ? result.data.prizeName : result.data.status)
         if (result.data.doublingStatus) {
           console.log('提交积分翻倍')
-          await dailyYYY.lookVideoDouble(axios, options)
+          await dailyYYY.lookVideoDouble(axios, {
+            ...options,
+            jar: jar1
+          })
           await dailyYYY.lookVideoDoubleResult(axios, {
             ...options,
             Authorization,
@@ -262,12 +267,15 @@ var dailyYYY = {
         }
       }
 
-      console.log('等待15秒再继续')
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      if (freeTimes && advertTimes) {
+        console.log('等待15秒再继续')
+        await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      }
 
     } while (freeTimes || advertTimes)
   },
   lookVideoDouble: async (axios, options) => {
+    const { jar } = options
     let params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel

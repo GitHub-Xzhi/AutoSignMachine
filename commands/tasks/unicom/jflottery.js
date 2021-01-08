@@ -1,4 +1,4 @@
-
+var crypto = require('crypto');
 var CryptoJS = require("crypto-js");
 const { URL } = require('url');
 // 豪礼大派送
@@ -44,7 +44,16 @@ var decrypt = function (word, keyStr) {
     });
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
-
+var sign = (data) => {
+    let str = 'integralofficial&'
+    let params = []
+    data.forEach((v, i) => {
+        if (v) {
+            params.push('arguments' + (i + 1) + v)
+        }
+    });
+    return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
+}
 module.exports = {
     getTicket: async (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
@@ -83,22 +92,22 @@ module.exports = {
         let jfid = cookiesJson.cookies.find(i => i.key == '_jf_id')
         jfid = jfid.value
 
-        params = {
+        let keyArr = secretkeyArray()
+        let keyrdm = Math.floor(Math.random() * 5)
+
+        let params = {
             activityId: "Ac-de644531df54410e875ba08ca2256b6a",
             userCookie: jfid,
             userNumber: searchParams.userNumber,
             time: new Date().getTime()
         };
 
-        let keyArr = secretkeyArray()
-        let keyrdm = Math.floor(Math.random() * 5)
-
         let reqdata = JSON.stringify({
             params: encrypt(JSON.stringify(params), keyArr[keyrdm]) + keyrdm,
             parKey: keyArr
         })
 
-        res = await axios.request({
+        let res = await axios.request({
             baseURL: 'https://m.jf.10010.com/',
             headers: {
                 "user-agent": useragent,
@@ -115,37 +124,102 @@ module.exports = {
         if (result.code !== 0) {
             throw new Error(result.message)
         }
-
+        let jar1 = res.config.jar
 
         let activity = result.data.activityInfos.activityVOs[0]
-        let n = Math.floor(5 * Math.random())
-        let i = secretkeyArray()
-        let t = {
-            activityId: activity.activityId, currentTimes: activity.activityTimesInfo.times, type: "积分"
-        }
-        console.log("已消耗机会", (1 + 4) - (activity.activityTimesInfo.freeTimes + activity.activityTimesInfo.advertTimes), "剩余免费机会", activity.activityTimesInfo.freeTimes, '看视频广告机会(不支持)', activity.activityTimesInfo.advertTimes)
         let Authorization = result.data.token.access_token
-        params = {
-            "params": encrypt(JSON.stringify(t), i[n]) + n,
-            "parKey": i
-        }
-        res = await axios.request({
-            baseURL: 'https://m.jf.10010.com/',
-            headers: {
-                "Authorization": `Bearer ${Authorization}`,
-                "user-agent": useragent,
-                "referer": "https://img.jf.10010.com/",
-                "origin": "https://img.jf.10010.com"
-            },
-            url: `/jf-yuech/api/gameResultV2/timesDraw`,
-            method: 'post',
-            data: params
-        })
-        result = res.data
-        if (result.code !== 0) {
-            console.log("豪礼大派送抽奖:", result.message)
-        } else {
-            console.log('豪礼大派送抽奖:', result.consumptionV1Infos.gameResult.prizeStatus)
-        }
+        let freeTimes = activity.activityTimesInfo.freeTimes
+        let advertTimes = activity.activityTimesInfo.advertTimes
+
+        do {
+            console.log("已消耗机会", (1 + 4) - (freeTimes + advertTimes), "剩余免费机会", freeTimes, '看视频广告机会', advertTimes)
+
+            if (!freeTimes && !advertTimes) {
+                console.log('没有游戏次数')
+                break
+            }
+            let currentTimes = (1 + 4) - (freeTimes + advertTimes) + 1
+
+            let p1 = {
+                activityId: activity.activityId,
+                currentTimes: freeTimes,
+                type: "积分"
+            }
+
+            if (!freeTimes && advertTimes) {
+                let params = {
+                    'arguments1': 'AC20200611152252',
+                    'arguments2': '',
+                    'arguments3': '',
+                    'arguments4': new Date().getTime(),
+                    'arguments6': '',
+                    'arguments7': '',
+                    'arguments8': '',
+                    'arguments9': '',
+                    'netWay': 'Wifi',
+                    'remark1': '到小游戏豪礼派送',
+                    'remark': '签到小游戏翻倍得积分',
+                    'version': `android@8.0100`,
+                    'codeId': 945705532
+                }
+                params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+                params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
+                params['arguments4'] = new Date().getTime()
+
+                result = await require('./taskcallback').reward(axios, {
+                    ...options,
+                    params,
+                    jar: jar1
+                })
+
+                p1 = {
+                    'activityId': activity.activityId,
+                    'currentTimes': advertTimes,
+                    'type': '广告',
+                    'orderId': params['orderId'],
+                    'phoneType': 'android',
+                    'version': '8.01'
+                }
+                advertTimes--
+            } else {
+                freeTimes--
+            }
+
+            let n = Math.floor(5 * Math.random())
+            let i = secretkeyArray()
+
+            params = {
+                "params": encrypt(JSON.stringify(p1), i[n]) + n,
+                "parKey": i
+            }
+            res = await axios.request({
+                baseURL: 'https://m.jf.10010.com/',
+                headers: {
+                    "Authorization": `Bearer ${Authorization}`,
+                    "user-agent": useragent,
+                    "referer": "https://img.jf.10010.com/",
+                    "origin": "https://img.jf.10010.com"
+                },
+                url: `/jf-yuech/api/gameResultV2/timesDraw`,
+                method: 'post',
+                data: params
+            })
+            result = res.data
+            if (result.code !== 0) {
+                console.log("豪礼大派送抽奖:", result.message)
+            } else {
+                if (result.data.consumptionV1Infos.code !== '0') {
+                    console.log("豪礼大派送抽奖:", result.data.consumptionV1Infos.result)
+                } else {
+                    console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.drawResultPO.prizeName)
+                }
+            }
+
+            if (freeTimes && advertTimes) {
+                console.log('等待15秒再继续')
+                await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+            }
+
+        } while (freeTimes || advertTimes)
     }
 }
