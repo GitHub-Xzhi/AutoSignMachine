@@ -154,7 +154,7 @@ var dailyVideoFreeGoods = {
         })
       })
 
-      let timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
+      timestamp = moment(new Date(res.times)).format('YYYYMMDDHHmmss')
       result = await axios.request({
         headers: {
           "user-agent": useragent,
