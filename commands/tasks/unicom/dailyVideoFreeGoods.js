@@ -21,7 +21,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption (data, key) {
+function encryption(data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -128,7 +128,7 @@ var dailyVideoFreeGoods = {
       })
 
       if (result.data.data.time) {
-        throw new Error(`已处于限制期，需${result.data.data.time}秒后重试`)
+        throw new Error(`已处于限制期，` + moment().add(result.data.data.time, 'seconds').format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
       }
 
       result = await require('./taskcallback').reward(axios, {
@@ -181,7 +181,7 @@ var dailyVideoFreeGoods = {
         if (result.data.data.luckCode) {
           console.log('提交任务成功', `券码：${result.data.data.luckCode}`)
         } else if (result.data.data.time) {
-          console.log('提交任务成功', `需${result.data.data.time}秒后重试`)
+          throw new Error(`已处于限制期，` + moment().add(result.data.data.time, 'seconds').format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
         } else {
           console.log('提交任务成功')
         }
