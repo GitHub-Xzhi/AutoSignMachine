@@ -59,10 +59,12 @@ var start = async (params) => {
     })
   })
 
-  // 首页-小说-阅读越有礼打卡赢话费
   await scheduler.regTask('dailyBookRead', async () => {
+    // 首页-小说-阅读越有礼打卡赢话费
     await require('./dailyBookRead').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+    // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
+    await require('./dailyVideoBook').giftBoints(request, options)
   })
 
   // 首页-签到有礼-免费领-浏览领积分
@@ -108,11 +110,6 @@ var start = async (params) => {
   // 首页-签到有礼-免费抽-赢Apple Watch(去抽奖)
   await scheduler.regTask('dailyTurntablePage', async () => {
     await require('./dailyTurntablePage').doTask(request, options)
-  })
-
-  // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
-  await scheduler.regTask('dailyBookGiftBoints', async () => {
-    await require('./dailyVideoBook').giftBoints(request, options)
   })
 
   // 首页-签到有礼-赚更多福利-看视频奖励5积分
