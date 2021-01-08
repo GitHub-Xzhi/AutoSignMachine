@@ -155,7 +155,7 @@ var dailyVideoBook = {
 
     return {
       Token: data.message,
-      jar: jar
+      jar: res.config.jar || jar
     }
   },
   readDetail: async (axios, options) => {
