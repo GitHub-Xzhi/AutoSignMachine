@@ -137,6 +137,8 @@ var dailyYYQ = {
     let advertTimes = activity.advertLimitNum
     let times = 5
 
+    // /jf-yuech/api/integralLogs/surplusFreeGame?activityId=Ac-da377d4512124eb49cc3ea4e0d25e379
+
     do {
       let orderId = ''
       console.log("第" + times + "次")
@@ -218,7 +220,9 @@ var dailyYYQ = {
         console.log('快乐摇摇球:', result.data.prizeName)
         if (result.data.doublingStatus) {
           console.log('提交积分翻倍')
-          await dailyYYQ.lookVideoDouble(axios, options)
+          await dailyYYQ.lookVideoDouble(axios, {
+            ...options
+          })
           await dailyYYQ.lookVideoDoubleResult(axios, {
             ...options,
             Authorization,
@@ -231,11 +235,10 @@ var dailyYYQ = {
       console.log('等待15秒再继续')
       await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
 
-      times = times - 1
-
-    } while (times)
+    } while (--times)
   },
   lookVideoDouble: async (axios, options) => {
+    const { activity, Authorization } = options
     let params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel
