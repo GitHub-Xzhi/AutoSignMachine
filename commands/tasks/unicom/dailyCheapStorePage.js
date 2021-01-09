@@ -98,6 +98,7 @@ var dailyCheapStorePage = {
 
     let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
     let playCounts = 0
+    let bottleCount = 0
 
     // 每6个小时6次机会，可使用能量瓶重置机会
 
@@ -111,7 +112,9 @@ var dailyCheapStorePage = {
       })
 
       playCounts = res.playCounts
-      console.log('游戏机会:', playCounts)
+      console.log('剩余游戏机会:', playCounts)
+      bottleCount = res.bottleCount
+      console.log('剩余能量瓶:', bottleCount)
 
       if ('times' in res) {
         console.log('每6个小时6次机会', moment(new Date(res.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
@@ -119,12 +122,15 @@ var dailyCheapStorePage = {
 
       if (!playCounts) {// 用完机会再使用能量瓶重置
         console.log('尝试使用能量瓶重置机会')
-        let bs = await dailyCheapStorePage.getBottle(axios, {
-          ...options,
-          jar: jar1,
-          searchParams,
-          ecs_token
-        })
+        let bs = 1
+        if (!bottleCount) {
+          bs = await dailyCheapStorePage.getBottle(axios, {
+            ...options,
+            jar: jar1,
+            searchParams,
+            ecs_token
+          })
+        }
         if (bs === 2) {
           break
         } else if (bs === 1) {
