@@ -65,6 +65,9 @@ var start = async (params) => {
     await require('./dailyVideoBook').doTask(request, options)
     // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
     await require('./dailyVideoBook').giftBoints(request, options)
+  })
+
+  await scheduler.regTask('dailyBookLuckdraw', async () => {
     // 首页-小说-阅读福利抽大奖
     await require('./dailyBookLuckdraw').doTask(request, options)
   })

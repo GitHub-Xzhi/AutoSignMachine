@@ -173,9 +173,38 @@ var dailyVideoBook = {
     return data.message[0]
   },
   updatePersonReadtime: async (axios, options) => {
-    const { cntindex, cntname } = options
+    const { cntindex, cntname, cnttype, cntid } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-    let { data } = await axios.request({
+    await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://m.iread.wo.cn/`,
+        "origin": "http://m.iread.wo.cn"
+      },
+      url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
+      method: 'POST',
+      data: transParams({
+        'cntindex': cntindex,
+        'cntname': cntname,
+        'time': 0
+      })
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://m.iread.wo.cn/`,
+        "origin": "http://m.iread.wo.cn"
+      },
+      url: `http://m.iread.wo.cn/touchextenernal/contentread/updateReadTimes.action`,
+      method: 'POST',
+      data: transParams({
+        'cntid': cntid,
+        'cnttype': cnttype
+      })
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 2 * 60 * 1000))
+    await axios.request({
       headers: {
         "user-agent": useragent,
         "referer": `http://m.iread.wo.cn/`,
@@ -189,6 +218,7 @@ var dailyVideoBook = {
         'time': 2
       })
     })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
     console.log('完成阅读时间上报')
   },
   addDrawTimes: async (axios, options) => {
@@ -219,16 +249,15 @@ var dailyVideoBook = {
       ...Token
     })
 
+    await dailyVideoBook.updatePersonReadtime(axios, {
+      ...options,
+      ...detail
+    })
+
     await dailyVideoBook.addDrawTimes(axios, {
       ...options,
       ...detail,
       jar
-    })
-
-    await dailyVideoBook.updatePersonReadtime(axios, {
-      ...options,
-      cntindex: detail.cntindex,
-      cntname: detail.cntname
     })
 
     await new Promise((resolve, reject) => setTimeout(resolve, 1000))
