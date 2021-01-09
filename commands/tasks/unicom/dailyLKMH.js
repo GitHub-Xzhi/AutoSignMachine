@@ -1,4 +1,3 @@
-const { time } = require('console');
 var crypto = require('crypto');
 var CryptoJS = require("crypto-js");
 
