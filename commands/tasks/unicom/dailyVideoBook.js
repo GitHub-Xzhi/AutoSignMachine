@@ -298,7 +298,7 @@ var dailyVideoBook = {
         'type': 'readNovelDouble'
       })
     })
-    console.log(data.msg)
+    console.log('翻倍结果', data.msg)
   }
 }
 

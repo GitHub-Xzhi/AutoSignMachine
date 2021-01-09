@@ -293,9 +293,9 @@ var dailyLKMH = {
     })
     result = res.data
     if (result.code !== 0) {
-      console.log("签到小游戏盲盒:", result.message)
+      console.log("签到小游戏盲盒翻倍结果:", result.message)
     } else {
-      console.log("签到小游戏盲盒:", result.data)
+      console.log("签到小游戏盲盒翻倍结果:", result.data)
     }
   }
 }

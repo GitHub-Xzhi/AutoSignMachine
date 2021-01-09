@@ -140,6 +140,9 @@ var dailyYYY = {
     let advertTimes = activity.activityTimesInfo.advertTimes
 
     do {
+
+      let orderId = ''
+
       console.log("已消耗机会", (1 + 4) - (freeTimes + advertTimes), "剩余免费机会", freeTimes, '看视频广告机会', advertTimes)
 
       if (!freeTimes && !advertTimes) {
@@ -200,6 +203,8 @@ var dailyYYY = {
           'version': '8.01'
         }
         advertTimes--
+
+        orderId = params['orderId']
       } else {
         freeTimes--
       }
@@ -263,7 +268,7 @@ var dailyYYY = {
             ...options,
             Authorization,
             activityId: activity.activityId,
-            winningRecordId: params['orderId']
+            winningRecordId: orderId
           })
         }
       }
@@ -332,9 +337,9 @@ var dailyYYY = {
     })
     result = res.data
     if (result.code !== 0) {
-      console.log("摇一摇送好礼:", result.message)
+      console.log("摇一摇送好礼翻倍结果:", result.message)
     } else {
-      console.log("摇一摇送好礼:", result.data)
+      console.log("摇一摇送好礼翻倍结果:", result.data)
     }
   }
 }
