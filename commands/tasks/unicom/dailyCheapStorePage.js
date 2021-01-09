@@ -112,9 +112,8 @@ var dailyCheapStorePage = {
       })
 
       playCounts = res.playCounts
-      console.log('剩余游戏机会:', playCounts)
       bottleCount = res.bottleCount
-      console.log('剩余能量瓶:', bottleCount)
+      console.log('剩余能量瓶:', bottleCount, '剩余游戏机会:', playCounts)
 
       if ('times' in res) {
         console.log('每6个小时6次机会', moment(new Date(res.times)).format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
@@ -141,6 +140,7 @@ var dailyCheapStorePage = {
             ecs_token
           })
           playCounts = 6
+          console.log('重置机会成功+', playCounts)
         } else if (bs === 0) {
           // 防止错误循环
           tryn = tryn - 1
