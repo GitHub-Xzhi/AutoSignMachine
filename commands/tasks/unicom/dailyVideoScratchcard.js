@@ -119,11 +119,7 @@ var dailyVideoScratchcard = {
     params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
 
     if (goods.length) {
-      // 随机商品 似乎限制只能有6次参与机会  这里采用随机商品，每个商品一次的方式
-      let num = 6
-      do {
-        let good = goods[Math.floor(Math.random() * goods.length)]
-
+      goods.forEach((good, num) => {
         console.log('开始处理', good.name)
         params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
         params['arguments4'] = new Date().getTime()
@@ -156,8 +152,7 @@ var dailyVideoScratchcard = {
         }
         console.log('等待15秒再继续')
         await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
-
-      } while (--num)
+      })
     } else {
       console.log('暂无可刮得商品')
     }
