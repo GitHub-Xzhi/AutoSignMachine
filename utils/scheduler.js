@@ -32,7 +32,8 @@ let scheduler = {
                 queues.push({
                     taskName: taskName,
                     taskState: 0,
-                    willTime: randomTime
+                    willTime: randomTime,
+                    waitTime: Math.floor(Math.random() * 600) + 'seconds'
                 })
             }
             if (queues.length) {
@@ -78,6 +79,13 @@ let scheduler = {
             for (let task of will_queues) {
                 if (task.taskName in tasks) {
                     try {
+                        if (task.waitTime) {
+                            console.log('延迟执行', task.waitTime)
+                            var willTime = new moment(task.willTime)
+                            var waitTime = willTime.add(task.waitTime)
+                            var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
+                            await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
+                        }
                         await tasks[task.taskName]()
                         queues[queues.findIndex(q => q.taskName === task.taskName)] = {
                             ...task,
