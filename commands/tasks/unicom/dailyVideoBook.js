@@ -122,7 +122,9 @@ var dailyVideoBook = {
     let cookiesJson = config.jar.toJSON()
     let diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
     let useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
-    let jar = config.jar
+    let m_jar = config.jar
+    let st_jar
+    let res
     if (!useraccount || !diwert) {
       //密码加密
       var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
@@ -130,7 +132,19 @@ var dailyVideoBook = {
       var key = RSAUtils.getKeyPair(exponent, '', modulus);
       let phonenum = RSAUtils.encryptedString(key, options.user);
 
-      let res = await axios.request({
+      res = await axios.request({
+        headers: {
+          "user-agent": useragent
+        },
+        url: `http://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
+        method: 'POST',
+        data: transParams({
+          phonenum
+        })
+      })
+      m_jar = res.config.jar
+
+      res = await axios.request({
         headers: {
           "user-agent": useragent
         },
@@ -140,42 +154,29 @@ var dailyVideoBook = {
           phonenum
         })
       })
-      jar = res.config.jar
+      st_jar = res.config.jar
     }
 
 
-    let res = await axios.request({
+    res = await axios.request({
       headers: {
         "user-agent": useragent,
       },
       url: `http://st.woread.com.cn/touchextenernal/read/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
       method: 'GET',
-      jar
+      jar: st_jar
     })
 
     return {
       Token: data.message,
-      jar: res.config.jar || jar
+      st_jar: res.config.jar || st_jar,
+      m_jar
     }
   },
-  readDetail: async (axios, options) => {
-    const { userid, token } = options
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-    let { data } = await axios.request({
-      headers: {
-        "user-agent": useragent,
-        "referer": `https://img.client.10010.com/`,
-        "origin": "https://img.client.10010.com"
-      },
-      url: `https://m.iread.wo.cn/touchextenernal/proxy/newreadlist/42/${userid}/${token}?pagenum=1&pagecount=1&cnttypes=1`,
-      method: 'GET'
-    })
-    return data.message[0]
-  },
   updatePersonReadtime: async (axios, options) => {
-    const { cntindex, cntname, cnttype, cntid } = options
+    const { detail, jar } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-    await axios.request({
+    let res = await axios.request({
       headers: {
         "user-agent": useragent,
         "referer": `http://m.iread.wo.cn/`,
@@ -183,14 +184,21 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
       method: 'POST',
+      jar,
       data: transParams({
-        'cntindex': cntindex,
-        'cntname': cntname,
+        'cntindex': detail.cntindex,
+        'cntname': detail.cntname,
         'time': 0
       })
     })
+    console.log('ajaxUpdatePersonReadtime', res.data)
+    await dailyVideoBook.addDrawTimes(axios, {
+      ...options,
+      detail,
+      jar
+    })
     await new Promise((resolve, reject) => setTimeout(resolve, 1000))
-    await axios.request({
+    res = await axios.request({
       headers: {
         "user-agent": useragent,
         "referer": `http://m.iread.wo.cn/`,
@@ -198,13 +206,18 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/updateReadTimes.action`,
       method: 'POST',
+      jar,
       data: transParams({
-        'cntid': cntid,
-        'cnttype': cnttype
+        'cntid': detail.cntid,
+        'cnttype': detail.cnttype
       })
     })
+
+    console.log('updateReadTimes', res.data.message)
+
     await new Promise((resolve, reject) => setTimeout(resolve, 2 * 60 * 1000))
-    await axios.request({
+
+    res = await axios.request({
       headers: {
         "user-agent": useragent,
         "referer": `http://m.iread.wo.cn/`,
@@ -212,13 +225,22 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
       method: 'POST',
+      jar,
       data: transParams({
-        'cntindex': cntindex,
-        'cntname': cntname,
+        'cntindex': detail.cntindex,
+        'cntname': detail.cntname,
         'time': 2
       })
     })
+    console.log('ajaxUpdatePersonReadtime', res.data)
     await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+
+    await dailyVideoBook.addReadRatioToRedis(axios, {
+      ...options,
+      detail,
+      jar
+    })
+
     console.log('完成阅读时间上报')
   },
   addDrawTimes: async (axios, options) => {
@@ -234,33 +256,63 @@ var dailyVideoBook = {
       method: 'POST',
       jar
     })
-    console.log('阅读打卡上报', data.message)
+
+    console.log('updateReadTimes', data.message)
+  },
+  addReadRatioToRedis: async (axios, options) => {
+    let { jar, detail } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://m.iread.wo.cn/`,
+        "origin": "http://m.iread.wo.cn"
+      },
+      url: `http://m.iread.wo.cn/touchextenernal/contentread/addReadRatioToRedis.action`,
+      method: 'POST',
+      jar,
+      data: transParams({
+        'chapterallindex': detail.chapterallindex,
+        'cntindex': detail.cntindex,
+        'curChaptNo': detail.chapterseno,
+        'curChaptRatio': '0.0539946886857252',
+        'curChaptWidth': '313.052',
+        'volumeallindex': detail.chapterallindex
+      })
+    })
+    console.log('addReadRatioToRedis', data.message)
   },
   giftBoints: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     let Authorization = await dailyVideoBook.oauthMethod(axios, options)
-    let { Token, jar } = await dailyVideoBook.login(axios, {
+    let { Token, m_jar, st_jar } = await dailyVideoBook.login(axios, {
       ...options,
       Authorization
     })
+    //POST http://st.woread.com.cn/touchextenernal/read/getUpDownChapter.action HTTP/1.1
+    //chapterseno	1
+    // cntindex	480230
 
-    let detail = await dailyVideoBook.readDetail(axios, {
-      ...options,
-      ...Token
-    })
+    let detail = {
+      'cntindex': '480230',
+      'catid': '118440',
+      'pageIndex': '10843',
+      'cardid': '11910',
+      'desmobile': '17585920865',
+      'version': 'android@8.0100',
+      'cntname': '乡村小农医',
+      'channelid': '18000018',
+      'chapterallindex': '38096061',
+      'volumeallindex': '1297284',
+      'chapterseno': '1',
+      'cntid': '10480230'
+    }
 
     await dailyVideoBook.updatePersonReadtime(axios, {
       ...options,
-      ...detail
+      detail,
+      jar: m_jar
     })
-
-    await dailyVideoBook.addDrawTimes(axios, {
-      ...options,
-      ...detail,
-      jar
-    })
-
-    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
 
     let { data, config } = await axios.request({
       headers: {
