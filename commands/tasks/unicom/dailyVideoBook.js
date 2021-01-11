@@ -257,7 +257,7 @@ var dailyVideoBook = {
       jar
     })
 
-    console.log('updateReadTimes', data.message)
+    console.log('addDrawTimes', data.message)
   },
   addReadRatioToRedis: async (axios, options) => {
     let { jar, detail } = options
