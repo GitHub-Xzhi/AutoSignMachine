@@ -227,7 +227,7 @@ var dailyYYQ = {
             ...options,
             Authorization,
             activityId: activity.activityId,
-            winningRecordId: orderId
+            winningRecordId: result.data.winningRecordId
           })
         }
       }
@@ -238,18 +238,17 @@ var dailyYYQ = {
     } while (--times)
   },
   lookVideoDouble: async (axios, options) => {
-    const { activity, Authorization } = options
     let params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel
-      'arguments3': '', // yhTaskId menuId
+      'arguments3': '73e3907bbf9c4748b2fe9a053cee5e82', // yhTaskId menuId
       'arguments4': new Date().getTime(), // time
       'arguments6': '517050707',
       'netWay': 'Wifi',
       'version': `android@8.0100`
     }
     params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-    let { num } = await require('./taskcallback').query(axios, {
+    let { num, jar } = await require('./taskcallback').query(axios, {
       ...options,
       params
     })
@@ -261,7 +260,7 @@ var dailyYYQ = {
     params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel
-      'arguments3': '', // yhTaskId menuId
+      'arguments3': '73e3907bbf9c4748b2fe9a053cee5e82', // yhTaskId menuId
       'arguments4': new Date().getTime(), // time
       'arguments6': '',
       'arguments7': '',
