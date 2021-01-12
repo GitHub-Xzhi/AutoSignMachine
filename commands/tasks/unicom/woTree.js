@@ -1,4 +1,57 @@
-module.exports = {
+var crypto = require('crypto');
+
+var sign = (data) => {
+  let str = 'integralofficial&'
+  let params = []
+  data.forEach((v, i) => {
+    if (v) {
+      params.push('arguments' + (i + 1) + v)
+    }
+  });
+  return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
+}
+var woTree = {
+  entry: async (axios, options) => {
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
+    let searchParams = {}
+    let result = await axios.request({
+      baseURL: 'https://m.client.10010.com/',
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://img.client.10010.com/`,
+        "origin": "https://img.client.10010.com"
+      },
+      url: `https://m.client.10010.com/mobileService/openPlatform/openPlatLineNew.htm?to_url=https://img.client.10010.com/mactivity/woTree/index.html&duanlianjieabc=qA504`,
+      method: 'get',
+      transformResponse: (data, headers) => {
+        if ('location' in headers) {
+          let uu = new URL(headers.location)
+          let pp = {}
+          for (let p of uu.searchParams) {
+            pp[p[0]] = p[1]
+          }
+          if ('ticket' in pp) {
+            searchParams = pp
+          }
+        }
+        return data
+      }
+    }).catch(err => console.log(err))
+
+    let jar = result.config.jar
+    let cookiesJson = jar.toJSON()
+    let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
+    ecs_token = ecs_token.value
+    if (!ecs_token) {
+      throw new Error('ecs_token缺失')
+    }
+
+    return {
+      searchParams,
+      ecs_token,
+      jar
+    }
+  },
   getStatus: (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     return new Promise((resolve, reject) => {
@@ -64,4 +117,72 @@ module.exports = {
       }
     }
   },
+  water: async (axios, options) => {
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    const { jar } = await woTree.entry(axios, options)
+    // https://m.client.10010.com/mactivity/arbordayJson/getChanceByIndex.htm?index=0
+    // {"msg":"success","code":"0000","data":{"chance_0":0}}
+    let num = 2
+    do {
+      if (num < 2) {
+        console.log('看视频浇水')
+        let params = {
+          'arguments1': '',
+          'arguments2': '',
+          'arguments3': '',
+          'arguments4': new Date().getTime(),
+          'arguments6': '',
+          'arguments7': '',
+          'arguments8': '',
+          'arguments9': '',
+          'netWay': 'Wifi',
+          'remark1': '沃之树看视频得浇水机会',
+          'remark': '',
+          'version': `android@8.0100`,
+          'codeId': 945535626
+        }
+        params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+        let result = await require('./taskcallback').reward(axios, {
+          ...options,
+          params,
+          jar
+        })
+        result = await axios.request({
+          headers: {
+            "user-agent": useragent,
+            "referer": `https://img.client.10010.com/`,
+            "origin": "https://img.client.10010.com",
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+          },
+          url: `https://m.client.10010.com/mactivity/arbordayJson/giveGrowChance.htm`,
+          method: 'POST',
+          data: '{}'
+        })
+        console.log(result.data)
+      }
+      let res = await axios.request({
+        headers: {
+          "user-agent": useragent,
+          "referer": `https://img.client.10010.com/`,
+          "origin": "https://img.client.10010.com",
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        url: `https://m.client.10010.com/mactivity/arbordayJson/arbor/3/0/3/grow.htm`,
+        method: 'POST',
+        data: '{}'
+      })
+      let result = res.data
+      if (result.code !== '0000') {
+        console.log('浇水失败', result.msg)
+      } else {
+        if (result.data.addedValue) {
+          console.log('浇水成功', '成长值+' + result.data.addedValue)
+        } else {
+          console.log('浇水操作完成')
+        }
+      }
+    } while (--num)
+  }
 }
+
+module.exports = woTree

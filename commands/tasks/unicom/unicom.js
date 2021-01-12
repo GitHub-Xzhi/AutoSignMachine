@@ -44,6 +44,8 @@ var start = async (params) => {
 
   // 首页-游戏-娱乐中心-沃之树
   await scheduler.regTask('dailywoTree', async () => {
+    // 沃之树 浇水
+    await require('./woTree').water(request, options)
     let i = 2
     do {
       // 普通 - 看视频 似乎是分开的两次
