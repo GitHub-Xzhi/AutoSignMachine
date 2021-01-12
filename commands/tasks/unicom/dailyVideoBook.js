@@ -174,7 +174,7 @@ var dailyVideoBook = {
     }
   },
   updatePersonReadtime: async (axios, options) => {
-    const { detail, jar } = options
+    const { detail, m_jar, st_jar } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     let res = await axios.request({
       headers: {
@@ -184,7 +184,7 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
       method: 'POST',
-      jar,
+      jar: m_jar,
       data: transParams({
         'cntindex': detail.cntindex,
         'cntname': detail.cntname,
@@ -195,9 +195,10 @@ var dailyVideoBook = {
     await dailyVideoBook.addDrawTimes(axios, {
       ...options,
       detail,
-      jar
+      jar: st_jar
     })
     await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    
     res = await axios.request({
       headers: {
         "user-agent": useragent,
@@ -206,7 +207,7 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/updateReadTimes.action`,
       method: 'POST',
-      jar,
+      jar: m_jar,
       data: transParams({
         'cntid': detail.cntid,
         'cnttype': detail.cnttype
@@ -225,7 +226,7 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
       method: 'POST',
-      jar,
+      jar: m_jar,
       data: transParams({
         'cntindex': detail.cntindex,
         'cntname': detail.cntname,
@@ -238,7 +239,7 @@ var dailyVideoBook = {
     await dailyVideoBook.addReadRatioToRedis(axios, {
       ...options,
       detail,
-      jar
+      jar: m_jar
     })
 
     console.log('完成阅读时间上报')
@@ -305,13 +306,15 @@ var dailyVideoBook = {
       'chapterallindex': '38096061',
       'volumeallindex': '1297284',
       'chapterseno': '1',
-      'cntid': '10480230'
+      'cntid': '10480230',
+      'cnttype': '1'
     }
 
     await dailyVideoBook.updatePersonReadtime(axios, {
       ...options,
       detail,
-      jar: m_jar
+      st_jar: st_jar,
+      m_jar: m_jar
     })
 
     let { data, config } = await axios.request({
