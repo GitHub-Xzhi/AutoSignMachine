@@ -8,7 +8,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w() {
+function w () {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -28,7 +28,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption(data, key) {
+function encryption (data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -148,8 +148,7 @@ var dailyVideoScratchcard = {
         if (result.data.code !== 200) {
           console.log(result.data.msg)
         } else {
-          console.log(result.data.data)
-          console.log('提交任务成功', `+${result.data.data.integral}`)
+          console.log('提交任务成功', `+${result.data.data.prizeType ? result.data.data.integral : 0}`)
         }
         console.log('等待15秒再继续')
         await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
