@@ -294,7 +294,7 @@ var dailyYYY = {
     })
 
     if (!num) {
-      console.log('签到小游戏买什么都省转盘抽奖: 今日已完成')
+      console.log('签到小游戏摇摇乐不倒翁: 今日已完成')
       return
     }
 
