@@ -19,7 +19,7 @@ var parseCookie = function (cookies) {
 }
 module.exports = (cookies, useJar) => {
   const service = axios.create({
-    timeout: 6000,
+    timeout: 60000,
     headers: {
       cookie: parseCookie(cookies)
     },

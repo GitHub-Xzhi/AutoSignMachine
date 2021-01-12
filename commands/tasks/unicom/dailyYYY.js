@@ -261,14 +261,13 @@ var dailyYYY = {
         if (result.data.doublingStatus) {
           console.log('提交积分翻倍')
           await dailyYYY.lookVideoDouble(axios, {
-            ...options,
-            jar: jar1
+            ...options
           })
           await dailyYYY.lookVideoDoubleResult(axios, {
             ...options,
             Authorization,
             activityId: activity.activityId,
-            winningRecordId: orderId
+            winningRecordId: result.data.winningRecordId
           })
         }
       }
@@ -279,7 +278,6 @@ var dailyYYY = {
     } while (freeTimes || advertTimes)
   },
   lookVideoDouble: async (axios, options) => {
-    const { jar } = options
     let params = {
       'arguments1': 'AC20200611152252', // acid
       'arguments2': 'GGPD', // yhChannel
@@ -290,7 +288,7 @@ var dailyYYY = {
       'version': `android@8.0100`
     }
     params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
-    let { num } = await require('./taskcallback').query(axios, {
+    let { num, jar } = await require('./taskcallback').query(axios, {
       ...options,
       params
     })
