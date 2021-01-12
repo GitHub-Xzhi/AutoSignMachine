@@ -87,7 +87,7 @@ var start = async (params) => {
     await require('./jflottery').timesDraw(request, options)
   })
 
-  // 首页-签到有礼-免费抽-摇戴森(摇一摇)
+  // 首页-签到有礼-免费抽-拿苹果iPad Pro(摇一摇)
   await scheduler.regTask('dailyYYY', async () => {
     await require('./dailyYYY').doTask(request, options)
   })
