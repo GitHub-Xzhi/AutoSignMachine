@@ -212,8 +212,12 @@ module.exports = {
                     console.log("豪礼大派送抽奖:", result.data.consumptionV1Infos.result)
                 } else {
                     if (result.data.consumptionV1Infos.gameResult.prizeStatus === '中奖') {
-                        console.log(result.data.consumptionV1Infos)
-                        console.log('豪礼大派送抽奖:', '中奖')
+                        if(result.data.consumptionV1Infos.gameResult.integralScore){
+                            console.log('豪礼大派送抽奖:', '中奖+', result.data.consumptionV1Infos.gameResult.integralScore)
+                        } else {
+                            console.log(result.data.consumptionV1Infos)
+                            console.log('豪礼大派送抽奖:', '中奖')
+                        }
                     } else {
 
                         console.log('豪礼大派送抽奖:', result.data.consumptionV1Infos.gameResult.prizeStatus)
