@@ -198,7 +198,7 @@ var dailyVideoBook = {
       jar: st_jar
     })
     await new Promise((resolve, reject) => setTimeout(resolve, 1000))
-    
+
     res = await axios.request({
       headers: {
         "user-agent": useragent,
@@ -242,6 +242,7 @@ var dailyVideoBook = {
       jar: m_jar
     })
 
+    await new Promise((resolve, reject) => setTimeout(resolve, 10 * 1000))
     console.log('完成阅读时间上报')
   },
   addDrawTimes: async (axios, options) => {
