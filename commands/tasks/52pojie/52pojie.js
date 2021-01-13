@@ -10,10 +10,11 @@ var start = async (params) => {
   }
 
   const request = _request(cookies)
+  
+  await scheduler.regTask('dailySign', async () => {
+    await require('./sign')(request)
+  })
 
-  await require('./sign')(request)
-
-  console.log('全部任务执行完毕！')
 }
 module.exports = {
   start
