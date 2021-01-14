@@ -242,7 +242,7 @@ var dailyVideoBook = {
       jar: m_jar
     })
 
-    await new Promise((resolve, reject) => setTimeout(resolve, 10 * 1000))
+    await new Promise((resolve, reject) => setTimeout(resolve, 5 * 1000))
     console.log('完成阅读时间上报')
   },
   addDrawTimes: async (axios, options) => {
@@ -317,6 +317,41 @@ var dailyVideoBook = {
       st_jar: st_jar,
       m_jar: m_jar
     })
+
+    let res = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://img.client.10010.com/`,
+        "origin": "https://img.client.10010.com"
+      },
+      url: `https://act.10010.com/SigninApp/floorData/getIntegralFree`,
+      method: 'POST',
+      data: transParams({
+        'type': 'readNovel'
+      })
+    })
+
+    let result = res.data
+
+    let taskList = []
+
+    if(result.status !== '0000'){
+      console.log('出现错误', result.msg)
+      return
+    } else {
+      taskList = result.data.taskList
+    }
+
+    let ts = taskList.find(t => t.templateCode === 'mll_dxs')
+    if(ts){
+      if(ts.action === 'API_YILINGQU'){
+        console.log('出现错误', '已经领取过')
+        return
+      }
+    } else{
+        console.log('出现错误', '不存在的活动')
+        return
+    }
 
     let { data, config } = await axios.request({
       headers: {
