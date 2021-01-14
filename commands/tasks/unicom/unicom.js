@@ -82,6 +82,8 @@ var start = async (params) => {
   // 首页-签到有礼-免费拿-看视频夺宝
   await scheduler.regTask('dailyVideoFreeGoods', async () => {
     await require('./dailyVideoFreeGoods').doTask(request, options)
+  }, {
+    isCircle: true
   })
 
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
@@ -102,6 +104,8 @@ var start = async (params) => {
   // 首页-签到有礼-免费抽-赢三星Galaxy Z(试试手气)
   await scheduler.regTask('dailyCheapStorePage', async () => {
     await require('./dailyCheapStorePage').doTask(request, options)
+  }, {
+    isCircle: true
   })
 
   // 首页-签到有礼-免费抽-拆华为Pad(去抽奖)

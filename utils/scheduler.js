@@ -28,7 +28,13 @@ let scheduler = {
             const endDate = moment().endOf('days').toDate();
             for (let taskName of taskNames) {
                 // 随机时间
-                const randomTime = moment(randomDate(startDate, endDate)).format('YYYY-MM-DD HH:mm:ss');
+                let randomTime = moment(randomDate(startDate, endDate)).format('YYYY-MM-DD HH:mm:ss');
+
+                let options = tasks[taskName].options
+                if (options && options.isCircle) {
+                    // 周期任务，固定检查点为一天的起点
+                    randomTime = moment().startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                }
                 queues.push({
                     taskName: taskName,
                     taskState: 0,
@@ -42,7 +48,7 @@ let scheduler = {
             }
         }
     },
-    genFileName(command) {
+    genFileName (command) {
         scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', 'taskFile_' + command + '_' + moment().format('YYYYMMDD') + '.json')
     },
     loadTasksQueue: async () => {
@@ -62,8 +68,11 @@ let scheduler = {
             will_queues
         }
     },
-    regTask: async (taskName, callback) => {
-        tasks[taskName] = callback
+    regTask: async (taskName, callback, options) => {
+        tasks[taskName] = {
+            callback,
+            options
+        }
     },
     hasWillTask: async (command) => {
         await scheduler.genFileName(command)
@@ -86,7 +95,7 @@ let scheduler = {
                             var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
-                        await tasks[task.taskName]()
+                        await tasks[task.taskName]['callback']()
                         queues[queues.findIndex(q => q.taskName === task.taskName)] = {
                             ...task,
                             taskState: 1
