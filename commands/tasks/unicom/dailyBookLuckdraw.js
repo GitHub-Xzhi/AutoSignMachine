@@ -106,11 +106,13 @@ var dailyBookLuckdraw = {
                 jar
             })
             let result = res.data
-            console.log(result)
-            if (result.code !== '0000') {
-                console.log('阅读每日读书福利抽奖', result.message)
-            } else {
+            if (result.code === '0000') {
                 console.log('阅读每日读书福利抽奖', result.prizedesc)
+            } else if (result.code === '9999') {
+                console.log('阅读每日读书福利抽奖', result.message)
+                break
+            } else {
+                console.log('阅读每日读书福利抽奖', result.message)
             }
 
             console.log('等待15秒再继续')
