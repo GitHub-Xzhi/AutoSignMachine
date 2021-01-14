@@ -96,7 +96,7 @@ let scheduler = {
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
                         await tasks[task.taskName]['callback']()
-                        if (!tasks[task.taskName].options.isCircle) {
+                        if (!(tasks[task.taskName].options && tasks[task.taskName].options.isCircle)) {
                             queues[queues.findIndex(q => q.taskName === task.taskName)] = {
                                 ...task,
                                 taskState: 1
