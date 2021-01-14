@@ -21,7 +21,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption(data, key) {
+function encryption (data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -107,7 +107,6 @@ var dailyVideoFreeGoods = {
       if (time) {
         console.log(`签到小游戏买什么都省免费夺宝: 剩余机会不足，等待下一轮,` + moment().add(time, 'seconds').format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试')
       }
-      throw new Error('签到小游戏买什么都省免费夺宝: 剩余机会不足，等待下一轮')
     }
 
     let params = {
@@ -156,7 +155,8 @@ var dailyVideoFreeGoods = {
       })
 
       if (result.data.data.time) {
-        throw new Error(`已处于限制期，` + moment().add(result.data.data.time, 'seconds').format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试，跳过')
+        console.log(`已处于限制期，` + moment().add(result.data.data.time, 'seconds').format('YYYY-MM-DD HH:mm:ss') + ' 后可再次尝试，跳过')
+        break
       }
 
       result = await require('./taskcallback').reward(axios, {

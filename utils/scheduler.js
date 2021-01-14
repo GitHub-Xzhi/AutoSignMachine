@@ -96,13 +96,15 @@ let scheduler = {
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
                         await tasks[task.taskName]['callback']()
-                        queues[queues.findIndex(q => q.taskName === task.taskName)] = {
-                            ...task,
-                            taskState: 1
+                        if (!tasks[task.taskName].options.isCircle) {
+                            queues[queues.findIndex(q => q.taskName === task.taskName)] = {
+                                ...task,
+                                taskState: 1
+                            }
+                            fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
                         }
-                        fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
                     } catch (err) {
-                        console.log('周期任务：', err)
+                        console.log('任务错误：', err)
                     }
                 }
             }

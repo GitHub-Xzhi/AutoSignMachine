@@ -9,7 +9,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w() {
+function w () {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -29,7 +29,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption(data, key) {
+function encryption (data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -189,7 +189,7 @@ var dailyCheapStorePage = {
 
     } while (playCounts)
 
-    throw new Error('进入下一轮的尝试等待期')
+    console.log('进入下一轮的尝试等待期')
   },
   getBottleState: async (axios, options) => {
     const { jar, searchParams, ecs_token } = options
