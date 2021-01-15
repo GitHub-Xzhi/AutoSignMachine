@@ -158,7 +158,7 @@ var woTree = {
           method: 'POST',
           data: '{}'
         })
-        console.log(result.data)
+        console.log(result.data.msg)
       }
       let res = await axios.request({
         headers: {
