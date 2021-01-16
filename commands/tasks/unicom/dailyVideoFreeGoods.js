@@ -197,8 +197,8 @@ var dailyVideoFreeGoods = {
           console.log('提交任务成功')
         }
       }
-      console.log('等待15秒再继续')
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      console.log('等待25秒再继续')
+      await new Promise((resolve, reject) => setTimeout(resolve, 25 * 1000))
     }
   }
 }
