@@ -58,6 +58,48 @@ var dailyVideoBook = {
       params
     })
   },
+  getBookUpDownChapter: async (axios, options) => {
+    const { jar, book, chapter } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data, config } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/read/getUpDownChapter.action`,
+      method: 'POST',
+      jar,
+      data: transParams({
+        'cntindex': book.cntindex,
+        'chapterseno': chapter.chapterseno || 1
+      })
+    })
+    return data.message
+  },
+  getBookList: async (axios, options) => {
+    const { jar, params } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data, config } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/read/getBookList.action`,
+      method: 'POST',
+      jar,
+      data: transParams({
+        'bindType': '1',
+        'categoryindex': '118440',
+        'curpage': '1',
+        'limit': '10',
+        'pageIndex': '10843',
+        'cardid': params.cardid
+      })
+    })
+    return data.message
+  },
   doTask: async (request, options) => {
     let { num, jar } = await dailyVideoBook.query(request, options)
     if (!num) {
@@ -180,6 +222,43 @@ var dailyVideoBook = {
   updatePersonReadtime: async (axios, options) => {
     const { detail, m_jar, st_jar } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    await dailyVideoBook.ajaxUpdatePersonReadtime(axios, {
+      ...options,
+      detail,
+      jar: m_jar,
+      time: 0
+    })
+    await dailyVideoBook.addDrawTimes(axios, {
+      ...options,
+      detail,
+      jar: st_jar
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    await dailyVideoBook.updateReadTimes(axios, {
+      ...options,
+      detail,
+      jar: m_jar
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1 * 30 * 1000))
+    await dailyVideoBook.ajaxUpdatePersonReadtime(axios, {
+      ...options,
+      detail,
+      jar: m_jar,
+      time: 2
+    })
+    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    await dailyVideoBook.addReadRatioToRedis(axios, {
+      ...options,
+      detail,
+      jar: m_jar
+    })
+
+    await new Promise((resolve, reject) => setTimeout(resolve, 1 * 1000))
+    console.log('完成阅读时间上报')
+  },
+  ajaxUpdatePersonReadtime: async (axios, options) => {
+    const { detail, jar, time } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     let res = await axios.request({
       headers: {
         "user-agent": useragent,
@@ -188,22 +267,19 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
       method: 'POST',
-      jar: m_jar,
+      jar,
       data: transParams({
         'cntindex': detail.cntindex,
         'cntname': detail.cntname,
-        'time': 0
+        'time': time || 0
       })
     })
     console.log('ajaxUpdatePersonReadtime', res.data)
-    await dailyVideoBook.addDrawTimes(axios, {
-      ...options,
-      detail,
-      jar: st_jar
-    })
-    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
-
-    res = await axios.request({
+  },
+  updateReadTimes: async (axios, options) => {
+    let { jar, detail } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
       headers: {
         "user-agent": useragent,
         "referer": `http://m.iread.wo.cn/`,
@@ -211,43 +287,13 @@ var dailyVideoBook = {
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/updateReadTimes.action`,
       method: 'POST',
-      jar: m_jar,
+      jar,
       data: transParams({
         'cntid': detail.cntid,
         'cnttype': detail.cnttype
       })
     })
-
-    console.log('updateReadTimes', res.data.message)
-
-    await new Promise((resolve, reject) => setTimeout(resolve, 2 * 60 * 1000))
-
-    res = await axios.request({
-      headers: {
-        "user-agent": useragent,
-        "referer": `http://m.iread.wo.cn/`,
-        "origin": "http://m.iread.wo.cn"
-      },
-      url: `http://m.iread.wo.cn/touchextenernal/contentread/ajaxUpdatePersonReadtime.action`,
-      method: 'POST',
-      jar: m_jar,
-      data: transParams({
-        'cntindex': detail.cntindex,
-        'cntname': detail.cntname,
-        'time': 2
-      })
-    })
-    console.log('ajaxUpdatePersonReadtime', res.data)
-    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
-
-    await dailyVideoBook.addReadRatioToRedis(axios, {
-      ...options,
-      detail,
-      jar: m_jar
-    })
-
-    await new Promise((resolve, reject) => setTimeout(resolve, 5 * 1000))
-    console.log('完成阅读时间上报')
+    console.log('updateReadTimes', data.message)
   },
   addDrawTimes: async (axios, options) => {
     let { jar } = options
@@ -255,8 +301,8 @@ var dailyVideoBook = {
     let { data } = await axios.request({
       headers: {
         "user-agent": useragent,
-        "referer": `https://m.iread.wo.cn/`,
-        "origin": "http://m.iread.wo.cn"
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
       },
       url: `http://st.woread.com.cn/touchextenernal/readluchdraw/addDrawTimes.action`,
       method: 'POST',
@@ -288,39 +334,276 @@ var dailyVideoBook = {
     })
     console.log('addReadRatioToRedis', data.message)
   },
-  giftBoints: async (axios, options) => {
+  reportLatestRead: async (axios, options) => {
+    let { jar, detail } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/contentread/reportLatestRead.action`,
+      method: 'POST',
+      jar,
+      data: transParams({
+        'chapterallindex': detail.chapterallindex,
+        'cntindex': detail.cntindex
+      })
+    })
+    console.log('reportLatestRead', data.message)
+  },
+  sltPreReadChapter: async (axios, options) => {
+    let { jar, detail } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/contentread/sltPreReadChapter.action`,
+      method: 'get',
+      jar,
+      params: transParams({
+        'cntindex': detail.cntindex,
+        'chapterseno': detail.chapterseno,
+        'finishflag': '2',
+        'beginchapter': '',
+        'prenum': 1,
+        'nextnum': 2,
+        '_': new Date().getTime()
+      })
+    })
+    console.log('sltPreReadChapter', data.curChapterTitle)
+  },
+  getActivityStatus: async (axios, options) => {
+    let { jar, detail } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/thanksgiving/getActivityStatus.action`,
+      method: 'POST',
+      jar
+    })
+    console.log('getActivityStatus', data.message)
+  },
+  ajaxchapter: async (axios, options) => {
+    let { jar, detail } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `http://st.woread.com.cn/`,
+        "origin": "http://st.woread.com.cn"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/contentread/ajaxchapter.action`,
+      method: 'POST',
+      jar,
+      data: transParams({
+        'cntindex': detail.cntindex,
+        'catid': '0',
+        'volumeallindex': detail.volumeallindex,
+        'chapterallindex': detail.chapterallindex,
+        'chapterseno': detail.chapterseno,
+        'activityID': '',
+        'pageIndex': '10782',
+        'cardid': detail.cardid,
+        '_': new Date().getTime()
+      })
+    })
+    console.log('ajaxchapter innercode', data.innercode)
+  },
+  read10doDraw: async (axios, options) => {
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+
     let Authorization = await dailyVideoBook.oauthMethod(axios, options)
     let { Token, m_jar, st_jar } = await dailyVideoBook.login(axios, {
       ...options,
       Authorization
     })
-    //POST http://st.woread.com.cn/touchextenernal/read/getUpDownChapter.action HTTP/1.1
-    //chapterseno	1
-    // cntindex	480230
 
-    let detail = {
-      'cntindex': '480230',
-      'catid': '118440',
-      'pageIndex': '10843',
-      'cardid': '11910',
-      'desmobile': '17585920865',
-      'version': 'android@8.0100',
-      'cntname': '乡村小农医',
-      'channelid': '18000018',
-      'chapterallindex': '38096061',
-      'volumeallindex': '1297284',
-      'chapterseno': '1',
-      'cntid': '10480230',
-      'cnttype': '1'
-    }
-
-    await dailyVideoBook.updatePersonReadtime(axios, {
+    await dailyVideoBook.read10(axios, {
       ...options,
-      detail,
-      st_jar: st_jar,
-      m_jar: m_jar
+      m_jar,
+      st_jar
     })
+
+    let n = 1
+    do {
+      console.log(`第%s次抽奖`, n)
+      let { data } = await axios.request({
+        headers: {
+          "user-agent": useragent,
+          "referer": `http://st.woread.com.cn/`,
+          "origin": "http://st.woread.com.cn"
+        },
+        url: `http://st.woread.com.cn/touchextenernal/thanksgiving/doDraw.action`,
+        method: 'POST',
+        jar: st_jar,
+        data: 'acticeindex=MDMzMURDNTNDQzA0RDk5QTQ2RTI1RkQ5OEYwQzQ2RkI%3D'
+      })
+      if (data.code === '0000') {
+        console.log('read10doDraw 成功', data.prizedesc)
+      } else {
+        console.log('read10doDraw 失败', data.message)
+        if (data.innercode === '9148') {
+          break
+        }
+      }
+      ++n
+      console.log('等待3秒')
+      await new Promise((resolve, reject) => setTimeout(resolve, 3000))
+    } while (n <= 6)
+  },
+  read10: async (axios, options) => {
+    const { st_jar, m_jar } = options
+
+    let cardid = '11910'
+    console.log('取得书籍列表')
+    let books = await dailyVideoBook.getBookList(axios, {
+      ...options,
+      jar: st_jar,
+      params: {
+        cardid
+      }
+    })
+
+    let m = 5
+    do {
+      let book = books[Math.floor(Math.random() * books.length)]
+      console.log('随机获取', book.cntname)
+
+      let n = 12
+      let chapterseno = 1
+
+      do {
+
+        let chapters = await dailyVideoBook.getBookUpDownChapter(axios, {
+          ...options,
+          jar: st_jar,
+          book,
+          chapter: {
+            chapterseno
+          }
+        })
+
+
+        chapter = chapters[chapters.length - 2]
+
+        chapterseno = chapters[chapters.length - 1].chapterseno
+
+        console.log(chapter.chaptertitle)
+
+        let detail = {
+          'cntindex': book.cntindex,
+          'catid': '118440',
+          'pageIndex': '10843',
+          'cardid': cardid,
+          'desmobile': options.user,
+          'version': 'android@8.0100',
+          'cntname': book.cntname,
+          'channelid': '18000018',
+          'chapterallindex': chapter.chapterallindex,
+          'volumeallindex': chapter.volumeallindex,
+          'chapterseno': chapter.chapterseno,
+          'cntid': chapter.cntid,
+          'cnttype': book.cnttype
+        }
+
+        await dailyVideoBook.reportLatestRead(axios, {
+          ...options,
+          detail,
+          jar: st_jar
+        })
+
+        await dailyVideoBook.updatePersonReadtime(axios, {
+          ...options,
+          detail,
+          st_jar: st_jar,
+          m_jar: m_jar
+        })
+
+        await dailyVideoBook.sltPreReadChapter(axios, {
+          ...options,
+          detail,
+          jar: st_jar
+        })
+
+        await dailyVideoBook.ajaxchapter(axios, {
+          ...options,
+          detail,
+          jar: st_jar
+        })
+
+        console.log('等待3秒')
+        await new Promise((resolve, reject) => setTimeout(resolve, 3000))
+      } while (--n)
+
+      console.log('阅读10章完成')
+
+    } while (--m)
+
+    console.log('阅读5本书完成')
+  },
+  giftBoints: async (axios, options) => {
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    // let Authorization = await dailyVideoBook.oauthMethod(axios, options)
+    // let { Token, m_jar, st_jar } = await dailyVideoBook.login(axios, {
+    //   ...options,
+    //   Authorization
+    // })
+    // let cardid = '11910'
+    // console.log('取得书籍列表')
+    // let books = await dailyVideoBook.getBookList(axios, {
+    //   ...options,
+    //   jar: st_jar,
+    //   params: {
+    //     cardid
+    //   }
+    // })
+    // let book = books[Math.floor(Math.random() * books.length)]
+    // console.log('随机获取', book.cntname)
+
+    // let chapter = {
+    //   chapterseno: 1
+    // }
+
+    // let chapters = await dailyVideoBook.getBookUpDownChapter(axios, {
+    //   ...options,
+    //   jar: st_jar,
+    //   book,
+    //   chapter
+    // })
+
+    // chapter = chapters[0]
+
+    // let detail = {
+    //   'cntindex': book.cntindex,
+    //   'catid': '118440',
+    //   'pageIndex': '10843',
+    //   'cardid': cardid,
+    //   'desmobile': options.user,
+    //   'version': 'android@8.0100',
+    //   'cntname': book.cntname,
+    //   'channelid': '18000018',
+    //   'chapterallindex': chapter.chapterallindex,
+    //   'volumeallindex': chapter.volumeallindex,
+    //   'chapterseno': chapter.chapterseno,
+    //   'cntid': chapter.cntid,
+    //   'cnttype': book.cnttype
+    // }
+
+    // await dailyVideoBook.updatePersonReadtime(axios, {
+    //   ...options,
+    //   detail,
+    //   st_jar: st_jar,
+    //   m_jar: m_jar
+    // })
 
     let res = await axios.request({
       headers: {
@@ -339,7 +622,7 @@ var dailyVideoBook = {
 
     let taskList = []
 
-    if(result.status !== '0000'){
+    if (result.status !== '0000') {
       console.log('出现错误', result.msg)
       return
     } else {
@@ -347,14 +630,14 @@ var dailyVideoBook = {
     }
 
     let ts = taskList.find(t => t.templateCode === 'mll_dxs')
-    if(ts){
-      if(ts.action === 'API_YILINGQU'){
+    if (ts) {
+      if (ts.action === 'API_YILINGQU') {
         console.log('出现错误', '已经领取过')
         return
       }
-    } else{
-        console.log('出现错误', '不存在的活动')
-        return
+    } else {
+      console.log('出现错误', '不存在的活动')
+      return
     }
 
     let { data, config } = await axios.request({

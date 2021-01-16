@@ -60,11 +60,13 @@ var start = async (params) => {
       popList: result.popList
     })
   })
-
+  
   await scheduler.regTask('dailyBookRead', async () => {
     // 首页-小说-阅读越有礼打卡赢话费
     await require('./dailyBookRead').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+    // 首页-小说-读满10章赢好礼
+    await require('./dailyVideoBook').read10doDraw(request, options)
     // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
     await require('./dailyVideoBook').giftBoints(request, options)
   })
