@@ -418,6 +418,49 @@ var dailyVideoBook = {
     })
     console.log('ajaxchapter innercode', data.innercode)
   },
+  // 看视频领2积分
+  read10doDrawLookVideoDouble: async (axios, options) => {
+    let params = {
+      'arguments1': 'AC20200521222721', // acid
+      'arguments2': 'GGPD', // yhChannel
+      'arguments3': '8e374761c0af4d9d9748ae9be7e5a3f8', // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': '',
+      'netWay': 'Wifi',
+      'version': `android@8.0100`
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    let { num, jar } = await require('./taskcallback').query(axios, {
+      ...options,
+      params
+    })
+    if (!num) {
+      console.log('阅读满章抽奖得积分: 今日已完成')
+      return
+    }
+    params = {
+      'arguments1': 'AC20200521222721', // acid
+      'arguments2': 'GGPD', // yhChannel
+      'arguments3': '8e374761c0af4d9d9748ae9be7e5a3f8', // yhTaskId menuId
+      'arguments4': new Date().getTime(), // time
+      'arguments6': '',
+      'arguments7': '',
+      'arguments8': '',
+      'arguments9': '',
+      'orderId': crypto.createHash('md5').update(new Date().getTime() + '').digest('hex'),
+      'netWay': 'Wifi',
+      'remark': '阅读满章抽奖得积分',
+      'remark1': '阅读满章抽奖得积分',
+      'version': `android@8.0100`,
+      'codeId': 945559732
+    }
+    params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+    await require('./taskcallback').doTask(axios, {
+      ...options,
+      params,
+      jar
+    })
+  },
   read10doDraw: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
 

@@ -67,6 +67,8 @@ var start = async (params) => {
     await require('./dailyVideoBook').doTask(request, options)
     // 首页-小说-读满10章赢好礼
     await require('./dailyVideoBook').read10doDraw(request, options)
+    // 首页-小说-读满10章赢好礼-看视频领2积分
+    await require('./dailyVideoBook').read10doDrawLookVideoDouble(request, options)
     // 首页-签到有礼-免流量得福利-3积分天天拿(阅读打卡)
     await require('./dailyVideoBook').giftBoints(request, options)
   })
