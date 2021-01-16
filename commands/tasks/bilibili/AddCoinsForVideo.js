@@ -94,6 +94,9 @@ var TryGetNotDonatedVideo = async (axios) => {
         break
       }
     }
+    let s = Math.floor(Math.random() * 20)
+    console.log('等待%s秒再继续', s)
+    await new Promise((resolve, reject) => setTimeout(resolve, s * 1000))
   } while (tryCount <= 10)
   return video
 }
@@ -199,6 +202,9 @@ module.exports = async (axios, options) => {
             console.log("尝试投币次数超过10次，投币任务终止");
             break
           }
+          let s = Math.floor(Math.random() * 20)
+          console.log('等待%s秒再继续', s)
+          await new Promise((resolve, reject) => setTimeout(resolve, s * 1000))
         }
         let resultCoinBalance = await todayCoinBalance(axios)
         console.log("投币任务完成，余额为: " + resultCoinBalance.data.money);
