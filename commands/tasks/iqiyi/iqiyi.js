@@ -34,7 +34,7 @@ var start = async (params) => {
     // vip签到任务
     await scheduler.regTask('signVip', async () => {
       let isNotSign = await require('./signVip').querySignInfo(request)
-      if (!isNotSign) {
+      if (isNotSign) {
         await require('./signVip').vipSign(request)
       }
     })
