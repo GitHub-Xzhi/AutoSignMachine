@@ -60,7 +60,7 @@ var start = async (params) => {
       popList: result.popList
     })
   })
-  
+
   await scheduler.regTask('dailyBookRead', async () => {
     // 首页-小说-阅读越有礼打卡赢话费
     await require('./dailyBookRead').doTask(request, options)
@@ -87,7 +87,8 @@ var start = async (params) => {
   await scheduler.regTask('dailyVideoFreeGoods', async () => {
     await require('./dailyVideoFreeGoods').doTask(request, options)
   }, {
-    isCircle: true
+    isCircle: true,
+    startTime: 8 * 3600
   })
 
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖

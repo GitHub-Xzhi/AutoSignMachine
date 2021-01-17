@@ -27,18 +27,20 @@ let scheduler = {
             // 截止时间
             const endDate = moment().endOf('days').toDate();
             for (let taskName of taskNames) {
-                // 随机时间
-                let randomTime = moment(randomDate(startDate, endDate)).format('YYYY-MM-DD HH:mm:ss');
-
+                let willTime = moment(randomDate(startDate, endDate));
                 let options = tasks[taskName].options
-                if (options && options.isCircle) {
-                    // 周期任务，固定检查点为一天的起点
-                    randomTime = moment().startOf('days').format('YYYY-MM-DD HH:mm:ss');
+                if (options) {
+                    if (options.isCircle) {
+                        willTime = moment().startOf('days');
+                    }
+                    if (options.startTime) {
+                        willTime = moment().startOf('days').add(options.startTime, 'seconds');
+                    }
                 }
                 queues.push({
                     taskName: taskName,
                     taskState: 0,
-                    willTime: randomTime,
+                    willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
                     waitTime: Math.floor(Math.random() * 600) + 'seconds'
                 })
             }
@@ -48,7 +50,7 @@ let scheduler = {
             }
         }
     },
-    genFileName (command) {
+    genFileName(command) {
         scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', 'taskFile_' + command + '_' + moment().format('YYYYMMDD') + '.json')
     },
     loadTasksQueue: async () => {

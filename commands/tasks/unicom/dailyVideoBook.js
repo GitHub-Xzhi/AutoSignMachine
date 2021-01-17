@@ -501,7 +501,7 @@ var dailyVideoBook = {
       ++n
       console.log('等待3秒')
       await new Promise((resolve, reject) => setTimeout(resolve, 3000))
-    } while (n <= 6)
+    } while (n <= 5)
   },
   read10: async (axios, options) => {
     const { st_jar, m_jar } = options
