@@ -1,0 +1,207 @@
+{
+  "nested": {
+    "a": {
+      "fields": {
+        "key": {
+          "type": "string",
+          "id": 1
+        },
+        "value": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "b": {
+      "fields": {
+        "method": {
+          "type": "string",
+          "id": 1
+        },
+        "iv": {
+          "type": "int32",
+          "id": 2
+        }
+      }
+    },
+    "c": {
+      "fields": {
+        "Seq": {
+          "type": "int64",
+          "id": 1
+        },
+        "qua": {
+          "type": "string",
+          "id": 2
+        },
+        "deviceInfo": {
+          "type": "string",
+          "id": 3
+        },
+        "busiBuff": {
+          "type": "q2",
+          "id": 4
+        },
+        "traceid": {
+          "type": "string",
+          "id": 5
+        },
+        "Module": {
+          "type": "string",
+          "id": 6
+        },
+        "Cmdname": {
+          "type": "string",
+          "id": 7
+        },
+        "loginSig": {
+          "type": "C0011a",
+          "id": 8
+        },
+        "Crypto": {
+          "type": "b",
+          "id": 9
+        },
+        "Extinfo": {
+          "type": "int32",
+          "id": 10
+        },
+        "contentType": {
+          "type": "int32",
+          "id": 11
+        }
+      }
+    },
+    "d": {
+      "fields": {
+        "Seq": {
+          "type": "int32",
+          "id": 1
+        },
+        "retCode": {
+          "type": "int64",
+          "id": 2
+        },
+        "errMsg": {
+          "type": "bytes",
+          "id": 3
+        },
+        "busiBuff": {
+          "type": "bytes",
+          "id": 4
+        },
+        "Extinfo": {
+          "rule": "repeated",
+          "type": "a",
+          "id": 5
+        }
+      }
+    },
+    "C0011a": {
+      "fields": {
+        "uin": {
+          "type": "string",
+          "id": 1
+        },
+        "sig": {
+          "type": "string",
+          "id": 2
+        },
+        "platform": {
+          "type": "string",
+          "id": 3
+        },
+        "type": {
+          "type": "int32",
+          "id": 4
+        },
+        "appid": {
+          "type": "string",
+          "id": 5
+        },
+        "openid": {
+          "type": "string",
+          "id": 6
+        },
+        "sessionkey": {
+          "type": "bytes",
+          "id": 7
+        },
+        "Extinfo": {
+          "rule": "repeated",
+          "type": "a",
+          "id": 8
+        }
+      }
+    },
+    "q2b": {
+      "fields": {
+        "mapInfo": {
+          "rule": "repeated",
+          "type": "a",
+          "id": 1
+        },
+        "attachInfo": {
+          "type": "string",
+          "id": 2
+        }
+      }
+    },
+    "q2": {
+      "fields": {
+        "extInfo": {
+          "type": "q2b",
+          "id": 1
+        },
+        "appid": {
+          "type": "string",
+          "id": 2
+        },
+        "factType": {
+          "type": "int32",
+          "id": 3
+        },
+        "duration": {
+          "type": "int32",
+          "id": 4
+        },
+        "reportTime": {
+          "type": "int64",
+          "id": 5
+        },
+        "afterCertify": {
+          "type": "int32",
+          "id": 6
+        },
+        "appType": {
+          "type": "int32",
+          "id": 7
+        },
+        "scene": {
+          "type": "int32",
+          "id": 8
+        },
+        "totalTime": {
+          "type": "int32",
+          "id": 9
+        },
+        "launchId": {
+          "type": "string",
+          "id": 10
+        },
+        "via": {
+          "type": "string",
+          "id": 11
+        },
+        "AdsTotalTime": {
+          "type": "int32",
+          "id": 12
+        },
+        "hostExtInfo": {
+          "type": "string",
+          "id": 13
+        }
+      }
+    }
+  }
+}
