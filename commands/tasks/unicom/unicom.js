@@ -89,7 +89,7 @@ var start = async (params) => {
   }, {
     isCircle: true,
     startTime: 10 * 3600,
-    intervalTime: 1 * 3600
+    intervalTime: 4 * 3600
   })
 
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
