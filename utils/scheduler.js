@@ -97,16 +97,17 @@ let scheduler = {
                             var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
-                        await task['callback']()
+                        let ttt = tasks[task.taskName]
+                        await ttt['callback']()
 
-                        if (task.options) {
+                        if (ttt.options) {
                             let isupdate = false
-                            if (!task.options.isCircle) {
+                            if (!ttt.options.isCircle) {
                                 task.taskState = 1
                                 isupdate = true
                             }
-                            if (task.options.isCircle && task.options.intervalTime) {
-                                task.willTime = moment().add(task.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+                            if (ttt.options.isCircle && ttt.options.intervalTime) {
+                                task.willTime = moment().add(ttt.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
                                 isupdate = true
                             }
                             if (isupdate) {
