@@ -100,8 +100,8 @@ let scheduler = {
                         let ttt = tasks[task.taskName]
                         await ttt['callback']()
 
+                        let isupdate = false
                         if (ttt.options) {
-                            let isupdate = false
                             if (!ttt.options.isCircle) {
                                 task.taskState = 1
                                 isupdate = true
@@ -110,10 +110,14 @@ let scheduler = {
                                 task.willTime = moment().add(ttt.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
                                 isupdate = true
                             }
-                            if (isupdate) {
-                                queues[queues.findIndex(q => q.taskName === task.taskName)] = task
-                                fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
-                            }
+                        } else {
+                            task.taskState = 1
+                            isupdate = true
+                        }
+
+                        if (isupdate) {
+                            queues[queues.findIndex(q => q.taskName === task.taskName)] = task
+                            fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
                         }
                     } catch (err) {
                         console.log('任务错误：', err)
