@@ -16,49 +16,70 @@ const randomDate = (startDate, endDate) => {
 };
 let tasks = {}
 let scheduler = {
-    taskFile: path.join(os.homedir(), '.AutoSignMachine', 'taskFile_' + moment().format('YYYYMMDD') + '.json'),
+    taskFile: path.join(os.homedir(), '.AutoSignMachine', 'taskFile.json'),
+    today: '',
+    buildQueues: async () => {
+        let queues = []
+        let taskNames = Object.keys(tasks)
+        const startDate = new Date();
+        const endDate = moment().endOf('days').toDate();
+        for (let taskName of taskNames) {
+            let willTime = moment(randomDate(startDate, endDate));
+            let options = tasks[taskName].options
+            if (options) {
+                if (options.isCircle) {
+                    willTime = moment().startOf('days');
+                }
+                if (options.startTime) {
+                    willTime = moment().startOf('days').add(options.startTime, 'seconds');
+                }
+            }
+            queues.push({
+                taskName: taskName,
+                taskState: 0,
+                willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
+                waitTime: Math.floor(Math.random() * 600) + 'seconds'
+            })
+        }
+        return queues
+    },
     // 初始化待执行的任务队列
     initTasksQueue: async () => {
-        let taskNames = Object.keys(tasks)
-        let queues = []
+        const today = moment().format('YYYYMMDD')
         if (!fs.existsSync(scheduler.taskFile)) {
-            // 开始时间
-            const startDate = new Date();
-            // 截止时间
-            const endDate = moment().endOf('days').toDate();
-            for (let taskName of taskNames) {
-                let willTime = moment(randomDate(startDate, endDate));
-                let options = tasks[taskName].options
-                if (options) {
-                    if (options.isCircle) {
-                        willTime = moment().startOf('days');
-                    }
-                    if (options.startTime) {
-                        willTime = moment().startOf('days').add(options.startTime, 'seconds');
-                    }
-                }
-                queues.push({
-                    taskName: taskName,
-                    taskState: 0,
-                    willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
-                    waitTime: Math.floor(Math.random() * 600) + 'seconds'
-                })
-            }
-            if (queues.length) {
-                fs.ensureFileSync(scheduler.taskFile)
-                fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
+            let queues = await scheduler.buildQueues()
+            fs.ensureFileSync(scheduler.taskFile)
+            fs.writeFileSync(scheduler.taskFile, JSON.stringify({
+                today,
+                queues
+            }))
+        } else {
+            let taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
+            taskJson = JSON.parse(taskJson)
+            if (taskJson.today !== today) {
+                let queues = await scheduler.buildQueues()
+                fs.writeFileSync(scheduler.taskFile, JSON.stringify({
+                    today,
+                    queues
+                }))
             }
         }
+        scheduler.today = today
     },
-    genFileName (command) {
-        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', 'taskFile_' + command + '_' + moment().format('YYYYMMDD') + '.json')
+    genFileName(command) {
+        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}.json`)
+        scheduler.today = moment().format('YYYYMMDD')
     },
     loadTasksQueue: async () => {
         let queues = []
         let will_queues = []
+        let taskJson = {}
         if (fs.existsSync(scheduler.taskFile)) {
-            let taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
-            queues = JSON.parse(taskJson)
+            taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
+            taskJson = JSON.parse(taskJson)
+            if (taskJson.today === scheduler.today) {
+                queues = taskJson.queues
+            }
         }
         for (let task of queues) {
             if (task.taskState === 0 && moment(task.willTime).isBefore(moment(), 'minutes')) {
@@ -66,6 +87,7 @@ let scheduler = {
             }
         }
         return {
+            taskJson,
             queues,
             will_queues
         }
@@ -85,7 +107,7 @@ let scheduler = {
     execTask: async (command) => {
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
-        let { queues, will_queues } = await scheduler.loadTasksQueue()
+        let { taskJson, queues, will_queues } = await scheduler.loadTasksQueue()
         if (will_queues.length) {
             for (let task of will_queues) {
                 if (task.taskName in tasks) {
@@ -117,7 +139,8 @@ let scheduler = {
 
                         if (isupdate) {
                             queues[queues.findIndex(q => q.taskName === task.taskName)] = task
-                            fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
+                            taskJson.queues = queues
+                            fs.writeFileSync(scheduler.taskFile, JSON.stringify(taskJson))
                         }
                     } catch (err) {
                         console.log('任务错误：', err)
