@@ -111,7 +111,8 @@ var start = async (params) => {
   await scheduler.regTask('dailyCheapStorePage', async () => {
     await require('./dailyCheapStorePage').doTask(request, options)
   }, {
-    isCircle: true
+    isCircle: true,
+    intervalTime: 4 * 3600
   })
 
   // 首页-签到有礼-免费抽-拆华为Pad(去抽奖)
