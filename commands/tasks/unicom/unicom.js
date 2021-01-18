@@ -88,7 +88,8 @@ var start = async (params) => {
     await require('./dailyVideoFreeGoods').doTask(request, options)
   }, {
     isCircle: true,
-    startTime: 8 * 3600
+    startTime: 10 * 3600,
+    intervalTime: 1 * 3600
   })
 
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖

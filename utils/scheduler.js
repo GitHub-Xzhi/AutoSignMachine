@@ -50,7 +50,7 @@ let scheduler = {
             }
         }
     },
-    genFileName(command) {
+    genFileName (command) {
         scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', 'taskFile_' + command + '_' + moment().format('YYYYMMDD') + '.json')
     },
     loadTasksQueue: async () => {
@@ -97,13 +97,22 @@ let scheduler = {
                             var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
-                        await tasks[task.taskName]['callback']()
-                        if (!(tasks[task.taskName].options && tasks[task.taskName].options.isCircle)) {
-                            queues[queues.findIndex(q => q.taskName === task.taskName)] = {
-                                ...task,
-                                taskState: 1
+                        await task['callback']()
+
+                        if (task.options) {
+                            let isupdate = false
+                            if (!task.options.isCircle) {
+                                task.taskState = 1
+                                isupdate = true
                             }
-                            fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
+                            if (task.options.isCircle && task.options.intervalTime) {
+                                task.willTime = moment().add(task.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+                                isupdate = true
+                            }
+                            if (isupdate) {
+                                queues[queues.findIndex(q => q.taskName === task.taskName)] = task
+                                fs.writeFileSync(scheduler.taskFile, JSON.stringify(queues))
+                            }
                         }
                     } catch (err) {
                         console.log('任务错误：', err)
