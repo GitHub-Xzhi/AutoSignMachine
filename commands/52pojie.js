@@ -1,5 +1,6 @@
 
 const path = require('path')
+const { scheduler } = require('../utils/scheduler')
 
 exports.command = '52pojie'
 
@@ -20,13 +21,21 @@ exports.builder = function (yargs) {
     .epilog('copyright 2020 LunnLew');
 }
 
-exports.handler = function (argv) {
+exports.handler = async function (argv) {
   var command = argv._[0]
-  require(path.join(__dirname, 'tasks', command, command)).start({
+  await require(path.join(__dirname, 'tasks', command, command)).start({
     cookies: {
       htVD_2132_auth: argv.htVD_2132_auth,
       htVD_2132_saltkey: argv.htVD_2132_saltkey
     },
     options: {}
   }).catch(err => console.log("52pojie签到任务:", err.message))
+  let hasTasks = await scheduler.hasWillTask(command)
+  if (hasTasks) {
+    scheduler.execTask(command).catch(err => console.log("52pojie签到任务:", err.message)).finally(() => {
+      console.log('全部任务执行完毕！')
+    })
+  } else {
+    console.log('暂无可执行任务！')
+  }
 }  
