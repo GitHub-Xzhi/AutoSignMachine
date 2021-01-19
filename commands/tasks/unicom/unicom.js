@@ -172,7 +172,7 @@ var start = async (params) => {
       await require('./producGame').timeTaskQuery(request, options)
       await require('./producGame').gameFlowGet(request, {
         ...options,
-        gameId: game.gameId
+        gameId: game.id
       })
     }
   })

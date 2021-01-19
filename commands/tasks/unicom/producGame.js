@@ -76,12 +76,10 @@ module.exports = {
             return
         }
 
-        let person = require(path.resolve(path.join(__dirname, './playGame.json')));
+        let playGame = require(path.resolve(path.join(__dirname, './playGame.json')));
         let protobufRoot = require('protobufjs').Root;
-        let root = protobufRoot.fromJSON(person);
-        let mc = root.lookupType('c');
-        var moment = require('moment');
-        var fs = require('fs');
+        let root = protobufRoot.fromJSON(playGame);
+        let mc = root.lookupType('JudgeTimingBusiBuff');
         let launchId1 = launchid || new Date().getTime() + ''
 
         let n = 1;
@@ -166,76 +164,61 @@ module.exports = {
             }
         })
 
-        var buf = new Buffer(0x0);
-        buf = Buffer.concat([buf, Buffer.from([0x08, 0x20])])
+        let playGame = require(path.resolve(path.join(__dirname, './playGame.json')));
+        let protobufRoot = require('protobufjs').Root;
+        let root = protobufRoot.fromJSON(playGame);
+        let mc = root.lookupType('GetAppInfoByLinkBusiBuff');
 
-        let buf_tmp = Buffer.from('V1_AND_MINISDK_1.5.3_0_RELEASE_B')
-        buf = Buffer.concat([buf, Buffer.from([0x12, buf_tmp.length]), buf_tmp])
+        let n = 1;
 
-        buf = Buffer.concat([buf, Buffer.from([0x1A])])
+        let dd = moment().format('MMDDHHmmss')
+        let time = new Date().getTime() % 1000
+        let s = Math.floor(Math.random() * 90000) + 10000
+        let traceid = `${options.user}_${dd}${time}_${s}`
+        let Seq = n * 3
 
-        buf_tmp = Buffer.from('m=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=8.1')
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+        let a = {
+            'uin': `${options.user}`,
+            'sig': jwt,
+            'platform': '2001',
+            'type': 0,
+            'appid': '101794394'
+        }
+        let busiBuff = {
+            link: game.url,
+            linkType: 0
+        }
+        let c = {
+            'Seq': Seq,
+            'qua': 'V1_AND_MINISDK_1.5.3_0_RELEASE_B',
+            'deviceInfo': 'm=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=null',
+            'busiBuff': Buffer.from(JSON.stringify(busiBuff)),
+            'traceid': traceid,
+            'Module': `mini_app_info`,
+            'Cmdname': 'GetAppInfoByLink',
+            'loginSig': a,
+            'Crypto': null,
+            'Extinfo': null,
+            'contentType': 1
+        }
 
-        buf = Buffer.concat([buf, Buffer.from([0x22])])
+        let infoEncodeMessage = mc.encode(mc.create(c)).finish();
 
-        buf_tmp = Buffer.from(JSON.stringify({ "link": game.url, "linkType": 0 }).replace(/\//g, '\\/'))
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+        let Nonce = Math.floor(Math.random() * 90000) + 10000
+        let Timestamp = Math.floor(new Date().getTime() / 1000)
 
-
-        buf = Buffer.concat([buf, Buffer.from([0x2A, 0x1F])])
-
-        // user
-        buf_tmp = Buffer.from(`${options.user}_0101180709792_111872`)
-        buf = Buffer.concat([buf, buf_tmp])
-
-        buf_tmp = Buffer.from('mini_app_info')
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
-
-        buf_tmp = Buffer.from(':')
-        buf = Buffer.concat([buf, buf_tmp])
-
-        buf_tmp = Buffer.from('GetAppInfoByLink')
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
-
-        buf = Buffer.concat([buf, Buffer.from([0x42, 0xEB, 0x01, 0x0A])])
-
-        // user
-        buf_tmp = Buffer.from(options.user)
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
-
-        // jwt
-        buf_tmp = Buffer.from(jwt)
-        buf = Buffer.concat([buf, Buffer.from([0x12, buf_tmp.length, 0x01]), buf_tmp])
-
-        buf_tmp = Buffer.from('2001')
-        buf = Buffer.concat([buf, Buffer.from([0x1A, buf_tmp.length]), buf_tmp])
-        buf = Buffer.concat([buf, Buffer.from([0x20, 0x00, 0x2A])])
-
-        buf_tmp = Buffer.from('101794394')
-        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
-
-        buf = Buffer.concat([buf, Buffer.from([0x58, 0x01])])
-
-        // console.log(buf_tmp.length)
-        // console.log(buf)
-        // await new Promise((resolve, reject) => {
-        //     fs.writeFile('./reportTime_bin', buf, function (err) {
-        //         if (err) throw err;
-        //         resolve();
-        //     })
-        // })
+        let str = `POST /mini/OpenChannel?Action=input&Nonce=${Nonce}&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=${Timestamp}`
+        let Signature = CryptoJS.HmacSHA256(str, 'test')
+        let hashInBase64 = CryptoJS.enc.Base64.stringify(Signature);
 
         let res = await axios.request({
             headers: {
                 "user-agent": "okhttp/4.4.0"
             },
-            url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=844446177&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=1609498732&Signature=CarOLq%2FDutf2ftVlQpAK4m57xMALgWEBzPxVlaqBUHE%3D`,
+            url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=${Nonce}&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=${Timestamp}&Signature=${hashInBase64}`,
             method: 'post',
             responseType: 'arrayBuffer',
-            data: buf
-        }, {
-            jar: null
+            data: infoEncodeMessage
         }).catch(err => console.log(err))
         let result = JSON.parse(Buffer.from(res.data).slice(0x7).toString('utf-8'))
         return result
