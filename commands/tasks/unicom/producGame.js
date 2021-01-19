@@ -1,5 +1,6 @@
 // 娱乐中心
 const CryptoJS = require("crypto-js");
+const moment = require('moment');
 const path = require('path')
 
 var transParams = (data) => {
@@ -154,6 +155,90 @@ module.exports = {
 
             ++n
         } while (n <= 6)
+    },
+    gameInfo: async (axios, options) => {
+        const { game } = options
+
+        let jwt = undefined
+        axios.defaults.headers.cookie.split('; ').forEach(item => {
+            if (item.indexOf('jwt') === 0) {
+                jwt = item.split("=").pop()
+            }
+        })
+
+        var buf = new Buffer(0x0);
+        buf = Buffer.concat([buf, Buffer.from([0x08, 0x20])])
+
+        let buf_tmp = Buffer.from('V1_AND_MINISDK_1.5.3_0_RELEASE_B')
+        buf = Buffer.concat([buf, Buffer.from([0x12, buf_tmp.length]), buf_tmp])
+
+        buf = Buffer.concat([buf, Buffer.from([0x1A])])
+
+        buf_tmp = Buffer.from('m=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=8.1')
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+        buf = Buffer.concat([buf, Buffer.from([0x22])])
+
+        buf_tmp = Buffer.from(JSON.stringify({ "link": game.url, "linkType": 0 }).replace(/\//g, '\\/'))
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+
+        buf = Buffer.concat([buf, Buffer.from([0x2A, 0x1F])])
+
+        // user
+        buf_tmp = Buffer.from(`${options.user}_0101180709792_111872`)
+        buf = Buffer.concat([buf, buf_tmp])
+
+        buf_tmp = Buffer.from('mini_app_info')
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+        buf_tmp = Buffer.from(':')
+        buf = Buffer.concat([buf, buf_tmp])
+
+        buf_tmp = Buffer.from('GetAppInfoByLink')
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+        buf = Buffer.concat([buf, Buffer.from([0x42, 0xEB, 0x01, 0x0A])])
+
+        // user
+        buf_tmp = Buffer.from(options.user)
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+        // jwt
+        buf_tmp = Buffer.from(jwt)
+        buf = Buffer.concat([buf, Buffer.from([0x12, buf_tmp.length, 0x01]), buf_tmp])
+
+        buf_tmp = Buffer.from('2001')
+        buf = Buffer.concat([buf, Buffer.from([0x1A, buf_tmp.length]), buf_tmp])
+        buf = Buffer.concat([buf, Buffer.from([0x20, 0x00, 0x2A])])
+
+        buf_tmp = Buffer.from('101794394')
+        buf = Buffer.concat([buf, Buffer.from([buf_tmp.length]), buf_tmp])
+
+        buf = Buffer.concat([buf, Buffer.from([0x58, 0x01])])
+
+        // console.log(buf_tmp.length)
+        // console.log(buf)
+        // await new Promise((resolve, reject) => {
+        //     fs.writeFile('./reportTime_bin', buf, function (err) {
+        //         if (err) throw err;
+        //         resolve();
+        //     })
+        // })
+
+        let res = await axios.request({
+            headers: {
+                "user-agent": "okhttp/4.4.0"
+            },
+            url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=844446177&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=1609498732&Signature=CarOLq%2FDutf2ftVlQpAK4m57xMALgWEBzPxVlaqBUHE%3D`,
+            method: 'post',
+            responseType: 'arrayBuffer',
+            data: buf
+        }, {
+            jar: null
+        }).catch(err => console.log(err))
+        let result = JSON.parse(Buffer.from(res.data).slice(0x7).toString('utf-8'))
+        return result
     },
     popularGames: async (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
