@@ -23,7 +23,7 @@ var start = async (params) => {
         await require('./clock_in').doTask(request, options)
     }, {
         startHours: 8,
-        endHours: 13
+        endHours: 9
     })
 
 }

@@ -4,7 +4,7 @@ var isInTime = function (e, t) {
     var n = (new Date).getHours();
     return n >= e && n < t
 }
-// 打卡领会员
+// 打卡领会员-仅自动邀请
 var clockIn = {
     doTask: async (axios, options) => {
         let { data } = await axios.request({
