@@ -21,11 +21,15 @@ let scheduler = {
     buildQueues: async () => {
         let queues = []
         let taskNames = Object.keys(tasks)
-        const startDate = new Date();
-        const endDate = moment().endOf('days').toDate();
+        let startDate = new Date();
+        let endDate = moment().endOf('days').toDate();
         for (let taskName of taskNames) {
-            let willTime = moment(randomDate(startDate, endDate));
             let options = tasks[taskName].options
+            if (options) {
+                startDate = options.startHours ? moment().startOf('days').add(options.startHours, 'hours') : startDate
+                endDate = options.endHours ? moment().startOf('days').add(options.endHours, 'hours') : endDate
+            }
+            let willTime = moment(randomDate(startDate, endDate));
             if (options) {
                 if (options.isCircle) {
                     willTime = moment().startOf('days');
