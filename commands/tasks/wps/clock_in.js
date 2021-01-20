@@ -7,6 +7,7 @@ var isInTime = function (e, t) {
 // 打卡领会员-仅自动邀请
 var clockIn = {
     doTask: async (axios, options) => {
+        // https://zt.wps.cn/2018/clock_in/api/get_data?member=wps
         let { data } = await axios.request({
             url: `https://zt.wps.cn/2018/clock_in`,
             method: 'get'
@@ -77,6 +78,12 @@ var clockIn = {
                 console.log(err)
             }
         }
+
+        // let { data: clock_in } = await axios.request({
+        //     headers: { "sid": sid },
+        //     url: `http://zt.wps.cn/2018/clock_in/api/clock_in?member=wps`,
+        //     method: 'get'
+        // }).catch(err => console.log(err))
     }
 }
 module.exports = clockIn
