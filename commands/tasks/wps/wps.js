@@ -22,8 +22,8 @@ var start = async (params) => {
     await scheduler.regTask('wps_clock_in', async () => {
         await require('./clock_in').doTask(request, options)
     }, {
-        startHours: 8,
-        endHours: 9
+        startHours: 6,
+        endHours: 8
     })
 
 }

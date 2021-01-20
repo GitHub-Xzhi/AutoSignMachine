@@ -19,8 +19,8 @@ var clockIn = {
             if (datamodel.is_clock_in) {
                 console.log('今日已打卡，跳过')
                 return
-            } else if (!isInTime(8, 13)) {
-                console.log('不在8-13时间段内，跳过')
+            } else if (!isInTime(6, 13)) {
+                console.log('不在6-13时间段内，跳过')
                 return
             }
         } else {
