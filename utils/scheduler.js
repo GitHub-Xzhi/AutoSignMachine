@@ -114,6 +114,7 @@ let scheduler = {
         let { taskJson, queues, will_queues } = await scheduler.loadTasksQueue()
         if (will_queues.length) {
             for (let task of will_queues) {
+                let newTask = {}
                 if (task.taskName in tasks) {
                     try {
                         if (task.waitTime) {
@@ -129,20 +130,23 @@ let scheduler = {
                         let isupdate = false
                         if (ttt.options) {
                             if (!ttt.options.isCircle) {
-                                task.taskState = 1
+                                newTask.taskState = 1
                                 isupdate = true
                             }
                             if (ttt.options.isCircle && ttt.options.intervalTime) {
-                                task.willTime = moment().add(ttt.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+                                newTask.willTime = moment().add(ttt.options.intervalTime, 'seconds').format('YYYY-MM-DD HH:mm:ss')
                                 isupdate = true
                             }
                         } else {
-                            task.taskState = 1
+                            newTask.taskState = 1
                             isupdate = true
                         }
 
                         if (isupdate) {
-                            queues[queues.findIndex(q => q.taskName === task.taskName)] = task
+                            queues[queues.findIndex(q => q.taskName === task.taskName)] = {
+                                ...task,
+                                ...newTask
+                            }
                             taskJson.queues = queues
                             fs.writeFileSync(scheduler.taskFile, JSON.stringify(taskJson))
                         }

@@ -232,27 +232,27 @@ var dailyVideoBook = {
       detail,
       jar: st_jar
     })
-    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    await new Promise((resolve, reject) => setTimeout(resolve, 500))
     await dailyVideoBook.updateReadTimes(axios, {
       ...options,
       detail,
       jar: m_jar
     })
-    await new Promise((resolve, reject) => setTimeout(resolve, 1 * 30 * 1000))
+    await new Promise((resolve, reject) => setTimeout(resolve, 10 * 1000))
     await dailyVideoBook.ajaxUpdatePersonReadtime(axios, {
       ...options,
       detail,
       jar: m_jar,
       time: 2
     })
-    await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+    await new Promise((resolve, reject) => setTimeout(resolve, 500))
     await dailyVideoBook.addReadRatioToRedis(axios, {
       ...options,
       detail,
       jar: m_jar
     })
 
-    await new Promise((resolve, reject) => setTimeout(resolve, 1 * 1000))
+    await new Promise((resolve, reject) => setTimeout(resolve, 500))
     console.log('完成阅读时间上报')
   },
   ajaxUpdatePersonReadtime: async (axios, options) => {

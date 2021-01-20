@@ -65,6 +65,10 @@ var start = async (params) => {
     // 首页-小说-阅读越有礼打卡赢话费
     await require('./dailyBookRead').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
+  })
+  
+  // 首页-小说-读满10章赢好礼
+  await scheduler.regTask('dailyBookRead10doDraw', async () => {
     // 首页-小说-读满10章赢好礼
     await require('./dailyVideoBook').read10doDraw(request, options)
     // 首页-小说-读满10章赢好礼-看视频领2积分
