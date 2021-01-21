@@ -104,7 +104,7 @@ module.exports = {
                 appid: game.gameCode,
                 factType: n == 6 ? 13 : 12,
                 duration: null,
-                reportTime: Math.floor(new Date().getTime() / 1000),
+                reportTime: Math.floor(new Date().getTime() / 1000) + n * 62,
                 afterCertify: 0,
                 appType: 1,
                 scene: 1001,
@@ -149,7 +149,8 @@ module.exports = {
 
             console.log(Buffer.from(res.data).toString('hex'))
 
-            await new Promise((resolve, reject) => setTimeout(resolve, 65 * 1000))
+            // 这里不等待1分钟，上面使用 n*62 时长累计来替代，也可正常领取
+            await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
 
             ++n
         } while (n <= 6)

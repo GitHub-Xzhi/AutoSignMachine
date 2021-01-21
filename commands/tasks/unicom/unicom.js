@@ -66,7 +66,7 @@ var start = async (params) => {
     await require('./dailyBookRead').doTask(request, options)
     await require('./dailyVideoBook').doTask(request, options)
   })
-  
+
   // 首页-小说-读满10章赢好礼
   await scheduler.regTask('dailyBookRead10doDraw', async () => {
     // 首页-小说-读满10章赢好礼
@@ -88,13 +88,14 @@ var start = async (params) => {
   })
 
   // 首页-签到有礼-免费拿-看视频夺宝
-  await scheduler.regTask('dailyVideoFreeGoods', async () => {
-    await require('./dailyVideoFreeGoods').doTask(request, options)
-  }, {
-    isCircle: true,
-    startTime: 10 * 3600,
-    intervalTime: 4 * 3600
-  })
+  // 易出现本次操作需要进行验证，暂时注释
+  // await scheduler.regTask('dailyVideoFreeGoods', async () => {
+  //   await require('./dailyVideoFreeGoods').doTask(request, options)
+  // }, {
+  //   isCircle: true,
+  //   startTime: 10 * 3600,
+  //   intervalTime: 4 * 3600
+  // })
 
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
   await scheduler.regTask('jflottery', async () => {
@@ -149,7 +150,7 @@ var start = async (params) => {
     await require('./producGame').gameSignin(request, options)
   })
 
-  // 每日游戏时长-天天领取1G流量包
+  // 每日游戏时长-天天领取3G流量包
   await scheduler.regTask('dailygameflow', async () => {
     let allgames = await require('./producGame').popularGames(request, options)
     let games = await require('./producGame').timeTaskQuery(request, options)
@@ -170,10 +171,8 @@ var start = async (params) => {
         game,
         app: appInfo
       })
-      await new Promise((resolve, reject) => {
-        setTimeout(resolve, 10 * 1000)
-      })
       await require('./producGame').timeTaskQuery(request, options)
+      await new Promise((resolve, reject) => setTimeout(resolve, 20 * 1000))
       await require('./producGame').gameFlowGet(request, {
         ...options,
         gameId: game.id
