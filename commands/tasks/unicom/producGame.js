@@ -27,7 +27,7 @@ let account = {
 }
 
 
-module.exports = {
+var producGame = {
     // 娱乐中心每日签到-打卡
     gameSignin: (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
@@ -281,6 +281,127 @@ module.exports = {
             console.log('记录失败')
         }
     },
+    gamerecord: async (axios, options) => {
+        const { gameId } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'record',
+            'deviceType': 'Android',
+            'clientVersion': '8.0100',
+            'gameId': gameId,
+            'taskId': ''
+        }
+        let { data } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/producGameApp`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+        } else {
+            console.log('记录失败')
+        }
+    },
+    getTaskList: async (axios, options) => {
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'queryTaskCenter',
+            'deviceType': 'Android',
+            'clientVersion': '8.0100',
+        }
+        let { data } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/producGameTaskCenter`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data.code === '0000') {
+            return {
+                // reachState 0未完成, 1未领取, 2已完成
+                games: data.data.filter(d => d.task === '5' && d.reachState === '0' && d.task_type === 'duration')
+            }
+        } else {
+            console.log('获取游戏任务失败')
+            return {
+                games: []
+            }
+        }
+    },
+    doGameFlowTask: async (axios, options) => {
+        let allgames = await producGame.popularGames(request, options)
+        let games = await producGame.timeTaskQuery(request, options)
+        games = allgames.filter(g => games.map(i => i.gameId).indexOf(g.id) !== -1)
+        console.log('剩余game', games.length)
+        for (let game of games) {
+            console.log(game.name)
+            let { appInfo } = await producGame.gameInfo(request, {
+                ...options,
+                game
+            })
+            await producGame.gameverify(request, {
+                ...options,
+                game
+            })
+            await producGame.playGame(request, {
+                ...options,
+                game,
+                app: appInfo
+            })
+            await producGame.timeTaskQuery(request, options)
+            await new Promise((resolve, reject) => setTimeout(resolve, 20 * 1000))
+            await producGame.gameFlowGet(request, {
+                ...options,
+                gameId: game.id
+            })
+        }
+    },
+    doGameIntegralTask: async (axios, options) => {
+        let { games } = await producGame.getTaskList(axios, options)
+        console.log('剩余game', games.length)
+        for (let game of games) {
+            console.log(game.name)
+            let { appInfo } = await producGame.gameInfo(axios, {
+                ...options,
+                game
+            })
+            await producGame.gameverify(axios, {
+                ...options,
+                game
+            })
+            await producGame.gamerecord(axios, {
+                ...options,
+                gameId: game.game_id
+            })
+            await producGame.playGame(axios, {
+                ...options,
+                game: {
+                    ...game,
+                    gameCode: game.resource_id
+                },
+                app: appInfo
+            })
+            await producGame.getTaskList(axios, options)
+            await new Promise((resolve, reject) => setTimeout(resolve, 10 * 1000))
+            await producGame.gameIntegralGet(axios, {
+                ...options,
+                gameId: game.id
+            })
+        }
+
+        await producGame.gameIntegralGet(axios, {
+            ...options,
+            gameId: 148
+        })
+    },
     timeTaskQuery: async (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
         let params = {
@@ -332,5 +453,33 @@ module.exports = {
         } else {
             console.log('记录失败')
         }
+    },
+    gameIntegralGet: async (axios, options) => {
+        const { gameId: taskCenterId } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        let params = {
+            'methodType': 'taskGetReward',
+            'taskCenterId': taskCenterId,
+            'deviceType': 'Android',
+            'clientVersion': '8.0100',
+        }
+        let { data } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/producGameTaskCenter`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data) {
+            console.log(data.msg)
+        } else {
+            console.log('记录失败')
+        }
     }
 }
+
+
+module.exports = producGame

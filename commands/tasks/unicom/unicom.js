@@ -150,34 +150,14 @@ var start = async (params) => {
     await require('./producGame').gameSignin(request, options)
   })
 
-  // 每日游戏时长-天天领取3G流量包
+  // 首页-游戏-娱乐中心-天天领取3G流量包
   await scheduler.regTask('dailygameflow', async () => {
-    let allgames = await require('./producGame').popularGames(request, options)
-    let games = await require('./producGame').timeTaskQuery(request, options)
-    games = allgames.filter(g => games.map(i => i.gameId).indexOf(g.id) !== -1)
-    console.log('剩余game', games.length)
-    for (let game of games) {
-      console.log(game.name)
-      let { appInfo } = await require('./producGame').gameInfo(request, {
-        ...options,
-        game
-      })
-      await require('./producGame').gameverify(request, {
-        ...options,
-        game
-      })
-      await require('./producGame').playGame(request, {
-        ...options,
-        game,
-        app: appInfo
-      })
-      await require('./producGame').timeTaskQuery(request, options)
-      await new Promise((resolve, reject) => setTimeout(resolve, 20 * 1000))
-      await require('./producGame').gameFlowGet(request, {
-        ...options,
-        gameId: game.id
-      })
-    }
+    await require('./producGame').doGameFlowTask(request, options)
+  })
+
+  // 首页-积分查询-游戏任务
+  await scheduler.regTask('dailygameIntegral', async () => {
+    await require('./producGame').doGameIntegralTask(request, options)
   })
 
   // await require('./integral').getflDetail(request, options)
