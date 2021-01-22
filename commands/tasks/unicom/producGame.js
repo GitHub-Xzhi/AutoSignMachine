@@ -356,8 +356,9 @@ var producGame = {
                 game,
                 app: appInfo
             })
+            await new Promise((resolve, reject) => setTimeout(resolve, 200))
             await producGame.timeTaskQuery(request, options)
-            await new Promise((resolve, reject) => setTimeout(resolve, 20 * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
             await producGame.gameFlowGet(request, {
                 ...options,
                 gameId: game.id
@@ -389,14 +390,16 @@ var producGame = {
                 },
                 app: appInfo
             })
+            await new Promise((resolve, reject) => setTimeout(resolve, 200))
             await producGame.getTaskList(axios, options)
-            await new Promise((resolve, reject) => setTimeout(resolve, 10 * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
             await producGame.gameIntegralGet(axios, {
                 ...options,
                 taskCenterId: game.id
             })
         }
 
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
         await producGame.gameIntegralGet(axios, {
             ...options,
             taskCenterId: 148
