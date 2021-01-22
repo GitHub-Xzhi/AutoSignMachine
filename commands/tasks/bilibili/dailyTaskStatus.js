@@ -2,10 +2,11 @@ module.exports = (axios) => {
   return new Promise((resolve, reject) => {
     axios.request({
       headers: {
-        "referer": "https://www.bilibili.com",
+        "referer": "https://account.bilibili.com/account/home",
         "origin": "https://www.bilibili.com",
       },
-      url: 'https://api.bilibili.com/x/member/web/exp/reward'
+      url: 'https://api.bilibili.com/x/member/web/exp/reward',
+      method:'get'
     }).then(res => {
       let result = res.data
       if (result.code !== 0) {

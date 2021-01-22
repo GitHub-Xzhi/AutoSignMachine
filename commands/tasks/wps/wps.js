@@ -17,7 +17,7 @@ var start = async (params) => {
     if (!savedCookies) {
         savedCookies = cookies
     }
-    const request = _request(savedCookies, true)
+    const request = _request(savedCookies)
 
     await scheduler.regTask('wps_clock_in', async () => {
         await require('./clock_in').doTask(request, options)

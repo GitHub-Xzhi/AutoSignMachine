@@ -9,7 +9,7 @@ var start = async (params) => {
     if (!savedCookies) {
         savedCookies = cookies
     }
-    const request = _request(savedCookies, true)
+    const request = _request(savedCookies)
 
     // 每日签到领取和微币
     await scheduler.regTask('taskCenterWxSign', async () => {
