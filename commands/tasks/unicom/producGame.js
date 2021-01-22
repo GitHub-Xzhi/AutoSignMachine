@@ -151,7 +151,7 @@ var producGame = {
             console.log(Buffer.from(res.data).toString('hex'))
 
             // 这里不等待1分钟，上面使用 n*62 时长累计来替代，也可正常领取
-            await new Promise((resolve, reject) => setTimeout(resolve, 38 * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, 45 * 1000))
 
             ++n
         } while (n <= 6)
@@ -338,7 +338,7 @@ var producGame = {
         let games = await producGame.timeTaskQuery(axios, options)
         games = allgames.filter(g => games.filter(g => g.state === '0').map(i => i.gameId).indexOf(g.id) !== -1)
         console.log('剩余未完成game', games.length)
-        let queue = new PQueue({ concurrency: 2 });
+        let queue = new PQueue({ concurrency: 3 });
 
         for (let game of games) {
             queue.add(async () => {
