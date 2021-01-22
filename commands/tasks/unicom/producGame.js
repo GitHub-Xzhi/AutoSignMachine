@@ -1,5 +1,6 @@
 // 娱乐中心
 const CryptoJS = require("crypto-js");
+const { default: PQueue } = require('p-queue');
 const moment = require('moment');
 const path = require('path')
 
@@ -150,7 +151,7 @@ var producGame = {
             console.log(Buffer.from(res.data).toString('hex'))
 
             // 这里不等待1分钟，上面使用 n*62 时长累计来替代，也可正常领取
-            await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, 38 * 1000))
 
             ++n
         } while (n <= 6)
@@ -325,40 +326,47 @@ var producGame = {
             data: transParams(params)
         })
         if (data.code === '0000') {
-            return {
-                // reachState 0未完成, 1未领取, 2已完成
-                games: data.data.filter(d => d.task === '5' && d.reachState === '0' && d.task_type === 'duration')
-            }
+            // reachState 0未完成, 1未领取, 2已完成
+            return data.data
         } else {
             console.log('获取游戏任务失败')
-            return {
-                games: []
-            }
+            return []
         }
     },
     doGameFlowTask: async (axios, options) => {
         let allgames = await producGame.popularGames(axios, options)
         let games = await producGame.timeTaskQuery(axios, options)
-        games = allgames.filter(g => games.map(i => i.gameId).indexOf(g.id) !== -1)
-        console.log('剩余game', games.length)
+        games = allgames.filter(g => games.filter(g => g.state === '0').map(i => i.gameId).indexOf(g.id) !== -1)
+        console.log('剩余未完成game', games.length)
+        let queue = new PQueue({ concurrency: 2 });
+
         for (let game of games) {
-            console.log(game.name)
-            let { appInfo } = await producGame.gameInfo(axios, {
-                ...options,
-                game
+            queue.add(async () => {
+                console.log(game.name)
+                let { appInfo } = await producGame.gameInfo(axios, {
+                    ...options,
+                    game
+                })
+                await producGame.gameverify(axios, {
+                    ...options,
+                    game
+                })
+                await producGame.playGame(axios, {
+                    ...options,
+                    game,
+                    app: appInfo
+                })
             })
-            await producGame.gameverify(axios, {
-                ...options,
-                game
-            })
-            await producGame.playGame(axios, {
-                ...options,
-                game,
-                app: appInfo
-            })
+        }
+
+        await queue.onIdle()
+
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+        games = await producGame.timeTaskQuery(axios, options)
+        games = games.filter(g => g.state === '1')
+        console.log('剩余未领取game', games.length)
+        for (let game of games) {
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
-            await producGame.timeTaskQuery(axios, options)
-            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 10) * 1000))
             await producGame.gameFlowGet(axios, {
                 ...options,
                 gameId: game.id
@@ -366,33 +374,45 @@ var producGame = {
         }
     },
     doGameIntegralTask: async (axios, options) => {
-        let { games } = await producGame.getTaskList(axios, options)
-        console.log('剩余game', games.length)
+        let games = await producGame.getTaskList(axios, options)
+        games = games.filter(d => d.task === '5' && d.reachState === '0' && d.task_type === 'duration')
+        console.log('剩余未完成game', games.length)
+        let queue = new PQueue({ concurrency: 2 });
         for (let game of games) {
-            console.log(game.name)
-            let { appInfo } = await producGame.gameInfo(axios, {
-                ...options,
-                game
+            queue.add(async () => {
+                console.log(game.name)
+                let { appInfo } = await producGame.gameInfo(axios, {
+                    ...options,
+                    game
+                })
+                await producGame.gameverify(axios, {
+                    ...options,
+                    game
+                })
+                await producGame.gamerecord(axios, {
+                    ...options,
+                    gameId: game.game_id
+                })
+                await producGame.playGame(axios, {
+                    ...options,
+                    game: {
+                        ...game,
+                        gameCode: game.resource_id
+                    },
+                    app: appInfo
+                })
+
             })
-            await producGame.gameverify(axios, {
-                ...options,
-                game
-            })
-            await producGame.gamerecord(axios, {
-                ...options,
-                gameId: game.game_id
-            })
-            await producGame.playGame(axios, {
-                ...options,
-                game: {
-                    ...game,
-                    gameCode: game.resource_id
-                },
-                app: appInfo
-            })
+        }
+
+        await queue.onIdle()
+
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+        games = await producGame.getTaskList(axios, options)
+        games = games.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
+        console.log('剩余未领取game', games.length)
+        for (let game of games) {
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
-            await producGame.getTaskList(axios, options)
-            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 10) * 1000))
             await producGame.gameIntegralGet(axios, {
                 ...options,
                 taskCenterId: game.id
@@ -425,7 +445,7 @@ var producGame = {
         })
         if (data) {
             console.log(data.msg)
-            return data.data.filter(g => g.state === '0')//0未进行 state=1待领取 state=2已完成
+            return data.data//0未进行 state=1待领取 state=2已完成
         } else {
             console.log('记录失败')
         }
