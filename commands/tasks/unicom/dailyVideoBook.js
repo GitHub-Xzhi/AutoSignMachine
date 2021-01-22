@@ -158,7 +158,8 @@ var dailyVideoBook = {
         "AuthorizationClient": `Bearer ${Authorization}`,
         "Content-Type": "application/json",
         "referer": `https://img.client.10010.com/`,
-        "origin": "https://img.client.10010.com"
+        "origin": "https://img.client.10010.com",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `https://m.iread.wo.cn/touchextenernal/proxy/login`,
       method: 'GET',
@@ -180,7 +181,8 @@ var dailyVideoBook = {
 
       res = await axios.request({
         headers: {
-          "user-agent": useragent
+          "user-agent": useragent,
+          "X-Requested-With": "com.sinovatech.unicom.ui"
         },
         url: `http://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
         method: 'POST',
@@ -192,7 +194,8 @@ var dailyVideoBook = {
 
       res = await axios.request({
         headers: {
-          "user-agent": useragent
+          "user-agent": useragent,
+          "X-Requested-With": "com.sinovatech.unicom.ui"
         },
         url: `http://st.woread.com.cn/touchextenernal/common/shouTingLogin.action`,
         method: 'POST',
@@ -203,15 +206,15 @@ var dailyVideoBook = {
       st_jar = res.config.jar
     }
 
-
-    res = await axios.request({
-      headers: {
-        "user-agent": useragent,
-      },
-      url: `http://st.woread.com.cn/touchextenernal/read/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
-      method: 'GET',
-      jar: st_jar
-    })
+    // res = await axios.request({
+    //   headers: {
+    //     "user-agent": useragent,
+    //     "X-Requested-With": "com.sinovatech.unicom.ui"
+    //   },
+    //   url: `http://st.woread.com.cn/touchextenernal/read/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
+    //   method: 'GET',
+    //   jar: st_jar
+    // })
 
     return {
       Token: data.message,
@@ -301,7 +304,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
-        "origin": "http://st.woread.com.cn"
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://st.woread.com.cn/touchextenernal/readluchdraw/addDrawTimes.action`,
       method: 'POST',
@@ -317,7 +321,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `https://m.iread.wo.cn/`,
-        "origin": "http://m.iread.wo.cn"
+        "origin": "http://m.iread.wo.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/addReadRatioToRedis.action`,
       method: 'POST',
@@ -340,7 +345,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
-        "origin": "http://st.woread.com.cn"
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/reportLatestRead.action`,
       method: 'POST',
@@ -359,7 +365,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
-        "origin": "http://st.woread.com.cn"
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/sltPreReadChapter.action`,
       method: 'get',
@@ -383,7 +390,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
-        "origin": "http://st.woread.com.cn"
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://st.woread.com.cn/touchextenernal/thanksgiving/getActivityStatus.action`,
       method: 'POST',
@@ -398,7 +406,8 @@ var dailyVideoBook = {
       headers: {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
-        "origin": "http://st.woread.com.cn"
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/ajaxchapter.action`,
       method: 'POST',
@@ -482,7 +491,8 @@ var dailyVideoBook = {
         headers: {
           "user-agent": useragent,
           "referer": `http://st.woread.com.cn/`,
-          "origin": "http://st.woread.com.cn"
+          "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "com.sinovatech.unicom.ui"
         },
         url: `http://st.woread.com.cn/touchextenernal/thanksgiving/doDraw.action`,
         method: 'POST',
