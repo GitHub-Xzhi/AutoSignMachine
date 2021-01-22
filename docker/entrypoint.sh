@@ -16,6 +16,10 @@ if [ ${enable_unicom} ];then
   echo "10 13 * * *       node /AutoSignMachine/index.js unicom --cookies ${cookies} --user ${user} --password ${password} --appid ${appid}" >> /etc/crontabs/root
 fi
 
+if [ ${enable_10086} ];then
+  echo "10 13 * * *       node /AutoSignMachine/index.js 10086 --cookies ${cookies}" >> /etc/crontabs/root
+fi
+
 /usr/sbin/crond -c /etc/crontabs -f
 
 tail -f /var/log/cron.log
