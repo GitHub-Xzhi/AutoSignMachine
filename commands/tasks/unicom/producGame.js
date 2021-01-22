@@ -337,29 +337,29 @@ var producGame = {
         }
     },
     doGameFlowTask: async (axios, options) => {
-        let allgames = await producGame.popularGames(request, options)
-        let games = await producGame.timeTaskQuery(request, options)
+        let allgames = await producGame.popularGames(axios, options)
+        let games = await producGame.timeTaskQuery(axios, options)
         games = allgames.filter(g => games.map(i => i.gameId).indexOf(g.id) !== -1)
         console.log('剩余game', games.length)
         for (let game of games) {
             console.log(game.name)
-            let { appInfo } = await producGame.gameInfo(request, {
+            let { appInfo } = await producGame.gameInfo(axios, {
                 ...options,
                 game
             })
-            await producGame.gameverify(request, {
+            await producGame.gameverify(axios, {
                 ...options,
                 game
             })
-            await producGame.playGame(request, {
+            await producGame.playGame(axios, {
                 ...options,
                 game,
                 app: appInfo
             })
             await new Promise((resolve, reject) => setTimeout(resolve, 200))
-            await producGame.timeTaskQuery(request, options)
+            await producGame.timeTaskQuery(axios, options)
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
-            await producGame.gameFlowGet(request, {
+            await producGame.gameFlowGet(axios, {
                 ...options,
                 gameId: game.id
             })
