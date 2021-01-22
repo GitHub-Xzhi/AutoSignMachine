@@ -26,7 +26,6 @@ var taskCenter = {
             url: `http://wx.10086.cn/website/taskCenter/sign?t=` + new Date().getTime(),
             method: 'get'
         })
-        console.log(data)
         if (data.rtnCode !== '0') {
             console.log('签到失败', data.rtnMsg)
         } else {
