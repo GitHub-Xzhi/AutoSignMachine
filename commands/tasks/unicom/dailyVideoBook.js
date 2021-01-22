@@ -276,7 +276,7 @@ var dailyVideoBook = {
         'time': time || 0
       })
     })
-    console.log('ajaxUpdatePersonReadtime', res.data)
+    console.log('ajaxUpdatePersonReadtime 完成')
   },
   updateReadTimes: async (axios, options) => {
     let { jar, detail } = options
