@@ -14,9 +14,16 @@ var checkInfo = async (axios) => {
 module.exports = async (axios, params) => {
   const { options, cookies } = params
 
-  let res = await checkInfo(axios)
-  let result = res.data
+  let result
 
+  try {
+    let res = await checkInfo(axios)
+    result = res.data
+  } catch (err) {
+    console.log('获取信息失败')
+  }
+
+  // 重要：密码账户登录易出现 您的账号存在高危异常行为，为了您的账号安全，请验证手机号后登录帐号 提示，建议使用cookies
   if (Object.prototype.toString.call(result) !== '[object Object]' || !result || result.code !== 0) {
     console.log('cookies凭据访问失败，将使用账户密码登录')
     if (options['username']) {

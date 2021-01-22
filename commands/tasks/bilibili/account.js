@@ -210,6 +210,9 @@ var account = {
     if (res.data.code !== 0) {
       throw new Error(res.data.message)
     }
+    if (res.data.data.status === 2) {
+      throw new Error(res.data.data.message)
+    }
     tokenJson = {
       ...res.data.data.token_info,
       expires_in: res.data.data.token_info.expires_in + new Date().getTime()
