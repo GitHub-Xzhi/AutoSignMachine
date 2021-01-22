@@ -77,8 +77,8 @@ module.exports = async (axios, params) => {
       // ChinaunicomMobileBusiness
       'appId': appId || options.appid,
       'deviceBrand': 'samsung',
-      'deviceCode': deviceId,
-      'deviceId': deviceId,
+      'deviceCode': deviceId + '',
+      'deviceId': deviceId + '',
       'deviceModel': 'SM-G977N',
       'deviceOS': 'android7.1.2',
       'isRemberPwd': 'true',
