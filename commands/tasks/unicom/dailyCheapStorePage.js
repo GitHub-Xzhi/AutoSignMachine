@@ -176,6 +176,9 @@ var dailyCheapStorePage = {
 
       if (result.data.code !== 200) {
         console.log('提交任务失败', result.data.msg)
+        if(result.data.msg.indexOf('请勿频繁操作') !==-1){
+          throw new Error('取消本次任务')
+        }
       } else {
         let data = result.data.data
         let good = res.list.find(f => f.giftId === data.giftId)
