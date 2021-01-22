@@ -54,17 +54,12 @@ module.exports = async (axios, params) => {
     method: 'post'
   })
 
-  let token_online
-  let appId
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
-    if (item.indexOf('token_online') === 0) {
-      token_online = item.split("=").pop()
-    }
-    if (item.indexOf('appId') === 0) {
-      appId = item.split("=").pop()
-    }
-  })
-
+  let cookiesJson = config.jar.toJSON()
+  let token_online = cookiesJson.cookies.find(i => i.key == 'token_online')
+  token_online = token_online.value
+  let appId = cookiesJson.cookies.find(i => i.key == 'appId')
+  appId = appId.value
+  
   if (Object.prototype.toString.call(data) !== '[object Object]' || !data || !('phone' in data)) {
     console.log('cookies凭据访问失败，将使用账户密码登录')
     if (!('appid' in options) || !options['appid']) {

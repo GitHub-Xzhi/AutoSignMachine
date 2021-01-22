@@ -31,7 +31,7 @@ var sign = {
   querySignInfo: async (axios) => {
     console.log('查询签到状态')
     let P00001 = undefined
-    axios.defaults.headers.cookie.split('; ').forEach(item => {
+    axios.defaults.headers.Cookie.split('; ').forEach(item => {
       if (item.indexOf('P00001') === 0) {
         P00001 = item.split("=").pop()
       }
@@ -68,7 +68,7 @@ var sign = {
     console.log('进行VIP签到')
     let P00001 = undefined
     let QC005 = undefined
-    axios.defaults.headers.cookie.split('; ').forEach(item => {
+    axios.defaults.headers.Cookie.split('; ').forEach(item => {
       if (item.indexOf('P00001') === 0) {
         P00001 = item.split("=").pop()
       }

@@ -15,7 +15,7 @@ module.exports = async (axios) => {
   let P00001 = undefined
   let QC005 = undefined
   let dfp = undefined
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
+  axios.defaults.headers.Cookie.split('; ').forEach(item => {
     if (item.indexOf('P00001') === 0) {
       P00001 = item.split("=").pop()
     }

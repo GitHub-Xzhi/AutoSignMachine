@@ -31,7 +31,7 @@ function w() {
 module.exports = async (axios) => {
   console.log('访问热点首页')
 
-  await axios.request({
+  let { config } = await axios.request({
     headers: {
       "referer": "https://www.iqiyi.com",
       "origin": "https://www.iqiyi.com"
@@ -39,22 +39,15 @@ module.exports = async (axios) => {
     url: "https://www.iqiyi.com/feed/?vfrm=pcw_my&vfrmblk=body_jf&vfrmrst=702091_jf_rd"
   })
 
-
-  let P00001 = undefined
-  let P00PRU = undefined
-  let dfp = undefined
   let user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
-    if (item.indexOf('P00001') === 0) {
-      P00001 = item.split("=").pop()
-    }
-    if (item.indexOf('P00PRU') === 0) {
-      P00PRU = item.split("=").pop()
-    }
-    if (item.indexOf('_dfp') === 0) {
-      dfp = item.split("=").pop().split("@")[0]
-    }
-  })
+
+  let cookiesJson = config.jar.toJSON()
+  let P00001 = cookiesJson.cookies.find(i => i.key == 'P00001')
+  P00001 = P00001.value
+  let P00PRU = cookiesJson.cookies.find(i => i.key == 'P00PRU')
+  P00PRU = P00PRU.value
+  let dfp = cookiesJson.cookies.find(i => i.key == '_dfp')
+  dfp = dfp.value.split("@")[0]
 
   var a = {
     'agenttype': '1',

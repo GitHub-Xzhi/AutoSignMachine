@@ -18,7 +18,7 @@ module.exports = {
   getLotteryChance: async (axios, options) => {
     let uin = undefined
     let skey = undefined
-    axios.defaults.headers.cookie.split('; ').forEach(item => {
+    axios.defaults.headers.Cookie.split('; ').forEach(item => {
       if (item.indexOf('skey') === 0) {
         skey = item.split("=").pop()
       }
@@ -62,7 +62,7 @@ module.exports = {
   getGiftList: async (axios, options) => {
     let uin = undefined
     let skey = undefined
-    axios.defaults.headers.cookie.split('; ').forEach(item => {
+    axios.defaults.headers.Cookie.split('; ').forEach(item => {
       if (item.indexOf('skey') === 0) {
         skey = item.split("=").pop()
       }

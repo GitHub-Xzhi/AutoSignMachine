@@ -2,7 +2,7 @@ const dayjs = require('dayjs')
 
 var ReceiveVipPrivilege = async (axios, type) => {
   let bili_jct = undefined
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
+  axios.defaults.headers.Cookie.split('; ').forEach(item => {
     if (item.indexOf('bili_jct') === 0) {
       bili_jct = item.split("=").pop()
     }

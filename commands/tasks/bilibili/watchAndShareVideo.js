@@ -65,7 +65,7 @@ var ShareVideo = (axios, videoInfo, bili_jct) => {
 module.exports = async (axios, dailyTaskStatus) => {
   let videoInfo = undefined
   let bili_jct = undefined
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
+  axios.defaults.headers.Cookie.split('; ').forEach(item => {
     if (item.indexOf('bili_jct') === 0) {
       bili_jct = item.split("=").pop()
     }

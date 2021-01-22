@@ -7,11 +7,29 @@ const err = (error) => {
   return Promise.reject(error)
 }
 
-var parseCookieString = function (jar, cookies, config) {
-  console.log('parseCookieString for', config.url)
+var parseDefaultCookie = function (cookies) {
+  let cookie = ''
+  if (Object.prototype.toString.call(cookies) == '[object String]') {
+    cookie = cookies
+  } else if (Object.prototype.toString.call(cookies) == '[object Object]') {
+    Object.keys(cookies).forEach(item => {
+      cookie += item + '=' + cookies[item] + '; '
+    })
+  }
+  return cookie
+}
+
+var setCookieString = function (jar, cookies, config) {
+  let url
+  if (config.url.indexOf('http') === 0) {
+    url = config.url
+  } else {
+    url = config.baseURL + config.url
+  }
+  console.log('setCookieString for', url)
   if (Object.prototype.toString.call(cookies) == '[object String]') {
     cookies.split('; ').forEach(cookie => {
-      jar.setCookieSync(cookie, new URL(config.url).origin + '/', {})
+      jar.setCookieSync(cookie, new URL(url).origin + '/', {})
     })
   }
   return jar
@@ -19,6 +37,9 @@ var parseCookieString = function (jar, cookies, config) {
 
 module.exports = cookies => {
   const service = axios.create({
+    headers: {
+      Cookie: parseDefaultCookie(cookies)
+    },
     timeout: 60000,
     withCredentials: true
   })
@@ -30,7 +51,7 @@ module.exports = cookies => {
     if (!jar) {
       jar = new tough.CookieJar()
     }
-    config.jar = parseCookieString(jar, cookies, config)
+    config.jar = setCookieString(jar, cookies, config)
     return config
   }, err)
   service.interceptors.response.use(async response => {

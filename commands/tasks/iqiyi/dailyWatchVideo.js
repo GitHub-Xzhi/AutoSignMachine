@@ -88,20 +88,14 @@ module.exports = {
         })
       } while (videoPlayTime <= 35 * 60)
 
-      let P00001 = undefined
-      let P00PRU = undefined
-      let dfp = undefined
-      axios.defaults.headers.cookie.split('; ').forEach(item => {
-        if (item.indexOf('P00001') === 0) {
-          P00001 = item.split("=").pop()
-        }
-        if (item.indexOf('P00PRU') === 0) {
-          P00PRU = item.split("=").pop()
-        }
-        if (item.indexOf('_dfp') === 0) {
-          dfp = item.split("=").pop().split("@")[0]
-        }
-      })
+      let cookiesJson = res.config.jar.toJSON()
+      let P00001 = cookiesJson.cookies.find(i => i.key == 'P00001')
+      P00001 = P00001.value
+      let P00PRU = cookiesJson.cookies.find(i => i.key == 'P00PRU')
+      P00PRU = P00PRU.value
+      let dfp = cookiesJson.cookies.find(i => i.key == '_dfp')
+      dfp = dfp.value.split("@")[0]
+
       var a = {
         'agenttype': '1',
         'agentversion': '0',

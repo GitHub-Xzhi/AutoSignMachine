@@ -33,7 +33,7 @@ module.exports = async (axios) => {
   let P00PRU = undefined
   let dfp = undefined
   let user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
-  axios.defaults.headers.cookie.split('; ').forEach(item => {
+  axios.defaults.headers.Cookie.split('; ').forEach(item => {
     if (item.indexOf('P00001') === 0) {
       P00001 = item.split("=").pop()
     }

@@ -14,7 +14,7 @@ var task = {
     getTasks: async (axios) => {
         console.log('查询每日任务列表')
         let P00001 = undefined
-        axios.defaults.headers.cookie.split('; ').forEach(item => {
+        axios.defaults.headers.Cookie.split('; ').forEach(item => {
             if (item.indexOf('P00001') === 0) {
                 P00001 = item.split("=").pop()
             }
@@ -40,7 +40,7 @@ var task = {
     getTaskStatus: async (axios, taskIds) => {
         console.log('查询每日任务状态')
         let P00001 = undefined
-        axios.defaults.headers.cookie.split('; ').forEach(item => {
+        axios.defaults.headers.Cookie.split('; ').forEach(item => {
             if (item.indexOf('P00001') === 0) {
                 P00001 = item.split("=").pop()
             }
@@ -78,7 +78,7 @@ var task = {
     joinTasks: async (axios, tasks) => {
         console.log('开始参与任务')
         let P00001 = undefined
-        axios.defaults.headers.cookie.split('; ').forEach(item => {
+        axios.defaults.headers.Cookie.split('; ').forEach(item => {
             if (item.indexOf('P00001') === 0) {
                 P00001 = item.split("=").pop()
             }
@@ -135,7 +135,7 @@ var task = {
         let P00001 = undefined
         let QC005 = undefined
         let dfp = undefined
-        axios.defaults.headers.cookie.split('; ').forEach(item => {
+        axios.defaults.headers.Cookie.split('; ').forEach(item => {
             if (item.indexOf('P00001') === 0) {
                 P00001 = item.split("=").pop()
             }
