@@ -473,8 +473,11 @@ var producGame = {
         })
         if (data) {
             console.log(data.msg)
+            if (data.msg.indexOf('防刷策略接口校验不通过') !== -1) {
+                throw new Error('出现【防刷策略接口校验不通过】, 取消本次执行')
+            }
         } else {
-            console.log('记录失败')
+            console.log('获取奖励失败')
         }
     },
     gameIntegralGet: async (axios, options) => {
@@ -498,8 +501,11 @@ var producGame = {
         })
         if (data) {
             console.log(data.msg)
+            if (data.msg.indexOf('防刷策略接口校验不通过') !== -1) {
+                throw new Error('出现【防刷策略接口校验不通过】, 取消本次执行')
+            }
         } else {
-            console.log('记录失败')
+            console.log('获取奖励失败')
         }
     }
 }
