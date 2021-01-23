@@ -126,7 +126,7 @@ var start = async (params) => {
   }, taskOption)
 
   // 首页-签到有礼-免费抽-赢Apple Watch(去抽奖)
-  await scheduler.regTask('dailyTurntablePage', async () => {
+  await scheduler.regTask('dailyTurntablePage', async (request) => {
     await require('./dailyTurntablePage').doTask(request, options)
   }, taskOption)
 
