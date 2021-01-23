@@ -20,6 +20,10 @@ let tasks = {}
 let scheduler = {
     taskFile: path.join(os.homedir(), '.AutoSignMachine', 'taskFile.json'),
     today: '',
+    isRunning: false,
+    taskJson: undefined,
+    queues: [],
+    will_queues: [],
     buildQueues: async () => {
         let queues = []
         let taskNames = Object.keys(tasks)
@@ -61,7 +65,6 @@ let scheduler = {
                 queues
             }))
         } else {
-            console.log('已存在配置文件')
             let taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
             taskJson = JSON.parse(taskJson)
             if (taskJson.today !== today) {
@@ -71,6 +74,7 @@ let scheduler = {
                     today,
                     queues
                 }))
+                await scheduler.initTasksQueue()
             }
         }
         scheduler.today = today
@@ -97,6 +101,9 @@ let scheduler = {
             }
         }
         console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，将执行任务数${will_queues.length}`)
+        scheduler.taskJson = taskJson
+        scheduler.queues = queues
+        scheduler.will_queues = will_queues
         return {
             taskJson,
             queues,
@@ -114,13 +121,16 @@ let scheduler = {
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
         let { will_queues } = await scheduler.loadTasksQueue()
+        scheduler.isRunning = true
         return will_queues.length
     },
     execTask: async (command) => {
         console.log('开始执行任务')
-        await scheduler.genFileName(command)
-        await scheduler.initTasksQueue()
-        let { taskJson, queues, will_queues } = await scheduler.loadTasksQueue()
+        if (!scheduler.isRunning) {
+            await scheduler.genFileName(command)
+            await scheduler.initTasksQueue()
+        }
+        let { taskJson, queues, will_queues } = scheduler
         let init
         if (will_queues.length) {
             for (let task of will_queues) {
