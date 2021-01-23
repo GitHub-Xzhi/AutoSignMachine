@@ -27,7 +27,7 @@ var setCookieString = function (jar, cookies, config) {
     url = config.baseURL + config.url
   }
   let uuuu = new URL(url)
-  console.log('setCookieString for', uuuu.origin)
+  // console.log('setCookieString for', uuuu.origin)
   cookies = parseDefaultCookie(cookies)
   if (Object.prototype.toString.call(cookies) == '[object String]') {
     cookies.length && cookies.split('; ').forEach(cookie => {
