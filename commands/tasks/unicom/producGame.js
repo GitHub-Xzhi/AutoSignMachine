@@ -361,7 +361,7 @@ var producGame = {
 
         await queue.onIdle()
 
-        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 30) * 1000))
         games = await producGame.timeTaskQuery(axios, options)
         games = games.filter(g => g.state === '1')
         console.log('剩余未领取game', games.length)
@@ -407,7 +407,7 @@ var producGame = {
 
         await queue.onIdle()
 
-        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 30) * 1000))
         games = await producGame.getTaskList(axios, options)
         games = games.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
         console.log('剩余未领取game', games.length)
