@@ -3,6 +3,8 @@ const path = require('path')
 const fs = require('fs-extra')
 var moment = require('moment');
 moment.locale('zh-cn');
+const { getCookies, saveCookies } = require('./util')
+const _request = require('./request')
 
 const randomDate = (startDate, endDate) => {
     let date = new Date(+startDate + Math.random() * (endDate - startDate));
@@ -124,8 +126,16 @@ let scheduler = {
                             var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
                             await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
                         }
+
                         let ttt = tasks[task.taskName]
-                        await ttt['callback']()
+                        let savedCookies = await getCookies([command, ttt.options.cookieFileKey || 'default'].join('_')) || ttt.options.cookies
+                        let request = _request(savedCookies)
+                        if (ttt.options.init) {
+                            let init = await ttt.options['init'](request, savedCookies)
+                            await ttt['callback'](init.request, init.data)
+                        } else {
+                            await ttt['callback'](request)
+                        }
 
                         let isupdate = false
                         if (ttt.options) {

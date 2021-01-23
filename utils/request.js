@@ -8,15 +8,15 @@ const err = (error) => {
 }
 
 var parseDefaultCookie = function (cookies) {
-  let cookie = ''
+  let cookie = []
   if (Object.prototype.toString.call(cookies) == '[object String]') {
-    cookie = cookies
+    cookie = [cookies]
   } else if (Object.prototype.toString.call(cookies) == '[object Object]') {
     Object.keys(cookies).forEach(item => {
-      cookie += item + '=' + cookies[item] + '; '
+      cookie.push(item + '=' + cookies[item])
     })
   }
-  return cookie
+  return cookie.join('; ')
 }
 
 var setCookieString = function (jar, cookies, config) {
@@ -27,6 +27,7 @@ var setCookieString = function (jar, cookies, config) {
     url = config.baseURL + config.url
   }
   console.log('setCookieString for', url)
+  cookies = parseDefaultCookie(cookies)
   if (Object.prototype.toString.call(cookies) == '[object String]') {
     cookies.split('; ').forEach(cookie => {
       jar.setCookieSync(cookie, new URL(url).origin + '/', {})
