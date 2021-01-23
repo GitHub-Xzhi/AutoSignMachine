@@ -10,7 +10,7 @@ const err = (error) => {
 var parseDefaultCookie = function (cookies) {
   let cookie = []
   if (Object.prototype.toString.call(cookies) == '[object String]') {
-    cookie = [cookies]
+    cookie = cookies ? [cookies] : []
   } else if (Object.prototype.toString.call(cookies) == '[object Object]') {
     Object.keys(cookies).forEach(item => {
       cookie.push(item + '=' + cookies[item])
@@ -30,7 +30,7 @@ var setCookieString = function (jar, cookies, config) {
   console.log('setCookieString for', uuuu.origin)
   cookies = parseDefaultCookie(cookies)
   if (Object.prototype.toString.call(cookies) == '[object String]') {
-    cookies.split('; ').forEach(cookie => {
+    cookies.length && cookies.split('; ').forEach(cookie => {
       jar.setCookieSync(cookie, uuuu.origin + '/', {})
     })
   }

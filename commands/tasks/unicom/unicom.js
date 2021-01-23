@@ -100,6 +100,11 @@ var start = async (params) => {
   //   intervalTime: 4 * 3600
   // })
 
+  // 首页-签到有礼-免费抽-抓OPPO手机
+  await scheduler.regTask('dailyGrabdollPage', async (request) => {
+    await require('./dailyGrabdollPage').doTask(request, options)
+  }, taskOption)
+
   // 首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
   await scheduler.regTask('jflottery', async (request) => {
     await require('./jflottery').timesDraw(request, options)
