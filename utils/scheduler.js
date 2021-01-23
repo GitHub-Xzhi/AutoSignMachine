@@ -44,7 +44,7 @@ let scheduler = {
                 taskName: taskName,
                 taskState: 0,
                 willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
-                waitTime: Math.floor(Math.random() * 600) + 'seconds'
+                waitTime: Math.floor(Math.random() * 600)
             })
         }
         return queues
@@ -120,11 +120,8 @@ let scheduler = {
                 if (task.taskName in tasks) {
                     try {
                         if (task.waitTime) {
-                            console.log('延迟执行', task.waitTime)
-                            var willTime = new moment(task.willTime)
-                            var waitTime = willTime.add(task.waitTime)
-                            var seconds = parseInt(moment.duration(waitTime.diff(willTime)).asSeconds())
-                            await new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
+                            console.log('延迟执行', task.waitTime, 'seconds')
+                            await new Promise((resolve, reject) => setTimeout(resolve, task.waitTime * 1000))
                         }
 
                         let ttt = tasks[task.taskName]
