@@ -53,6 +53,7 @@ let scheduler = {
     initTasksQueue: async () => {
         const today = moment().format('YYYYMMDD')
         if (!fs.existsSync(scheduler.taskFile)) {
+            console.log('任务配置文件不存在，创建配置中')
             let queues = await scheduler.buildQueues()
             fs.ensureFileSync(scheduler.taskFile)
             fs.writeFileSync(scheduler.taskFile, JSON.stringify({
@@ -60,9 +61,11 @@ let scheduler = {
                 queues
             }))
         } else {
+            console.log('已存在配置文件')
             let taskJson = fs.readFileSync(scheduler.taskFile).toString('utf-8')
             taskJson = JSON.parse(taskJson)
             if (taskJson.today !== today) {
+                console.log('日期已变更，重新生成任务配置')
                 let queues = await scheduler.buildQueues()
                 fs.writeFileSync(scheduler.taskFile, JSON.stringify({
                     today,
@@ -75,6 +78,7 @@ let scheduler = {
     genFileName(command) {
         scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}.json`)
         scheduler.today = moment().format('YYYYMMDD')
+        console.log('获得配置文件', scheduler.taskFile, '当前日期', scheduler.today)
     },
     loadTasksQueue: async () => {
         let queues = []
@@ -92,6 +96,7 @@ let scheduler = {
                 will_queues.push(task)
             }
         }
+        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，将执行任务数${will_queues.length}`)
         return {
             taskJson,
             queues,
@@ -105,12 +110,14 @@ let scheduler = {
         }
     },
     hasWillTask: async (command) => {
+        console.log('计算可执行任务')
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
         let { will_queues } = await scheduler.loadTasksQueue()
         return will_queues.length
     },
     execTask: async (command) => {
+        console.log('开始执行任务')
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
         let { taskJson, queues, will_queues } = await scheduler.loadTasksQueue()
