@@ -52,6 +52,8 @@ module.exports = cookies => {
     let jar = config.jar
     if (!jar) {
       jar = new tough.CookieJar()
+    } else {
+      config.headers['Cookie'] = ''
     }
     config.jar = setCookieString(jar, cookies, config)
     return config

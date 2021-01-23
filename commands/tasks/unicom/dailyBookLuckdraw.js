@@ -23,39 +23,54 @@ var sign = (data) => {
 }
 
 var dailyBookLuckdraw = {
-    seeadvertluckdraw: async (axios, options) => {
+    oauthMethod: async (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-        let res = await axios.request({
+        let { data } = await axios.request({
             headers: {
                 "user-agent": useragent,
+                "referer": `https://img.client.10010.com/`,
+                "origin": "https://img.client.10010.com"
             },
+            url: `https://m.client.10010.com/finderInterface/woReadOauth/?typeCode=oauthMethod`,
+            method: 'GET'
+        })
+        return data.data.key
+    },
+    login: async (axios, options) => {
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+
+        //密码加密
+        var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
+        var exponent = "010001";
+        var key = RSAUtils.getKeyPair(exponent, '', modulus);
+        let phonenum = RSAUtils.encryptedString(key, options.user);
+        let { data, config } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "X-Requested-With": "com.sinovatech.unicom.ui"
+            },
+            url: `https://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
+            method: 'POST',
+            data: transParams({
+                phonenum
+            })
+        })
+        let jar = config.jar
+        let cookiesJson = jar.toJSON()
+        let diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
+        let useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
+        if (!useraccount || !diwert) {
+            throw new Error('获取用户信息失败')
+        }
+
+        await axios.request({
+            headers: {
+                "user-agent": useragent
+            },
+            jar,
             url: `http://m.iread.wo.cn/touchextenernal/seeadvertluckdraw/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
             method: 'GET'
         })
-
-        let cookiesJson = res.config.jar.toJSON()
-        let diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
-        let useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
-        let jar = res.config.jar
-        if (!useraccount || !diwert) {
-            //密码加密
-            var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
-            var exponent = "010001";
-            var key = RSAUtils.getKeyPair(exponent, '', modulus);
-            let phonenum = RSAUtils.encryptedString(key, options.user);
-
-            let res = await axios.request({
-                headers: {
-                    "user-agent": useragent
-                },
-                url: `http://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
-                method: 'POST',
-                data: transParams({
-                    phonenum
-                })
-            })
-            jar = res.config.jar
-        }
 
         return {
             jar
@@ -63,7 +78,12 @@ var dailyBookLuckdraw = {
     },
     doTask: async (axios, options) => {
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-        const { jar } = await dailyBookLuckdraw.seeadvertluckdraw(axios, options)
+        let Authorization = await dailyBookLuckdraw.oauthMethod(axios, options)
+        let { jar } = await dailyBookLuckdraw.login(axios, {
+            ...options,
+            Authorization
+        })
+
         let times = 5
         do {
             if (times < 5) {
@@ -87,7 +107,7 @@ var dailyBookLuckdraw = {
                 params['orderId'] = crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
                 params['arguments4'] = new Date().getTime()
 
-                let result = await require('./taskcallback').reward(axios, {
+                await require('./taskcallback').reward(axios, {
                     ...options,
                     params,
                     jar
@@ -96,14 +116,19 @@ var dailyBookLuckdraw = {
 
             let res = await axios.request({
                 headers: {
-                    "user-agent": useragent,
+                    "user-agent": useragent
                 },
+                jar,
                 url: `http://m.iread.wo.cn/touchextenernal/seeadvertluckdraw/doDraw.action`,
                 method: 'POST',
                 data: transParams({
                     'acticeindex': 'NzJBQTQxMEE2QzQwQUE2MDYxMEI5MDNGQjFEMEEzODI='
-                }),
-                jar
+                })
+            }).catch(err => {
+                if (err.response.status !== 200) {
+                    console.log('访问错误', err.response.statusText)
+                    throw new Error('访问错误:' + [err.response.status, err.response.statusText].join('-'))
+                }
             })
             let result = res.data
             if (result.code === '0000') {

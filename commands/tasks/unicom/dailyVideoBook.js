@@ -149,76 +149,55 @@ var dailyVideoBook = {
     return data.data.key
   },
   login: async (axios, options) => {
-    const { Authorization } = options
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
 
-    let { data, config } = await axios.request({
+    //密码加密
+    var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
+    var exponent = "010001";
+    var key = RSAUtils.getKeyPair(exponent, '', modulus);
+    let phonenum = RSAUtils.encryptedString(key, options.user);
+
+
+    let { config: m_config } = await axios.request({
       headers: {
         "user-agent": useragent,
-        "AuthorizationClient": `Bearer ${Authorization}`,
-        "Content-Type": "application/json",
-        "referer": `https://img.client.10010.com/`,
-        "origin": "https://img.client.10010.com",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
-      url: `https://m.iread.wo.cn/touchextenernal/proxy/login`,
-      method: 'GET',
-      data: { "phone": options.user }
+      url: `https://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
+      method: 'POST',
+      data: transParams({
+        phonenum
+      })
     })
-
-    let cookiesJson = config.jar.toJSON()
+    let m_jar = m_config.jar
+    let cookiesJson = m_jar.toJSON()
     let diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
     let useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
-    let m_jar = config.jar
-    let st_jar
-    let res
     if (!useraccount || !diwert) {
-      //密码加密
-      var modulus = "00D9C7EE8B8C599CD75FC2629DBFC18625B677E6BA66E81102CF2D644A5C3550775163095A3AA7ED9091F0152A0B764EF8C301B63097495C7E4EA7CF2795029F61229828221B510AAE9A594CA002BA4F44CA7D1196697AEB833FD95F2FA6A5B9C2C0C44220E1761B4AB1A1520612754E94C55DC097D02C2157A8E8F159232ABC87";
-      var exponent = "010001";
-      var key = RSAUtils.getKeyPair(exponent, '', modulus);
-      let phonenum = RSAUtils.encryptedString(key, options.user);
-
-      res = await axios.request({
-        headers: {
-          "user-agent": useragent,
-          "X-Requested-With": "com.sinovatech.unicom.ui"
-        },
-        url: `http://m.iread.wo.cn/touchextenernal/common/shouTingLogin.action`,
-        method: 'POST',
-        data: transParams({
-          phonenum
-        })
-      })
-      m_jar = res.config.jar
-
-      res = await axios.request({
-        headers: {
-          "user-agent": useragent,
-          "X-Requested-With": "com.sinovatech.unicom.ui"
-        },
-        url: `http://st.woread.com.cn/touchextenernal/common/shouTingLogin.action`,
-        method: 'POST',
-        data: transParams({
-          phonenum
-        })
-      })
-      st_jar = res.config.jar
+      throw new Error('获取用户信息失败')
     }
 
-    // res = await axios.request({
-    //   headers: {
-    //     "user-agent": useragent,
-    //     "X-Requested-With": "com.sinovatech.unicom.ui"
-    //   },
-    //   url: `http://st.woread.com.cn/touchextenernal/read/index.action?channelid=18000018&yw_code=&desmobile=${options.user}&version=android@8.0100`,
-    //   method: 'GET',
-    //   jar: st_jar
-    // })
+    let { config: st_config } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      url: `http://st.woread.com.cn/touchextenernal/common/shouTingLogin.action`,
+      method: 'POST',
+      data: transParams({
+        phonenum
+      })
+    })
+    let st_jar = st_config.jar
+    cookiesJson = st_jar.toJSON()
+    diwert = cookiesJson.cookies.find(i => i.key == 'diwert')
+    useraccount = cookiesJson.cookies.find(i => i.key == 'useraccount')
+    if (!useraccount || !diwert) {
+      throw new Error('获取用户信息失败')
+    }
 
     return {
-      Token: data.message,
-      st_jar: res.config.jar || st_jar,
+      st_jar,
       m_jar
     }
   },
@@ -295,7 +274,7 @@ var dailyVideoBook = {
         'cnttype': detail.cnttype
       })
     })
-    console.log('updateReadTimes', data.message)
+    console.log('updateReadTimes 完成')
   },
   addDrawTimes: async (axios, options) => {
     let { jar } = options
@@ -305,7 +284,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
         "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://st.woread.com.cn/touchextenernal/readluchdraw/addDrawTimes.action`,
       method: 'POST',
@@ -322,7 +301,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `https://m.iread.wo.cn/`,
         "origin": "http://m.iread.wo.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://m.iread.wo.cn/touchextenernal/contentread/addReadRatioToRedis.action`,
       method: 'POST',
@@ -346,7 +325,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
         "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/reportLatestRead.action`,
       method: 'POST',
@@ -366,7 +345,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
         "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/sltPreReadChapter.action`,
       method: 'get',
@@ -391,7 +370,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
         "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://st.woread.com.cn/touchextenernal/thanksgiving/getActivityStatus.action`,
       method: 'POST',
@@ -407,7 +386,7 @@ var dailyVideoBook = {
         "user-agent": useragent,
         "referer": `http://st.woread.com.cn/`,
         "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+        "X-Requested-With": "XMLHttpRequest"
       },
       url: `http://st.woread.com.cn/touchextenernal/contentread/ajaxchapter.action`,
       method: 'POST',
@@ -473,7 +452,7 @@ var dailyVideoBook = {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
 
     let Authorization = await dailyVideoBook.oauthMethod(axios, options)
-    let { Token, m_jar, st_jar } = await dailyVideoBook.login(axios, {
+    let { m_jar, st_jar } = await dailyVideoBook.login(axios, {
       ...options,
       Authorization
     })
@@ -492,7 +471,7 @@ var dailyVideoBook = {
           "user-agent": useragent,
           "referer": `http://st.woread.com.cn/`,
           "origin": "http://st.woread.com.cn",
-        "X-Requested-With": "com.sinovatech.unicom.ui"
+          "X-Requested-With": "XMLHttpRequest"
         },
         url: `http://st.woread.com.cn/touchextenernal/thanksgiving/doDraw.action`,
         method: 'POST',
