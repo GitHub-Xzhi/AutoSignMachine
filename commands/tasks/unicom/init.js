@@ -30,7 +30,7 @@ var transParams = (data) => {
 };
 
 var chars = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-function generateMixed (n) {
+function generateMixed(n) {
   let res = "";
   for (var i = 0; i < n; i++) {
     var id = Math.ceil(Math.random() * 61);
@@ -42,24 +42,38 @@ function generateMixed (n) {
 module.exports = async (axios, params) => {
   let { cookies, options } = params
   const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+  let token_online
+  let appId
+  let data
 
-  const { data, config } = await axios.request({
-    baseURL: 'https://m.client.10010.com',
-    headers: {
-      "user-agent": useragent,
-      "referer": "https://m.client.10010.com",
-      "origin": "https://m.client.10010.com"
-    },
-    url: `/mobileService/customer/query/getMyUnicomDateTotle.htm`,
-    method: 'post'
-  })
+  if (cookies) {
+    let res = await axios.request({
+      baseURL: 'https://m.client.10010.com',
+      headers: {
+        "user-agent": useragent,
+        "referer": "https://m.client.10010.com",
+        "origin": "https://m.client.10010.com"
+      },
+      url: `/mobileService/customer/query/getMyUnicomDateTotle.htm`,
+      method: 'post'
+    })
+    data = res.data
+    config = res.config
+    let cookiesJson = config.jar.toJSON()
+    token_online = cookiesJson.cookies.find(i => i.key == 'token_online')
+    if (token_online) {
+      token_online = token_online.value
+    } else {
+      token_online = undefined
+    }
+    appId = cookiesJson.cookies.find(i => i.key == 'appId')
+    if (appId) {
+      appId = appId.value || options.appid
+    } else {
+      appId = undefined
+    }
+  }
 
-  let cookiesJson = config.jar.toJSON()
-  let token_online = cookiesJson.cookies.find(i => i.key == 'token_online')
-  token_online = token_online.value
-  let appId = cookiesJson.cookies.find(i => i.key == 'appId')
-  appId = appId.value
-  
   if (Object.prototype.toString.call(data) !== '[object Object]' || !data || !('phone' in data)) {
     console.log('cookies凭据访问失败，将使用账户密码登录')
     if (!('appid' in options) || !options['appid']) {
@@ -112,7 +126,7 @@ module.exports = async (axios, params) => {
   } else {
     const deviceId = generateMixed(15)
     var params = {
-      'appId': appId || options.appid,
+      'appId': appId,
       'deviceBrand': 'samsung',
       'deviceCode': deviceId,
       'deviceId': deviceId,
@@ -124,6 +138,9 @@ module.exports = async (axios, params) => {
       'reqtime': new Date().getTime(),
       'token_online': token_online,
       'version': `android@${unicom_version}`,
+    }
+    if (!params.appId) {
+      throw new Error('appId参数无效')
     }
     if (!params.token_online) {
       throw new Error('token_online参数无效')
