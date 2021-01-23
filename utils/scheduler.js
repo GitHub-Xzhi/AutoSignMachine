@@ -114,6 +114,7 @@ let scheduler = {
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
         let { taskJson, queues, will_queues } = await scheduler.loadTasksQueue()
+        let init
         if (will_queues.length) {
             for (let task of will_queues) {
                 let newTask = {}
@@ -129,7 +130,9 @@ let scheduler = {
                         let savedCookies = await getCookies([command, tttOptions.cookieFileKey || 'default'].join('_')) || tttOptions.cookies
                         let request = _request(savedCookies)
                         if (tttOptions.init) {
-                            let init = await tttOptions['init'](request, savedCookies)
+                            if (!init) {
+                                init = await tttOptions['init'](request, savedCookies)
+                            }
                             await ttt['callback'](init.request, init.data)
                         } else {
                             await ttt['callback'](request)
