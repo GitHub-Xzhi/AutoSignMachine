@@ -128,10 +128,11 @@ let scheduler = {
                         }
 
                         let ttt = tasks[task.taskName]
-                        let savedCookies = await getCookies([command, ttt.options.cookieFileKey || 'default'].join('_')) || ttt.options.cookies
+                        let tttOptions = ttt.options || {}
+                        let savedCookies = await getCookies([command, tttOptions.cookieFileKey || 'default'].join('_')) || tttOptions.cookies
                         let request = _request(savedCookies)
-                        if (ttt.options.init) {
-                            let init = await ttt.options['init'](request, savedCookies)
+                        if (tttOptions.init) {
+                            let init = await tttOptions['init'](request, savedCookies)
                             await ttt['callback'](init.request, init.data)
                         } else {
                             await ttt['callback'](request)
