@@ -33,7 +33,7 @@ let scheduler = {
             }
             let willTime = moment(randomDate(startDate, endDate));
             if (options) {
-                if (options.isCircle) {
+                if (options.isCircle || options.dev) {
                     willTime = moment().startOf('days');
                 }
                 if (options.startTime) {
@@ -44,7 +44,7 @@ let scheduler = {
                 taskName: taskName,
                 taskState: 0,
                 willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
-                waitTime: Math.floor(Math.random() * 600)
+                waitTime: options.dev ? 0 : Math.floor(Math.random() * 600)
             })
         }
         return queues
