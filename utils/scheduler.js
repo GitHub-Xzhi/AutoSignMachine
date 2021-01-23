@@ -21,6 +21,7 @@ let scheduler = {
     taskFile: path.join(os.homedir(), '.AutoSignMachine', 'taskFile.json'),
     today: '',
     isRunning: false,
+    isTryRun: false,
     taskJson: undefined,
     queues: [],
     will_queues: [],
@@ -44,11 +45,16 @@ let scheduler = {
                     willTime = moment().startOf('days').add(options.startTime, 'seconds');
                 }
             }
+            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
+            if (scheduler.isTryRun) {
+                willTime = moment().startOf('days');
+                waitTime = 0;
+            }
             queues.push({
                 taskName: taskName,
                 taskState: 0,
                 willTime: willTime.format('YYYY-MM-DD HH:mm:ss'),
-                waitTime: options.dev ? 0 : Math.floor(Math.random() * 600)
+                waitTime: waitTime
             })
         }
         return queues
@@ -116,7 +122,12 @@ let scheduler = {
             options
         }
     },
-    hasWillTask: async (command) => {
+    hasWillTask: async (command, tryRun) => {
+        scheduler.isTryRun = tryRun
+        if (tryRun) {
+            console.log('!!!当前运行在TryRun模式，仅建议在测试时运行!!!')
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+        }
         console.log('计算可执行任务')
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
