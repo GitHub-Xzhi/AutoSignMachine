@@ -31,7 +31,7 @@ var start = async (params) => {
   }, taskOption)
 
   // 每日定向积分 20201231
-  await scheduler.regTask('dxIntegralEveryDay', async () => {
+  await scheduler.regTask('dxIntegralEveryDay', async (request) => {
     await require('./integral').dxIntegralEveryDay(request, options)
   }, taskOption)
 
