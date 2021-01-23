@@ -26,11 +26,12 @@ var setCookieString = function (jar, cookies, config) {
   } else {
     url = config.baseURL + config.url
   }
-  console.log('setCookieString for', url)
+  let uuuu = new URL(url)
+  console.log('setCookieString for', uuuu.origin)
   cookies = parseDefaultCookie(cookies)
   if (Object.prototype.toString.call(cookies) == '[object String]') {
     cookies.split('; ').forEach(cookie => {
-      jar.setCookieSync(cookie, new URL(url).origin + '/', {})
+      jar.setCookieSync(cookie, uuuu.origin + '/', {})
     })
   }
   return jar
