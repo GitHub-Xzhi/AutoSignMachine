@@ -80,7 +80,6 @@ let scheduler = {
                     today,
                     queues
                 }))
-                await scheduler.initTasksQueue()
             }
         }
         scheduler.today = today
@@ -99,6 +98,9 @@ let scheduler = {
             taskJson = JSON.parse(taskJson)
             if (taskJson.today === scheduler.today) {
                 queues = taskJson.queues
+            }
+            if (scheduler.isTryRun) {
+                await fs.unlinkSync(scheduler.taskFile)
             }
         }
         for (let task of queues) {
@@ -124,7 +126,7 @@ let scheduler = {
     },
     hasWillTask: async (command, tryRun) => {
         scheduler.isTryRun = tryRun
-        if (tryRun) {
+        if (scheduler.isTryRun) {
             console.log('!!!当前运行在TryRun模式，仅建议在测试时运行!!!')
             await new Promise((resolve) => setTimeout(resolve, 3000))
         }
