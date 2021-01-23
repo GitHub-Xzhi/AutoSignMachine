@@ -3,7 +3,7 @@ const path = require('path')
 const fs = require('fs-extra')
 var moment = require('moment');
 moment.locale('zh-cn');
-const { getCookies, saveCookies } = require('./util')
+const { getCookies, saveCookies, delCookiesFile } = require('./util')
 const _request = require('./request')
 
 const randomDate = (startDate, endDate) => {
@@ -100,7 +100,7 @@ let scheduler = {
                 queues = taskJson.queues
             }
             if (scheduler.isTryRun) {
-                await fs.unlinkSync(scheduler.taskFile)
+                fs.unlinkSync(scheduler.taskFile)
             }
         }
         for (let task of queues) {
@@ -157,6 +157,9 @@ let scheduler = {
 
                         let ttt = tasks[task.taskName]
                         let tttOptions = ttt.options || {}
+                        if (scheduler.isTryRun) {
+                            await delCookiesFile([command, tttOptions.cookieFileKey || 'default'].join('_'))
+                        }
                         let savedCookies = await getCookies([command, tttOptions.cookieFileKey || 'default'].join('_')) || tttOptions.cookies
                         let request = _request(savedCookies)
                         if (tttOptions.init) {

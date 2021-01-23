@@ -3,6 +3,10 @@ const path = require('path')
 const fs = require('fs-extra')
 
 module.exports = {
+    async delCookiesFile(key) {
+        let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
+        fs.unlinkSync(cookieFile)
+    },
     getCookies: (key) => {
         let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
         if (fs.existsSync(cookieFile)) {
