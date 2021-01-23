@@ -10,6 +10,15 @@ var sign = (data) => {
   });
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
+
+var transParams = (data) => {
+  let params = new URLSearchParams();
+  for (let item in data) {
+    params.append(item, data['' + item + '']);
+  }
+  return params;
+};
+
 var woTree = {
   entry: async (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
@@ -152,11 +161,12 @@ var woTree = {
             "user-agent": useragent,
             "referer": `https://img.client.10010.com/`,
             "origin": "https://img.client.10010.com",
-            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
           },
           url: `https://m.client.10010.com/mactivity/arbordayJson/giveGrowChance.htm`,
           method: 'POST',
-          data: '{}'
+          data: transParams({
+            "{}": ""
+          })
         })
         console.log(result.data.msg)
       }
@@ -165,11 +175,12 @@ var woTree = {
           "user-agent": useragent,
           "referer": `https://img.client.10010.com/`,
           "origin": "https://img.client.10010.com",
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
         },
         url: `https://m.client.10010.com/mactivity/arbordayJson/arbor/3/0/3/grow.htm`,
         method: 'POST',
-        data: '{}'
+        data: transParams({
+          "{}": ""
+        })
       })
       let result = res.data
       if (result.code !== '0000') {
