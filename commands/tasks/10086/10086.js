@@ -7,6 +7,7 @@ var start = async (params) => {
 
     let init = async (request, savedCookies) => {
         if (!savedCookies) {
+            await saveCookies('10086_' + (options.user || 'default'), cookies)
             return {
                 request: _request(cookies)
             }

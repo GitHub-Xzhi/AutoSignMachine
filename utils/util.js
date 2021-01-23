@@ -14,15 +14,17 @@ module.exports = {
     saveCookies: (key, cookies, cookiesJar) => {
         let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
         let allcookies = {}
-        if(cookies){
+        if (cookies) {
             cookies.split('; ').map(c => {
                 let item = c.split('=')
                 allcookies[item[0]] = item[1] || ''
             })
         }
-        cookiesJar.toJSON().cookies.map(c => {
-            allcookies[c.key] = c.value || ''
-        })
+        if (cookiesJar) {
+            cookiesJar.toJSON().cookies.map(c => {
+                allcookies[c.key] = c.value || ''
+            })
+        }
         let cc = []
         for (let key in allcookies) {
             cc.push({
