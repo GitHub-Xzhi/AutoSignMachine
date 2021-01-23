@@ -182,6 +182,24 @@ var woTree = {
         }
       }
     } while (--num)
+  },
+  doTask: async (request, options) => {
+    // 沃之树 浇水
+    await woTree.water(request, options)
+    let i = 2
+    let result
+    do {
+      // 普通 - 看视频 似乎是分开的两次
+      result = await woTree.getStatus(request, options)
+      await woTree.takeFlow(request, {
+        options,
+        flowChangeList: result.flowChangeList
+      })
+    } while (i--)
+    await woTree.takePop(request, {
+      options,
+      popList: result.popList
+    })
   }
 }
 
