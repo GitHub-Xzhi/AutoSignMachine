@@ -5,20 +5,14 @@ var start = async (params) => {
   const { cookies, options } = params
 
   let init = async (request, savedCookies) => {
-    if (!savedCookies) {
-      let userInfo = await require('./init')(request, {
-        ...params,
-        cookies: savedCookies || cookies
-      })
-      return {
-        request,
-        data: {
-          userInfo
-        }
-      }
-    } else {
-      return {
-        request
+    let userInfo = await require('./init')(request, {
+      ...params,
+      cookies: savedCookies || cookies
+    })
+    return {
+      request,
+      data: {
+        userInfo
       }
     }
   }
