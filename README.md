@@ -162,5 +162,14 @@ docker run \
 */30 4-23 * * * /bin/node /workspace/AutoSignMachine/index.js unicom --user 1******5 --password 7****** --appid 1************9
 ```
 
+### 运行测试
+```sh
+## 立即模式, 一次性执行所有任务，仅建议测试任务是否正常时运行
+#增加 --tryrun
+
+## 指定任务模式，可以指定仅需要运行的子任务
+#增加 --tasks taskName1,taskName2,taskName3
+```
+
 ### GitHub Actions 运行问题
 暂未处理GitHub Actions支持
