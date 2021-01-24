@@ -110,7 +110,7 @@ docker run \
 * **首页-积分查询-游戏任务**
 
 ```sh
-node index.js unicom --user 131*******12 --pasword 11****11 --appid f7af****ebb
+node index.js unicom --user 131*******12 --password 11****11 --appid f7af****ebb
 ```
 
 ### docker部署
@@ -124,7 +124,7 @@ docker run \
   --label traefik.enable=false \
   -e enable_unicom=true \
   -e user=131*******12 \
-  -e pasword=11****11 \
+  -e password=11****11 \
   -e appid=f7af****ebb \
   auto-sign-machine:latest
 ```
