@@ -54,7 +54,7 @@ exports.handler = async function (argv) {
       options: {}
     }).catch(err => console.log("52pojie签到任务:", err.message))
     let hasTasks = await scheduler.hasWillTask(command, {
-      tryrun: 'tryrun' in account,
+      tryrun: 'tryrun' in argv,
       taskKey: account.htVD_2132_auth
     })
     if (hasTasks) {

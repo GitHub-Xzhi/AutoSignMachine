@@ -85,7 +85,7 @@ exports.handler = async function (argv) {
       }
     }).catch(err => console.log("bilibili签到任务:", err.message))
     let hasTasks = await scheduler.hasWillTask(command, {
-      tryrun: 'tryrun' in account,
+      tryrun: 'tryrun' in argv,
       taskKey: account.username
     })
     if (hasTasks) {
