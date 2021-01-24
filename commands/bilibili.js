@@ -77,8 +77,8 @@ exports.handler = async function (argv) {
         NumberOfCoins: account.NumberOfCoins,
         CoinsForVideo: account.CoinsForVideo,
         SelectLike: account.SelectLike,
-        username: account.username,
-        password: account.password,
+        username: account.username + '',
+        password: account.password + '',
       }
     }).catch(err => console.log("bilibili签到任务:", err.message))
     let hasTasks = await scheduler.hasWillTask(command, {

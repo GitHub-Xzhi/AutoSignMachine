@@ -26,7 +26,7 @@ exports.handler = async function (argv) {
             if (('user-' + sn) in argv) {
                 accounts.push({
                     cookies: argv['cookies-' + sn],
-                    user: argv['user-' + sn],
+                    user: argv['user-' + sn] + '',
                     tryrun: argv['tryrun-' + sn],
                     tasks: argv['tasks-' + sn]
                 })

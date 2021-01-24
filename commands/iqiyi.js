@@ -57,7 +57,7 @@ exports.handler = async function (argv) {
       cookies: {
         P00001: account.P00001,
         P00003: account.P00PRU,
-        P00PRU: account.P00PRU,
+        P00PRU: account.P00PRU + '',
         QC005: account.QC005,
         _dfp: account.dfp
       },
