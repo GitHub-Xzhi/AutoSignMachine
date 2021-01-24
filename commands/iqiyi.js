@@ -30,25 +30,49 @@ exports.builder = function (yargs) {
 
 exports.handler = async function (argv) {
   var command = argv._[0]
-  await require(path.join(__dirname, 'tasks', command, command)).start({
-    cookies: {
-      P00001: argv.P00001,
-      P00003: argv.P00PRU,
-      P00PRU: argv.P00PRU,
-      QC005: argv.QC005,
-      _dfp: argv.dfp
-    },
-    options: {}
-  }).catch(err => console.log("iqiyi签到任务:", err.message))
-  let hasTasks = await scheduler.hasWillTask(command, {
-    tryrun: 'tryrun' in argv,
-    taskKey: argv.P00PRU
-  })
-  if (hasTasks) {
-    scheduler.execTask(command, argv.tasks).catch(err => console.log("iqiyi签到任务:", err.message)).finally(() => {
-      console.log('全部任务执行完毕！')
-    })
+  var accounts = []
+  if ('accountSn' in argv && argv.accountSn) {
+    let accountSns = argv.accountSn.split(',')
+    for (let sn of accountSns) {
+      if (('P00PRU-' + sn) in argv) {
+        accounts.push({
+          P00001: argv['P00001-' + sn],
+          P00PRU: argv['P00PRU-' + sn],
+          P00PRU: argv['P00PRU-' + sn],
+          QC005: argv['QC005-' + sn],
+          dfp: argv['dfp-' + sn],
+          tryrun: argv['tryrun-' + sn],
+          tasks: argv['tasks-' + sn]
+        })
+      }
+    }
   } else {
-    console.log('暂无可执行任务！')
+    accounts.push({
+      ...argv
+    })
+  }
+  console.log('总账户数', accounts.length)
+  for (let account of accounts) {
+    await require(path.join(__dirname, 'tasks', command, command)).start({
+      cookies: {
+        P00001: account.P00001,
+        P00003: account.P00PRU,
+        P00PRU: account.P00PRU,
+        QC005: account.QC005,
+        _dfp: account.dfp
+      },
+      options: {}
+    }).catch(err => console.log("iqiyi签到任务:", err.message))
+    let hasTasks = await scheduler.hasWillTask(command, {
+      tryrun: 'tryrun' in account,
+      taskKey: account.P00PRU
+    })
+    if (hasTasks) {
+      scheduler.execTask(command, account.tasks).catch(err => console.log("iqiyi签到任务:", err.message)).finally(() => {
+        console.log('全部任务执行完毕！')
+      })
+    } else {
+      console.log('暂无可执行任务！')
+    }
   }
 }  

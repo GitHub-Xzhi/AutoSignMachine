@@ -7,6 +7,7 @@ var AutoSignMachine_Run = () => {
   yargs(hideBin(process.argv))
     .commandDir('commands')
     .demand(1)
+    .config('config', 'JSON配置文件路径')
     .help()
     .alias('h', 'help')
     .locale('en')

@@ -23,22 +23,43 @@ exports.builder = function (yargs) {
 
 exports.handler = async function (argv) {
     var command = argv._[0]
-    await require(path.join(__dirname, 'tasks', command, command)).start({
-        cookies: {
-            wps_sid: argv.wps_sid,
-            csrf: argv.csrf,
-        },
-        options: {}
-    }).catch(err => console.log("wps签到任务:", err.message))
-    let hasTasks = await scheduler.hasWillTask(command, {
-        tryrun: 'tryrun' in argv,
-        taskKey: argv.wps_sid
-    })
-    if (hasTasks) {
-        scheduler.execTask(command, argv.tasks).catch(err => console.log("wps签到任务:", err.message)).finally(() => {
-            console.log('全部任务执行完毕！')
-        })
+    var accounts = []
+    if ('accountSn' in argv && argv.accountSn) {
+        let accountSns = argv.accountSn.split(',')
+        for (let sn of accountSns) {
+            if (('wps_sid-' + sn) in argv) {
+                accounts.push({
+                    wps_sid: argv['wps_sid-' + sn],
+                    csrf: argv['csrf-' + sn],
+                    tryrun: argv['tryrun-' + sn],
+                    tasks: argv['tasks-' + sn]
+                })
+            }
+        }
     } else {
-        console.log('暂无可执行任务！')
+        accounts.push({
+            ...argv
+        })
+    }
+    console.log('总账户数', accounts.length)
+    for (let account of accounts) {
+        await require(path.join(__dirname, 'tasks', command, command)).start({
+            cookies: {
+                wps_sid: account.wps_sid,
+                csrf: account.csrf,
+            },
+            options: {}
+        }).catch(err => console.log("wps签到任务:", err.message))
+        let hasTasks = await scheduler.hasWillTask(command, {
+            tryrun: 'tryrun' in account,
+            taskKey: account.wps_sid
+        })
+        if (hasTasks) {
+            scheduler.execTask(command, account.tasks).catch(err => console.log("wps签到任务:", err.message)).finally(() => {
+                console.log('全部任务执行完毕！')
+            })
+        } else {
+            console.log('暂无可执行任务！')
+        }
     }
 }

@@ -41,5 +41,19 @@ module.exports = {
         fs.ensureFileSync(cookieFile)
         fs.writeFileSync(cookieFile, cc.map(c => c.key + '=' + c.value).join('; ')
         )
+    },
+    resolveConfigFile: (file) => {
+        if (file) {
+            if (file.indexOf('/') === 0) {
+                if (fs.existsSync(file)) {
+                    throw new Error('-f指定的文件不存在')
+                }
+                return path.resolve(file)
+            } else {
+                return path.resolve(process.cwd(), file)
+            }
+        } else {
+            throw new Error('-f需要指定配置文件参数')
+        }
     }
 }

@@ -35,23 +35,46 @@ exports.builder = function (yargs) {
 
 exports.handler = async function (argv) {
   var command = argv._[0]
-  await require(path.join(__dirname, 'tasks', command, command)).start({
-    cookies: argv.cookies,
-    options: {
-      appid: argv.appid,
-      user: argv.user,
-      password: argv.password
+  var accounts = []
+  if ('accountSn' in argv && argv.accountSn) {
+    let accountSns = argv.accountSn.split(',')
+    for (let sn of accountSns) {
+      if (('user-' + sn) in argv) {
+        accounts.push({
+          cookies: argv['cookies-' + sn],
+          user: argv['user-' + sn],
+          password: argv['password-' + sn],
+          appid: argv['appid-' + sn],
+          tryrun: argv['tryrun-' + sn],
+          tasks: argv['tasks-' + sn]
+        })
+      }
     }
-  }).catch(err => console.log("unicom任务:", err))
-  let hasTasks = await scheduler.hasWillTask(command, {
-    tryrun: 'tryrun' in argv,
-    taskKey: argv.user
-  })
-  if (hasTasks) {
-    scheduler.execTask(command, argv.tasks).catch(err => console.log("unicom任务:", err)).finally(() => {
-      console.log('全部任务执行完毕！')
-    })
   } else {
-    console.log('暂无可执行任务！')
+    accounts.push({
+      ...argv
+    })
+  }
+  console.log('总账户数', accounts.length)
+  for (let account of accounts) {
+    await require(path.join(__dirname, 'tasks', command, command)).start({
+      cookies: account.cookies,
+      options: {
+        appid: account.appid,
+        user: account.user,
+        password: account.password
+      }
+    }).catch(err => console.log("unicom任务:", err))
+    let hasTasks = await scheduler.hasWillTask(command, {
+      tryrun: 'tryrun' in account,
+      taskKey: account.user
+    })
+    if (hasTasks) {
+      scheduler.execTask(command, account.tasks).catch(err => console.log("unicom任务:", err)).finally(() => {
+        console.log('全部任务执行完毕！')
+      })
+    } else {
+      console.log('暂无可执行任务！')
+    }
   }
 }  
