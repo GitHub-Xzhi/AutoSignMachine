@@ -126,8 +126,8 @@ let scheduler = {
         }
     },
     hasWillTask: async (command, params) => {
-        const { taskKey, tryRun } = params
-        scheduler.isTryRun = tryRun
+        const { taskKey, tryrun } = params
+        scheduler.isTryRun = tryrun
         scheduler.taskKey = taskKey || 'default'
         if (scheduler.isTryRun) {
             console.log('!!!当前运行在TryRun模式，仅建议在测试时运行!!!')
