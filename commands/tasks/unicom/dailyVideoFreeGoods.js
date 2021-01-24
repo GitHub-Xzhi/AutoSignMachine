@@ -93,10 +93,10 @@ var dailyVideoFreeGoods = {
     let jar1 = result.config.jar
     let cookiesJson = jar1.toJSON()
     let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
-    ecs_token = ecs_token.value
     if (!ecs_token) {
       throw new Error('ecs_token缺失')
     }
+    ecs_token = ecs_token.value
     let { goods, freeTimes, leftTimes, time, getFreeTime, sameGoodsMaxTimes } = await dailyVideoFreeGoods.getGoodsList(axios, {
       ...options,
       token: ecs_token

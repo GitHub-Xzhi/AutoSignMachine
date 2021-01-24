@@ -90,11 +90,14 @@ var dailyYYY = {
 
     let cookiesJson = jar1.toJSON()
     let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
-    ecs_token = ecs_token.value
     if (!ecs_token) {
       throw new Error('ecs_token缺失')
     }
+    ecs_token = ecs_token.value
     let jfid = cookiesJson.cookies.find(i => i.key == '_jf_id')
+    if (!jfid) {
+      throw new Error('jfid缺失')
+    }
     jfid = jfid.value
 
     // let ff = { "params": "vogRkS7brjqaInNHJv4oumE6HtGp7tbG7ZE9P21hmoaBq/rSwtvFjI/vcw2bNbdFUW1s27XOdaXbcBWHpgDYxmQuMP4aFj0Fy3JYp566sCH+97rQyrJRf1GzslAsSiLQJC4DQawzH+J54FIipKElMw==4", "parKey": ["YTJapEBcsMsMOU1i", "yJI3cV3zUxqZWd5j", "TmLBjGV8hTfZ7rMf", "QqAuodE1Zz9eA84p", "IM9f9CfT8LDK2RQ7"] }

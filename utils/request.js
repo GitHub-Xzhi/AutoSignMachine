@@ -42,6 +42,7 @@ module.exports = cookies => {
     headers: {
       Cookie: parseDefaultCookie(cookies)
     },
+    jar: new tough.CookieJar(),
     timeout: 60000,
     withCredentials: true
   })

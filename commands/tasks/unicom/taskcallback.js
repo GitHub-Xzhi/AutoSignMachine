@@ -64,10 +64,10 @@ var taskcallback = {
         let { params, jar } = options
         let cookiesJson = jar.toJSON()
         let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
-        ecs_token = ecs_token.value
         if (!ecs_token) {
             throw new Error('ecs_token缺失')
         }
+        ecs_token = ecs_token.value
         let orderId = params.orderId || crypto.createHash('md5').update(new Date().getTime() + '').digest('hex')
         let codeId = parseInt(params.codeId || 945535616)
         let app_id = "5049584"

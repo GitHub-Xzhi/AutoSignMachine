@@ -123,6 +123,7 @@ module.exports = async (axios, params) => {
     }
     cookies = 'token_online=' + data.token_online + '; appId=' + data.appId
     await saveCookies('unicom_' + options.user, cookies, config.jar)
+    console.log('获得登录状态成功')
   } else {
     const deviceId = generateMixed(15)
     var params = {
@@ -162,7 +163,6 @@ module.exports = async (axios, params) => {
     }
     cookies += '; token_online=' + data.token_online + '; appId=' + data.appId
     await saveCookies('unicom_' + options.user, cookies, config.jar)
+    console.log('获得登录状态成功')
   }
-
-  console.log('获得登录状态成功')
 }

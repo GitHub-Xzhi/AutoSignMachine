@@ -137,18 +137,26 @@ let scheduler = {
         scheduler.isRunning = true
         return will_queues.length
     },
-    execTask: async (command) => {
+    execTask: async (command, selectedTasks) => {
         console.log('开始执行任务')
         if (!scheduler.isRunning) {
             await scheduler.genFileName(command)
             await scheduler.initTasksQueue()
+        }
+        selectedTasks = selectedTasks ? selectedTasks.split(',').filter(q => q) : ''
+        if (selectedTasks.length) {
+            console.log('将只执行选择的任务', selectedTasks.join(','))
         }
         let { taskJson, queues, will_queues } = scheduler
         let init
         if (will_queues.length) {
             for (let task of will_queues) {
                 let newTask = {}
-                if (task.taskName in tasks) {
+                if (task.taskName in tasks &&
+                    (
+                        !selectedTasks.length ||
+                        selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1
+                    )) {
                     try {
                         if (task.waitTime) {
                             console.log('延迟执行', task.waitTime, 'seconds')

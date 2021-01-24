@@ -50,10 +50,10 @@ var woTree = {
     let jar = result.config.jar
     let cookiesJson = jar.toJSON()
     let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
-    ecs_token = ecs_token.value
     if (!ecs_token) {
       throw new Error('ecs_token缺失')
     }
+    ecs_token = ecs_token.value
 
     return {
       searchParams,

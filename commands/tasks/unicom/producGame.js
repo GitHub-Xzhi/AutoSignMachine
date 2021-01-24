@@ -2,7 +2,7 @@
 const CryptoJS = require("crypto-js");
 const { default: PQueue } = require('p-queue');
 const moment = require('moment');
-const path = require('path')
+const path = require('path');
 
 var transParams = (data) => {
     let params = new URLSearchParams();
@@ -63,19 +63,14 @@ var producGame = {
     },
 
     playGame: async (axios, options) => {
-        const { game, app, launchid } = options
+        const { game, launchid, jar } = options
 
-        let jwt = undefined
-        axios.defaults.headers.Cookie.split('; ').forEach(item => {
-            if (item.indexOf('jwt') === 0) {
-                jwt = item.split("=").pop()
-            }
-        })
-
+        let cookiesJson = jar.toJSON()
+        let jwt = cookiesJson.cookies.find(i => i.key == 'jwt')
         if (!jwt) {
-            console.log('jwt缺失')
-            return
+            throw new Error('jwt缺失')
         }
+        jwt = jwt.value
 
         let playGame = require(path.resolve(path.join(__dirname, './playGame.json')));
         let protobufRoot = require('protobufjs').Root;
@@ -142,6 +137,7 @@ var producGame = {
                 headers: {
                     "user-agent": "okhttp/4.4.0"
                 },
+                jar: null,
                 url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=${Nonce}&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=${Timestamp}&Signature=${hashInBase64}`,
                 method: 'post',
                 responseType: 'arrayBuffer',
@@ -151,20 +147,20 @@ var producGame = {
             console.log(Buffer.from(res.data).toString('hex'))
 
             // 这里不等待1分钟，上面使用 n*62 时长累计来替代，也可正常领取
-            await new Promise((resolve, reject) => setTimeout(resolve, 45 * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000))
 
             ++n
         } while (n <= 6)
     },
     gameInfo: async (axios, options) => {
-        const { game } = options
+        const { game, jar } = options
 
-        let jwt = undefined
-        axios.defaults.headers.Cookie.split('; ').forEach(item => {
-            if (item.indexOf('jwt') === 0) {
-                jwt = item.split("=").pop()
-            }
-        })
+        let cookiesJson = jar.toJSON()
+        let jwt = cookiesJson.cookies.find(i => i.key == 'jwt')
+        if (!jwt) {
+            throw new Error('jwt缺失')
+        }
+        jwt = jwt.value
 
         let playGame = require(path.resolve(path.join(__dirname, './playGame.json')));
         let protobufRoot = require('protobufjs').Root;
@@ -217,6 +213,7 @@ var producGame = {
             headers: {
                 "user-agent": "okhttp/4.4.0"
             },
+            jar: null,
             url: `https://q.qq.com/mini/OpenChannel?Action=input&Nonce=${Nonce}&PlatformID=2001&SignatureMethod=HmacSHA256&Timestamp=${Timestamp}&Signature=${hashInBase64}`,
             method: 'post',
             responseType: 'arrayBuffer',
@@ -232,7 +229,7 @@ var producGame = {
             'deviceType': 'Android',
             'clientVersion': '8.0100',
         }
-        let { data } = await axios.request({
+        let { data, config } = await axios.request({
             baseURL: 'https://m.client.10010.com/',
             headers: {
                 "user-agent": useragent,
@@ -244,19 +241,23 @@ var producGame = {
             data: transParams(params)
         })
         if (data) {
-            return data.popularList || []
+            return {
+                jar: config.jar,
+                popularList: data.popularList || []
+            }
         } else {
             console.log('记录失败')
         }
     },
     gameverify: async (axios, options) => {
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
-        let jwt = undefined
-        axios.defaults.headers.Cookie.split('; ').forEach(item => {
-            if (item.indexOf('jwt') === 0) {
-                jwt = item.split("=").pop()
-            }
-        })
+        const { jar } = options
+        let cookiesJson = jar.toJSON()
+        let jwt = cookiesJson.cookies.find(i => i.key == 'jwt')
+        if (!jwt) {
+            throw new Error('jwt缺失')
+        }
+        jwt = jwt.value
+
         let { data } = await axios.request({
             baseURL: 'https://m.client.10010.com/',
             headers: {
@@ -334,7 +335,7 @@ var producGame = {
         }
     },
     doGameFlowTask: async (axios, options) => {
-        let allgames = await producGame.popularGames(axios, options)
+        let { popularList: allgames, jar } = await producGame.popularGames(axios, options)
         let games = await producGame.timeTaskQuery(axios, options)
         games = allgames.filter(g => games.filter(g => g.state === '0').map(i => i.gameId).indexOf(g.id) !== -1)
         console.log('剩余未完成game', games.length)
@@ -343,18 +344,15 @@ var producGame = {
         for (let game of games) {
             queue.add(async () => {
                 console.log(game.name)
-                let { appInfo } = await producGame.gameInfo(axios, {
-                    ...options,
-                    game
-                })
                 await producGame.gameverify(axios, {
                     ...options,
+                    jar,
                     game
                 })
                 await producGame.playGame(axios, {
                     ...options,
-                    game,
-                    app: appInfo
+                    jar,
+                    game
                 })
             })
         }

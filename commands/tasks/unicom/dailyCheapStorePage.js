@@ -9,7 +9,7 @@ var transParams = (data) => {
   }
   return params;
 };
-function w () {
+function w() {
   var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
     , t = [];
   return Object.keys(e).forEach((function (a) {
@@ -29,7 +29,7 @@ var sign = (data) => {
   return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
-function encryption (data, key) {
+function encryption(data, key) {
   var iv = "";
   var cipherEncoding = 'base64';
   var cipher = crypto.createCipheriv('aes-128-ecb', key, iv);
@@ -91,10 +91,10 @@ var dailyCheapStorePage = {
 
     let cookiesJson = jar1.toJSON()
     let ecs_token = cookiesJson.cookies.find(i => i.key == 'ecs_token')
-    ecs_token = ecs_token.value
     if (!ecs_token) {
       throw new Error('ecs_token缺失')
     }
+    ecs_token = ecs_token.value
 
     let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
     let playCounts = 0
@@ -176,7 +176,7 @@ var dailyCheapStorePage = {
 
       if (result.data.code !== 200) {
         console.log('提交任务失败', result.data.msg)
-        if(result.data.msg.indexOf('请勿频繁操作') !==-1){
+        if (result.data.msg.indexOf('请勿频繁操作') !== -1) {
           throw new Error('取消本次任务')
         }
       } else {

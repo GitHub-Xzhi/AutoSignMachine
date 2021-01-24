@@ -95,6 +95,9 @@ var dailyYYQ = {
       throw new Error('ecs_token缺失')
     }
     let jfid = cookiesJson.cookies.find(i => i.key == '_jf_id')
+    if (!jfid) {
+      throw new Error('jfid缺失')
+    }
     jfid = jfid.value
 
     let keyArr = secretkeyArray()

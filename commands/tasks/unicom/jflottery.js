@@ -90,6 +90,9 @@ module.exports = {
         let { searchParams, jar } = await module.exports.getTicket(axios, options)
         let cookiesJson = jar.toJSON()
         let jfid = cookiesJson.cookies.find(i => i.key == '_jf_id')
+        if (!jfid) {
+          throw new Error('jfid缺失')
+        }
         jfid = jfid.value
 
         let keyArr = secretkeyArray()
