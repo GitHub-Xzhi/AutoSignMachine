@@ -316,7 +316,7 @@ var producGame = {
             'deviceType': 'Android',
             'clientVersion': '8.0100',
         }
-        let { data } = await axios.request({
+        let { data, config } = await axios.request({
             headers: {
                 "user-agent": useragent,
                 "referer": "https://img.client.10010.com",
@@ -328,10 +328,13 @@ var producGame = {
         })
         if (data.code === '0000') {
             // reachState 0未完成, 1未领取, 2已完成
-            return data.data
+            return {
+                jar: config.jar,
+                games: data.data
+            }
         } else {
             console.log('获取游戏任务失败')
-            return []
+            return {}
         }
     },
     doGameFlowTask: async (axios, options) => {
@@ -372,7 +375,7 @@ var producGame = {
         }
     },
     doGameIntegralTask: async (axios, options) => {
-        let games = await producGame.getTaskList(axios, options)
+        let { games, jar } = await producGame.getTaskList(axios, options)
         games = games.filter(d => d.task === '5' && d.reachState === '0' && d.task_type === 'duration')
         console.log('剩余未完成game', games.length)
         let queue = new PQueue({ concurrency: 2 });
@@ -381,6 +384,7 @@ var producGame = {
                 console.log(game.name)
                 await producGame.gameverify(axios, {
                     ...options,
+                    jar,
                     game
                 })
                 await producGame.gamerecord(axios, {
@@ -389,6 +393,7 @@ var producGame = {
                 })
                 await producGame.playGame(axios, {
                     ...options,
+                    jar,
                     game: {
                         ...game,
                         gameCode: game.resource_id
@@ -401,8 +406,8 @@ var producGame = {
         await queue.onIdle()
 
         await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 30) * 1000))
-        games = await producGame.getTaskList(axios, options)
-        games = games.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
+        let { games: cgames } = await producGame.getTaskList(axios, options)
+        games = cgames.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
         console.log('剩余未领取game', games.length)
         for (let game of games) {
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
