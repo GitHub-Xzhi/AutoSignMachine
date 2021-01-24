@@ -367,7 +367,7 @@ var producGame = {
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
             await producGame.gameFlowGet(axios, {
                 ...options,
-                gameId: game.id
+                gameId: game.gameId
             })
         }
     },
@@ -379,10 +379,6 @@ var producGame = {
         for (let game of games) {
             queue.add(async () => {
                 console.log(game.name)
-                let { appInfo } = await producGame.gameInfo(axios, {
-                    ...options,
-                    game
-                })
                 await producGame.gameverify(axios, {
                     ...options,
                     game
@@ -396,8 +392,7 @@ var producGame = {
                     game: {
                         ...game,
                         gameCode: game.resource_id
-                    },
-                    app: appInfo
+                    }
                 })
 
             })
