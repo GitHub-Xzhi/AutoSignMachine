@@ -40,14 +40,17 @@ exports.handler = async function (argv) {
     let accountSns = argv.accountSn.split(',')
     for (let sn of accountSns) {
       if (('user-' + sn) in argv) {
-        accounts.push({
+        let account = {
           cookies: argv['cookies-' + sn],
           user: argv['user-' + sn] + '',
           password: argv['password-' + sn] + '',
           appid: argv['appid-' + sn],
-          tryrun: argv['tryrun-' + sn],
           tasks: argv['tasks-' + sn]
-        })
+        }
+        if (('tryrun-' + sn) in argv) {
+          account['tryrun'] = true
+        }
+        accounts.push(account)
       }
     }
   } else {

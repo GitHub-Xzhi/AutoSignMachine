@@ -28,12 +28,15 @@ exports.handler = async function (argv) {
     let accountSns = argv.accountSn.split(',')
     for (let sn of accountSns) {
       if (('htVD_2132_auth-' + sn) in argv) {
-        accounts.push({
+        let account = {
           htVD_2132_auth: argv['htVD_2132_auth-' + sn],
           htVD_2132_saltkey: argv['htVD_2132_saltkey-' + sn],
-          tryrun: argv['tryrun-' + sn],
           tasks: argv['tasks-' + sn]
-        })
+        }
+        if (('tryrun-' + sn) in argv) {
+          account['tryrun'] = true
+        }
+        accounts.push(account)
       }
     }
   } else {

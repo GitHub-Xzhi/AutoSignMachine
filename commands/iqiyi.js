@@ -35,15 +35,18 @@ exports.handler = async function (argv) {
     let accountSns = argv.accountSn.split(',')
     for (let sn of accountSns) {
       if (('P00PRU-' + sn) in argv) {
-        accounts.push({
+        let account = {
           P00001: argv['P00001-' + sn],
           P00PRU: argv['P00PRU-' + sn],
           P00PRU: argv['P00PRU-' + sn],
           QC005: argv['QC005-' + sn],
           dfp: argv['dfp-' + sn],
-          tryrun: argv['tryrun-' + sn],
           tasks: argv['tasks-' + sn]
-        })
+        }
+        if (('tryrun-' + sn) in argv) {
+          account['tryrun'] = true
+        }
+        accounts.push(account)
       }
     }
   } else {

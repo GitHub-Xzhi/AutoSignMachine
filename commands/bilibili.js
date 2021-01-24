@@ -52,16 +52,19 @@ exports.handler = async function (argv) {
     let accountSns = argv.accountSn.split(',')
     for (let sn of accountSns) {
       if (('username-' + sn) in argv) {
-        accounts.push({
+        let account = {
           cookies: argv['cookies-' + sn],
           NumberOfCoins: argv['NumberOfCoins-' + sn],
           CoinsForVideo: argv['CoinsForVideo-' + sn],
           SelectLike: argv['SelectLike-' + sn],
           username: argv['username-' + sn],
           password: argv['password-' + sn],
-          tryrun: argv['tryrun-' + sn],
           tasks: argv['tasks-' + sn]
-        })
+        }
+        if (('tryrun-' + sn) in argv) {
+          account['tryrun'] = true
+        }
+        accounts.push(account)
       }
     }
   } else {

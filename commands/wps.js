@@ -28,12 +28,15 @@ exports.handler = async function (argv) {
         let accountSns = argv.accountSn.split(',')
         for (let sn of accountSns) {
             if (('wps_sid-' + sn) in argv) {
-                accounts.push({
+                let account = {
                     wps_sid: argv['wps_sid-' + sn],
                     csrf: argv['csrf-' + sn],
-                    tryrun: argv['tryrun-' + sn],
                     tasks: argv['tasks-' + sn]
-                })
+                }
+                if (('tryrun-' + sn) in argv) {
+                    account['tryrun'] = true
+                }
+                accounts.push(account)
             }
         }
     } else {
