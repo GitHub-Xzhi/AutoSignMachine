@@ -127,11 +127,11 @@ var account = {
       throw new Error('获取登录状态失败')
     } else {
       const { config } = res
-      await saveCookies('bilibili_' + options.username, '', config.jar)
+      await saveCookies('bilibili_' + (options.username || 'default'), '', config.jar)
     }
   },
   loginByPassword: async (axios, options) => {
-    account.tokenFile = path.join(os.homedir(), '.AutoSignMachine', 'tokenFile_bilibili_' + options.username + '.json')
+    account.tokenFile = path.join(os.homedir(), '.AutoSignMachine', 'tokenFile_bilibili_' + (options.username || 'default') + '.json')
     let tokenJson
     if (fs.existsSync(account.tokenFile)) {
       let token = JSON.parse(fs.readFileSync(account.tokenFile).toString('utf-8'))

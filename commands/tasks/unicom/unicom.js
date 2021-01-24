@@ -15,8 +15,7 @@ var start = async (params) => {
     }
   }
   let taskOption = {
-    init,
-    cookieFileKey: options.user
+    init
   }
 
   // 每日签到积分

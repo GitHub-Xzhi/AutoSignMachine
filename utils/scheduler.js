@@ -25,6 +25,7 @@ let scheduler = {
     taskJson: undefined,
     queues: [],
     will_queues: [],
+    taskKey: 'default',
     buildQueues: async () => {
         let queues = []
         let taskNames = Object.keys(tasks)
@@ -85,7 +86,7 @@ let scheduler = {
         scheduler.today = today
     },
     genFileName(command) {
-        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}.json`)
+        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey}.json`)
         scheduler.today = moment().format('YYYYMMDD')
         console.log('获得配置文件', scheduler.taskFile, '当前日期', scheduler.today)
     },
@@ -124,12 +125,15 @@ let scheduler = {
             options
         }
     },
-    hasWillTask: async (command, tryRun) => {
+    hasWillTask: async (command, params) => {
+        const { taskKey, tryRun } = params
         scheduler.isTryRun = tryRun
+        scheduler.taskKey = taskKey || 'default'
         if (scheduler.isTryRun) {
             console.log('!!!当前运行在TryRun模式，仅建议在测试时运行!!!')
             await new Promise((resolve) => setTimeout(resolve, 3000))
         }
+        console.log('将使用', scheduler.taskKey, '作为账户识别码')
         console.log('计算可执行任务')
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()
@@ -166,9 +170,9 @@ let scheduler = {
                         let ttt = tasks[task.taskName]
                         let tttOptions = ttt.options || {}
                         if (scheduler.isTryRun) {
-                            await delCookiesFile([command, tttOptions.cookieFileKey || 'default'].join('_'))
+                            await delCookiesFile([command, scheduler.taskKey].join('_'))
                         }
-                        let savedCookies = await getCookies([command, tttOptions.cookieFileKey || 'default'].join('_')) || tttOptions.cookies
+                        let savedCookies = await getCookies([command, scheduler.taskKey].join('_')) || tttOptions.cookies
                         let request = _request(savedCookies)
                         if (tttOptions.init) {
                             if (!init) {

@@ -43,7 +43,10 @@ exports.handler = async function (argv) {
       password: argv.password
     }
   }).catch(err => console.log("unicom任务:", err))
-  let hasTasks = await scheduler.hasWillTask(command, 'tryrun' in argv)
+  let hasTasks = await scheduler.hasWillTask(command, {
+    tryrun: 'tryrun' in argv,
+    taskKey: argv.user
+  })
   if (hasTasks) {
     scheduler.execTask(command, argv.tasks).catch(err => console.log("unicom任务:", err)).finally(() => {
       console.log('全部任务执行完毕！')

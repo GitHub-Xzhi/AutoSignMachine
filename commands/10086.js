@@ -23,7 +23,10 @@ exports.handler = async function (argv) {
         cookies: argv.cookies,
         options: {}
     }).catch(err => console.log("10086签到任务:", err.message))
-    let hasTasks = await scheduler.hasWillTask(command, 'tryrun' in argv)
+    let hasTasks = await scheduler.hasWillTask(command, {
+        tryrun: 'tryrun' in argv,
+        taskKey: argv.user
+    })
     if (hasTasks) {
         scheduler.execTask(command, argv.tasks).catch(err => console.log("10086签到任务:", err.message)).finally(() => {
             console.log('全部任务执行完毕！')

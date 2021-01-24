@@ -17,8 +17,7 @@ var start = async (params) => {
     }
   }
   let taskOption = {
-    init,
-    cookieFileKey: options.username
+    init
   }
 
   // 每日观看分享视频

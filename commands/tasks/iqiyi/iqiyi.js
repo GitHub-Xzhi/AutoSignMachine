@@ -24,8 +24,7 @@ var start = async (params) => {
     }
   }
   let taskOption = {
-    init,
-    cookieFileKey: options.user
+    init
   }
 
   // 普通用户积分签到

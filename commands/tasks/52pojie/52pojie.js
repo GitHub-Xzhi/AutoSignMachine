@@ -22,8 +22,7 @@ var start = async (params) => {
     }
   }
   let taskOption = {
-    init,
-    cookieFileKey: options.user
+    init
   }
 
   await scheduler.regTask('dailySign', async (request) => {

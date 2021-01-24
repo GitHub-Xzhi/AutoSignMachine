@@ -122,7 +122,7 @@ module.exports = async (axios, params) => {
       throw new Error('登陆失败:' + data.dsc)
     }
     cookies = 'token_online=' + data.token_online + '; appId=' + data.appId
-    await saveCookies('unicom_' + options.user, cookies, config.jar)
+    await saveCookies('unicom_' + (options.user || 'default'), cookies, config.jar)
     console.log('获得登录状态成功')
   } else {
     const deviceId = generateMixed(15)
@@ -162,7 +162,7 @@ module.exports = async (axios, params) => {
       console.log(data.dsc)
     }
     cookies += '; token_online=' + data.token_online + '; appId=' + data.appId
-    await saveCookies('unicom_' + options.user, cookies, config.jar)
+    await saveCookies('unicom_' + (options.user || 'default'), cookies, config.jar)
     console.log('获得登录状态成功')
   }
 }

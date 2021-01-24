@@ -40,8 +40,11 @@ exports.handler = async function (argv) {
     },
     options: {}
   }).catch(err => console.log("iqiyi签到任务:", err.message))
-  let hasTasks = await scheduler.hasWillTask(command, 'tryrun' in argv)
-  if(hasTasks){
+  let hasTasks = await scheduler.hasWillTask(command, {
+    tryrun: 'tryrun' in argv,
+    taskKey: argv.P00PRU
+  })
+  if (hasTasks) {
     scheduler.execTask(command, argv.tasks).catch(err => console.log("iqiyi签到任务:", err.message)).finally(() => {
       console.log('全部任务执行完毕！')
     })

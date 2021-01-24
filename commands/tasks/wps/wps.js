@@ -22,8 +22,7 @@ var start = async (params) => {
         }
     }
     let taskOption = {
-        init,
-        cookieFileKey: options.wps_sid
+        init
     }
 
     await scheduler.regTask('wps_clock_in', async (request) => {
