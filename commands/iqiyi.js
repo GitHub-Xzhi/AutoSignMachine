@@ -37,8 +37,8 @@ exports.handler = async function (argv) {
       if (('P00PRU-' + sn) in argv) {
         let account = {
           P00001: argv['P00001-' + sn],
-          P00PRU: argv['P00PRU-' + sn],
-          P00PRU: argv['P00PRU-' + sn],
+          P00003: argv['P00003-' + sn],
+          P00PRU: argv['P00PRU-' + sn] + '',
           QC005: argv['QC005-' + sn],
           dfp: argv['dfp-' + sn],
           tasks: argv['tasks-' + sn]
@@ -51,7 +51,12 @@ exports.handler = async function (argv) {
     }
   } else {
     accounts.push({
-      ...argv
+      P00001: argv['P00001'],
+      P00003: argv['P00003'],
+      P00PRU: argv['P00PRU'] + '',
+      QC005: argv['QC005'],
+      dfp: argv['dfp'],
+      tasks: argv['tasks']
     })
   }
   console.log('总账户数', accounts.length)
@@ -59,8 +64,8 @@ exports.handler = async function (argv) {
     await require(path.join(__dirname, 'tasks', command, command)).start({
       cookies: {
         P00001: account.P00001,
-        P00003: account.P00PRU,
-        P00PRU: account.P00PRU + '',
+        P00003: account.P00003,
+        P00PRU: account.P00PRU,
         QC005: account.QC005,
         _dfp: account.dfp
       },

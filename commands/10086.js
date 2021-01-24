@@ -37,7 +37,9 @@ exports.handler = async function (argv) {
         }
     } else {
         accounts.push({
-            ...argv
+            cookies: argv['cookies'],
+            user: argv['user'] + '',
+            tasks: argv['tasks']
         })
     }
     console.log('总账户数', accounts.length)
