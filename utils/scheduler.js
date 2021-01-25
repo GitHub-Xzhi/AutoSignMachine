@@ -111,7 +111,7 @@ let scheduler = {
                 will_queues.push(task)
             }
         }
-        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，可执行任务数${will_queues.length}`)
+        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，截至当前可执行任务数${will_queues.length}`)
         scheduler.taskJson = taskJson
         scheduler.queues = queues
         scheduler.will_queues = will_queues
