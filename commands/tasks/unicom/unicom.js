@@ -147,7 +147,10 @@ var start = async (params) => {
   // 首页-游戏-娱乐中心-天天领取3G流量包
   await scheduler.regTask('dailygameflow', async (request) => {
     await require('./producGame').doGameFlowTask(request, options)
-  }, taskOption)
+  }, {
+    startTime: 7 * 3600, // 指定调度到7点附近
+    ...taskOption
+  })
 
   // 首页-积分查询-游戏任务
   await scheduler.regTask('dailygameIntegral', async (request) => {

@@ -201,7 +201,7 @@ let scheduler = {
                 queue.add(async () => {
                     try {
                         if (task.waitTime) {
-                            console.log('延迟执行', task.waitTime, 'seconds')
+                            console.log('延迟执行', task.taskName, task.waitTime, 'seconds')
                             await new Promise((resolve, reject) => setTimeout(resolve, task.waitTime * 1000))
                         }
 
