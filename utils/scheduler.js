@@ -5,6 +5,8 @@ var moment = require('moment');
 moment.locale('zh-cn');
 const { getCookies, saveCookies, delCookiesFile } = require('./util')
 const _request = require('./request')
+var crypto = require('crypto');
+const { default: PQueue } = require('p-queue');
 
 const randomDate = (startDate, endDate) => {
     let date = new Date(+startDate + Math.random() * (endDate - startDate));
@@ -109,7 +111,7 @@ let scheduler = {
                 will_queues.push(task)
             }
         }
-        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，将执行任务数${will_queues.length}`)
+        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，可执行任务数${will_queues.length}`)
         scheduler.taskJson = taskJson
         scheduler.queues = queues
         scheduler.will_queues = will_queues
@@ -147,20 +149,49 @@ let scheduler = {
             await scheduler.genFileName(command)
             await scheduler.initTasksQueue()
         }
-        selectedTasks = selectedTasks ? selectedTasks.split(',').filter(q => q) : ''
+        if (Object.prototype.toString.call(selectedTasks) == '[object String]') {
+            selectedTasks = selectedTasks.split(',').filter(q => q)
+        } else {
+            selectedTasks = []
+        }
         if (selectedTasks.length) {
             console.log('将只执行选择的任务', selectedTasks.join(','))
         }
         let { taskJson, queues, will_queues } = scheduler
-        let init
-        if (will_queues.length) {
-            for (let task of will_queues) {
-                let newTask = {}
-                if (task.taskName in tasks &&
-                    (
-                        !selectedTasks.length ||
-                        selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1
-                    )) {
+
+        let will_tasks = will_queues.filter(task => task.taskName in tasks && (!selectedTasks.length || selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1))
+        if (will_tasks.length) {
+            if (scheduler.isTryRun) {
+                await delCookiesFile([command, scheduler.taskKey].join('_'))
+            }
+
+            // 初始化处理
+            let init_funcs = {}
+            let init_funcs_result = {}
+            for (let task of will_tasks) {
+                let ttt = tasks[task.taskName]
+                let tttOptions = ttt.options || {}
+
+                let savedCookies = await getCookies([command, scheduler.taskKey].join('_')) || tttOptions.cookies
+                let request = _request(savedCookies)
+
+                if (tttOptions.init) {
+                    if (Object.prototype.toString.call(tttOptions.init) === '[object AsyncFunction]') {
+                        let hash = crypto.createHash('md5').update(tttOptions.init.toString()).digest('hex')
+                        if (!(hash in init_funcs)) {
+                            init_funcs_result[task.taskName + '_init'] = await tttOptions['init'](request, savedCookies)
+                            init_funcs[hash] = true
+                        }
+                    }
+                } else {
+                    init_funcs_result[task.taskName + '_init'] = { request }
+                }
+            }
+
+            // 任务执行
+            let queue = new PQueue({ concurrency: 2 });
+            for (let task of will_tasks) {
+                queue.add(async () => {
                     try {
                         if (task.waitTime) {
                             console.log('延迟执行', task.waitTime, 'seconds')
@@ -168,22 +199,14 @@ let scheduler = {
                         }
 
                         let ttt = tasks[task.taskName]
-                        let tttOptions = ttt.options || {}
-                        if (scheduler.isTryRun) {
-                            await delCookiesFile([command, scheduler.taskKey].join('_'))
-                        }
-                        let savedCookies = await getCookies([command, scheduler.taskKey].join('_')) || tttOptions.cookies
-                        let request = _request(savedCookies)
-                        if (tttOptions.init) {
-                            if (!init) {
-                                init = await tttOptions['init'](request, savedCookies)
-                            }
-                            await ttt['callback'](init.request, init.data)
+                        if (Object.prototype.toString.call(ttt.callback) === '[object AsyncFunction]') {
+                            await ttt.callback.apply(this, Object.values(init_funcs_result[task.taskName + '_init']))
                         } else {
-                            await ttt['callback'](request)
+                            console.log('任务执行内容空')
                         }
 
                         let isupdate = false
+                        let newTask = {}
                         if (ttt.options) {
                             if (!ttt.options.isCircle) {
                                 newTask.taskState = 1
@@ -199,20 +222,23 @@ let scheduler = {
                         }
 
                         if (isupdate) {
-                            queues[queues.findIndex(q => q.taskName === task.taskName)] = {
-                                ...task,
-                                ...newTask
+                            let taskindex = queues.findIndex(q => q.taskName === task.taskName)
+                            if (taskindex !== -1) {
+                                taskJson.queues[taskindex] = {
+                                    ...task,
+                                    ...newTask
+                                }
                             }
-                            taskJson.queues = queues
                             fs.writeFileSync(scheduler.taskFile, JSON.stringify(taskJson))
                         }
                     } catch (err) {
                         console.log('任务错误：', err)
                     }
-                }
+                })
             }
+            await queue.onIdle()
         } else {
-            console.log('今日暂无需要执行的任务')
+            console.log('暂无需要执行的任务')
         }
     }
 }
