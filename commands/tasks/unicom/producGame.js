@@ -380,7 +380,7 @@ var producGame = {
         games = games.filter(d => d.task === '5' && d.reachState === '0' && d.task_type === 'duration')
         console.log('剩余未完成game', games.length)
         let queue = new PQueue({ concurrency: 2 });
-        
+
         console.log('调度任务中', '并发数', 2)
         for (let game of games) {
             queue.add(async () => {
@@ -413,14 +413,14 @@ var producGame = {
         games = cgames.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
         console.log('剩余未领取game', games.length)
         for (let game of games) {
-            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+            await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 20) * 1000))
             await producGame.gameIntegralGet(axios, {
                 ...options,
                 taskCenterId: game.id
             })
         }
 
-        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
+        await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 20) * 1000))
         await producGame.gameIntegralGet(axios, {
             ...options,
             taskCenterId: 148
