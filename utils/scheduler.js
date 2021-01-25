@@ -111,7 +111,6 @@ let scheduler = {
                 will_queues.push(task)
             }
         }
-        console.log(`获取总任务数${queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，截至当前可执行任务数${will_queues.length}`)
         scheduler.taskJson = taskJson
         scheduler.queues = queues
         scheduler.will_queues = will_queues
@@ -160,6 +159,9 @@ let scheduler = {
         let { taskJson, queues, will_queues } = scheduler
 
         let will_tasks = will_queues.filter(task => task.taskName in tasks && (!selectedTasks.length || selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1))
+
+        console.log(`获取总任务数${taskJson.queues.length}，已完成任务数${queues.filter(q => q.taskState === 1).length}，截至当前可执行任务数${will_tasks.length}`)
+
         if (will_tasks.length) {
             if (scheduler.isTryRun) {
                 await delCookiesFile([command, scheduler.taskKey].join('_'))
@@ -180,8 +182,12 @@ let scheduler = {
                         let hash = crypto.createHash('md5').update(tttOptions.init.toString()).digest('hex')
                         if (!(hash in init_funcs)) {
                             init_funcs_result[task.taskName + '_init'] = await tttOptions['init'](request, savedCookies)
-                            init_funcs[hash] = true
+                            init_funcs[hash] = task.taskName + '_init'
+                        } else {
+                            init_funcs_result[task.taskName + '_init'] = init_funcs_result[init_funcs[hash]]
                         }
+                    } else {
+                        console.log(tttOptions.init)
                     }
                 } else {
                     init_funcs_result[task.taskName + '_init'] = { request }
@@ -190,6 +196,7 @@ let scheduler = {
 
             // 任务执行
             let queue = new PQueue({ concurrency: 2 });
+            console.log('调度任务中', '并发数', 2)
             for (let task of will_tasks) {
                 queue.add(async () => {
                     try {
