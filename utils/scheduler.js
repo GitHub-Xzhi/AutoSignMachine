@@ -106,9 +106,6 @@ let scheduler = {
             if (taskJson.today === scheduler.today) {
                 queues = taskJson.queues
             }
-            if (scheduler.isTryRun) {
-                fs.unlinkSync(scheduler.taskFile)
-            }
         }
         for (let task of queues) {
             if (task.taskState === 0 && moment(task.willTime).isBefore(moment(), 'minutes')) {
@@ -249,6 +246,9 @@ let scheduler = {
                 })
             }
             await queue.onIdle()
+            if (scheduler.isTryRun) {
+                fs.unlinkSync(scheduler.taskFile)
+            }
         } else {
             console.log('暂无需要执行的任务')
         }
