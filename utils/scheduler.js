@@ -192,7 +192,7 @@ let scheduler = {
                             init_funcs_result[task.taskName + '_init'] = init_funcs_result[init_funcs[hash]]
                         }
                     } else {
-                        console.log(tttOptions.init)
+                        console.log('not apply')
                     }
                 } else {
                     init_funcs_result[task.taskName + '_init'] = { request }
