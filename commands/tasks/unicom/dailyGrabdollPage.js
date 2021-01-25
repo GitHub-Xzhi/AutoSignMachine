@@ -143,9 +143,9 @@ var dailyGrabdollPage = {
                     "phone": phone,
                     'token': ecs_token,
                     'sourceCode': 'lt_zhuawawa'
-                }),
-                jar: jar1
+                })
             })
+
             let result = res.data
             if (result.code === 200) {
                 console.log('阅读开心抓大奖', result.data.goodsName)
