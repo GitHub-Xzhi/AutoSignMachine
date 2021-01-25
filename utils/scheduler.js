@@ -29,6 +29,15 @@ let scheduler = {
     queues: [],
     will_queues: [],
     taskKey: 'default',
+    clean: async () => {
+        scheduler.today = '';
+        scheduler.isRunning = false;
+        scheduler.isTryRun = false;
+        scheduler.taskJson = undefined;
+        scheduler.queues = [];
+        scheduler.will_queues = [];
+        scheduler.taskKey = 'default';
+    },
     buildQueues: async () => {
         let queues = []
         let taskNames = Object.keys(tasks)
@@ -123,6 +132,7 @@ let scheduler = {
     },
     hasWillTask: async (command, params) => {
         const { taskKey, tryrun } = params
+        scheduler.clean()
         scheduler.isTryRun = tryrun
         scheduler.taskKey = taskKey || 'default'
         if (scheduler.isTryRun) {
