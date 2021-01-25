@@ -140,7 +140,7 @@ var start = async (params) => {
   }, taskOption)
 
   // 首页-游戏-娱乐中心-每日打卡
-  await scheduler.regTask('producGame', async (request) => {
+  await scheduler.regTask('producGameSignin', async (request) => {
     await require('./producGame').gameSignin(request, options)
   }, taskOption)
 
