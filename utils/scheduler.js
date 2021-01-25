@@ -8,15 +8,16 @@ const _request = require('./request')
 var crypto = require('crypto');
 const { default: PQueue } = require('p-queue');
 
-const randomDate = (startDate, endDate) => {
-    let date = new Date(+startDate + Math.random() * (endDate - startDate));
-    let hour = date.getHours() + Math.random() * (20 - date.getHours()) | 0;
-    let minute = 0 + Math.random() * (59 - 0) | 0;
-    let second = 0 + Math.random() * (59 - 0) | 0;
-    date.setHours(hour);
-    date.setMinutes(minute);
-    date.setSeconds(second);
-    return date;
+const randomDate = (options) => {
+    let startDate = moment();
+    let endDate = moment().endOf('days');
+    if (options && options.startHours) {
+        startDate = moment().startOf('days').add(options.startHours, 'hours')
+    }
+    if (options && options.endHours) {
+        endDate = moment().startOf('days').add(options.endHours, 'hours')
+    }
+    return new Date(+startDate.toDate() + Math.random() * (endDate.toDate() - startDate.toDate()));
 };
 let tasks = {}
 let scheduler = {
@@ -31,15 +32,9 @@ let scheduler = {
     buildQueues: async () => {
         let queues = []
         let taskNames = Object.keys(tasks)
-        let startDate = new Date();
-        let endDate = moment().endOf('days').toDate();
         for (let taskName of taskNames) {
             let options = tasks[taskName].options
-            if (options) {
-                startDate = options.startHours ? moment().startOf('days').add(options.startHours, 'hours') : startDate
-                endDate = options.endHours ? moment().startOf('days').add(options.endHours, 'hours') : endDate
-            }
-            let willTime = moment(randomDate(startDate, endDate));
+            let willTime = moment(randomDate(options));
             if (options) {
                 if (options.isCircle || options.dev) {
                     willTime = moment().startOf('days');
