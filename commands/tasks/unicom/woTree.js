@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+const { buildUnicomUserAgent } = require('../../../utils/util')
 
 var sign = (data) => {
   let str = 'integralofficial&'
@@ -21,7 +22,7 @@ var transParams = (data) => {
 
 var woTree = {
   entry: async (axios, options) => {
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`
+    const useragent = buildUnicomUserAgent(options, 'p')
     let searchParams = {}
     let result = await axios.request({
       baseURL: 'https://m.client.10010.com/',
@@ -62,7 +63,7 @@ var woTree = {
     }
   },
   getStatus: (axios, options) => {
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    const useragent = buildUnicomUserAgent(options, 'p')
     return new Promise((resolve, reject) => {
       axios.request({
         baseURL: 'https://m.client.10010.com/',
@@ -84,8 +85,8 @@ var woTree = {
     })
   },
   takeFlow: async (axios, params) => {
+    const useragent = buildUnicomUserAgent(options, 'p')
     const { options, flowChangeList } = params
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     // type 1 看视频得流量  0 普通任务
     for (let flow of flowChangeList) {
       const { data } = await axios.request({
@@ -106,8 +107,8 @@ var woTree = {
     }
   },
   takePop: async (axios, params) => {
+    const useragent = buildUnicomUserAgent(options, 'p')
     const { options, popList } = params
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     for (let pop of popList) {
       const { data } = await axios.request({
         baseURL: 'https://m.client.10010.com/',
@@ -127,10 +128,25 @@ var woTree = {
     }
   },
   water: async (axios, options) => {
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    const useragent = buildUnicomUserAgent(options, 'p')
     const { jar } = await woTree.entry(axios, options)
-    // https://m.client.10010.com/mactivity/arbordayJson/getChanceByIndex.htm?index=0
-    // {"msg":"success","code":"0000","data":{"chance_0":0}}
+
+    const { data } = await axios.request({
+      baseURL: 'https://m.client.10010.com/',
+      headers: {
+        "user-agent": useragent,
+        "referer": "https://img.client.10010.com",
+        "origin": "https://img.client.10010.com"
+      },
+      url: `/mactivity/arbordayJson/getChanceByIndex.htm?index=0`,
+      method: 'post'
+    })
+
+    if (data.code !== '0000' || data.data.chance_0 !== 1) {
+      console.log('暂无浇水机会，跳过')
+      return
+    }
+
     let num = 2
     do {
       if (num < 2) {
@@ -187,7 +203,7 @@ var woTree = {
         console.log('浇水失败', result.msg)
       } else {
         if (result.data.addedValue) {
-          console.log('浇水成功', '成长值+' + result.data.addedValue)
+          console.log('浇水成功', '培养值+' + result.data.addedValue)
         } else {
           console.log('浇水操作完成')
         }
