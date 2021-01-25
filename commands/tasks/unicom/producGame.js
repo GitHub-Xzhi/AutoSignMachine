@@ -343,9 +343,9 @@ var producGame = {
         let games = await producGame.timeTaskQuery(axios, options)
         games = allgames.filter(g => games.filter(g => g.state === '0').map(i => i.gameId).indexOf(g.id) !== -1)
         console.log('剩余未完成game', games.length)
-        let queue = new PQueue({ concurrency: 3 });
+        let queue = new PQueue({ concurrency: 2 });
 
-        console.log('调度任务中', '并发数', 3)
+        console.log('调度任务中', '并发数', 2)
         for (let game of games) {
             queue.add(async () => {
                 console.log(game.name)
