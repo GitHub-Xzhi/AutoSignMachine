@@ -471,7 +471,8 @@ var producGame = {
             headers: {
                 "user-agent": useragent,
                 "referer": "https://img.client.10010.com",
-                "origin": "https://img.client.10010.com"
+                "origin": "https://img.client.10010.com",
+                "X-Requested-With": "com.sinovatech.unicom.ui"
             },
             url: `/producGameApp`,
             method: 'post',
