@@ -142,7 +142,12 @@ var woTree = {
       method: 'post'
     })
 
-    if (data.code !== '0000' || data.data.chance_0 !== 1) {
+    if (data.code !== '0000') {
+      console.log('查询浇水机会失败')
+      return
+    }
+
+    if (data.data.chance_0 === 0) {
       console.log('暂无浇水机会，跳过')
       return
     }
