@@ -3,6 +3,7 @@ const CryptoJS = require("crypto-js");
 const { default: PQueue } = require('p-queue');
 const moment = require('moment');
 const path = require('path');
+const { buildUnicomUserAgent } = require('../../../utils/util')
 
 var transParams = (data) => {
     let params = new URLSearchParams();
@@ -31,7 +32,7 @@ let account = {
 var producGame = {
     // 娱乐中心每日签到-打卡
     gameSignin: (axios, options) => {
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let data = {
             'methodType': 'signin'
         }
@@ -223,7 +224,7 @@ var producGame = {
         return result
     },
     popularGames: async (axios, options) => {
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'methodType': 'popularGames',
             'deviceType': 'Android',
@@ -285,7 +286,7 @@ var producGame = {
     },
     gamerecord: async (axios, options) => {
         const { gameId } = options
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'methodType': 'record',
             'deviceType': 'Android',
@@ -310,7 +311,7 @@ var producGame = {
         }
     },
     getTaskList: async (axios, options) => {
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'methodType': 'queryTaskCenter',
             'deviceType': 'Android',
@@ -432,7 +433,7 @@ var producGame = {
         }
     },
     timeTaskQuery: async (axios, options) => {
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'methodType': 'timeTaskQuery',
             'deviceType': 'Android',
@@ -458,7 +459,7 @@ var producGame = {
     },
     gameFlowGet: async (axios, options) => {
         const { gameId } = options
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'userNumber': options.user,
             'methodType': 'flowGet',
@@ -489,7 +490,7 @@ var producGame = {
     },
     gameIntegralGet: async (axios, options) => {
         const { taskCenterId } = options
-        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
             'methodType': 'taskGetReward',
             'taskCenterId': taskCenterId,
