@@ -129,27 +129,6 @@ docker run \
   auto-sign-machine:latest
 ```
 
-## 10086签到任务
-**每日签到领取和微币-微信端**
-
-```sh
-node index.js 10086 --cookies ******
-```
-
-### docker部署
-```sh
-# 构建
-docker build -t auto-sign-machine:latest  -f docker/Dockerfile .
-# 运行
-docker run \
-  --name auto-sign-machine \
-  -d \
-  --label traefik.enable=false \
-  -e enable_10086=true \
-  -e cookies=****** \
-  auto-sign-machine:latest
-```
-
 ### 注意
 #### cron中`%`号需要转义`\%`
 
