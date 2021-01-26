@@ -96,9 +96,10 @@ let scheduler = {
         scheduler.today = today
     },
     genFileName(command) {
-        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`)
+        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey}.json`)
+        let maskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`)
         scheduler.today = moment().format('YYYYMMDD')
-        console.log('获得配置文件', scheduler.taskFile, '当前日期', scheduler.today)
+        console.log('获得配置文件', maskFile, '当前日期', scheduler.today)
     },
     loadTasksQueue: async () => {
         let queues = []
