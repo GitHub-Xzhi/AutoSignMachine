@@ -110,7 +110,7 @@ docker run \
 * **首页-积分查询-游戏任务**
 
 ```sh
-node index.js unicom --user 131*******12 --pasword 11****11 --appid f7af****ebb
+node index.js unicom --user 131*******12 --password 11****11 --appid f7af****ebb
 ```
 
 ### docker部署
@@ -124,7 +124,7 @@ docker run \
   --label traefik.enable=false \
   -e enable_unicom=true \
   -e user=131*******12 \
-  -e pasword=11****11 \
+  -e password=11****11 \
   -e appid=f7af****ebb \
   auto-sign-machine:latest
 ```
@@ -162,9 +162,27 @@ docker run \
 */30 4-23 * * * /bin/node /workspace/AutoSignMachine/index.js unicom --user 1******5 --password 7****** --appid 1************9
 ```
 
+### 多用户配置
+启用`--accountSn`表示账户序号，例如`1,2`, 则将提取`option-sn`选项的值，例如`user-1`,`user-2`
+
+### 配置文件示例
+启用`--config /path/to/mycfg.json`表示配置文件
+```json
+{
+    "accountSn": "1,2",
+    "user-1": "22******1",
+    "password-1": "31******1",
+    "appid-1": "41******1",
+    "user-2": "25******1",
+    "password-3": "72******1",
+    "appid-2": "92******1"
+}
+```
+
 ### 运行测试
 ```sh
 ## 立即模式, 一次性执行所有任务，仅建议测试任务是否正常时运行，该方式无法重试周期任务
+## 该模式不缓存cookie信息，频繁使用将可能导致账号安全警告
 #增加 --tryrun
 
 ## 指定任务模式，可以指定仅需要运行的子任务

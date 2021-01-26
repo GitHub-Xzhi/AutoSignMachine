@@ -1,0 +1,80 @@
+version: "3"
+services:
+  asm_unicom:
+    container_name: asm_unicom
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/AutoSignMachine #同步脚本地址
+    restart: always
+    tty: true
+    network_mode: "bridge"
+    hostname: asm_unicom
+    environment:
+      - enable_unicom=true #签到开关 false / true
+      - user=123456 # 输入用户手机号
+      - password=123456 #输入用户密码
+      - appid=FFFFFFFF #输入手机端APPID
+  asm_bili:
+    container_name: asm_bili
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/AutoSignMachine #同步脚本地址
+    restart: always
+    tty: true
+    network_mode: "bridge"
+    environment:
+      - enable_bilibili=false #签到开关
+      - DedeUserID= #
+      - SESSDATA= #
+      - bili_jct= #
+
+  asm52pojie:
+    container_name: asm52pojie
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/AutoSignMachine #同步脚本地址
+    restart: always
+    tty: true
+    network_mode: "bridge"
+    environment:
+      - enable_52pojie=false #签到开关
+      - htVD_2132_auth= #
+      - htVD_2132_saltkey= #
+
+  asm_iqiyi:
+    container_name: asm_iqiyi
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/AutoSignMachine #同步脚本地址
+    restart: always
+    tty: true
+    network_mode: "bridge"
+    environment:
+      - enable_iqiyi=false #签到开关
+      - P00001= #
+      - P00PRU= #
+      - QC005= #
+      - dfp= #
+
+  asm10086:
+    container_name: asm10086
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./:/AutoSignMachine #同步脚本地址
+    restart: always
+    tty: true
+    network_mode: "bridge"
+    environment:
+      - enable_10086=false #签到开关
+      - cookies= #
+

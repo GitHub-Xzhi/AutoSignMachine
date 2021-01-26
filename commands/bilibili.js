@@ -47,22 +47,59 @@ exports.builder = function (yargs) {
 
 exports.handler = async function (argv) {
   var command = argv._[0]
-  await require(path.join(__dirname, 'tasks', command, command)).start({
-    cookies: argv.cookies,
-    options: {
-      NumberOfCoins: argv.NumberOfCoins,
-      CoinsForVideo: argv.CoinsForVideo,
-      SelectLike: argv.SelectLike,
-      username: argv.username,
-      password: argv.password,
+  var accounts = []
+  if ('accountSn' in argv && argv.accountSn) {
+    let accountSns = argv.accountSn.split(',')
+    for (let sn of accountSns) {
+      if (('username-' + sn) in argv) {
+        let account = {
+          cookies: argv['cookies-' + sn],
+          NumberOfCoins: argv['NumberOfCoins-' + sn],
+          CoinsForVideo: argv['CoinsForVideo-' + sn],
+          SelectLike: argv['SelectLike-' + sn],
+          username: argv['username-' + sn] + '',
+          password: argv['password-' + sn] + '',
+          tasks: argv['tasks-' + sn]
+        }
+        if (('tryrun-' + sn) in argv) {
+          account['tryrun'] = true
+        }
+        accounts.push(account)
+      }
     }
-  }).catch(err => console.log("bilibili签到任务:", err.message))
-  let hasTasks = await scheduler.hasWillTask(command, 'tryrun' in argv)
-  if (hasTasks) {
-    scheduler.execTask(command, argv.tasks).catch(err => console.log("bilibili签到任务:", err.message)).finally(() => {
-      console.log('全部任务执行完毕！')
-    })
   } else {
-    console.log('暂无可执行任务！')
+    accounts.push({
+      cookies: argv['cookies'],
+      NumberOfCoins: argv['NumberOfCoins'],
+      CoinsForVideo: argv['CoinsForVideo'],
+      SelectLike: argv['SelectLike'],
+      username: argv['username'] + '',
+      password: argv['password'] + '',
+      tasks: argv['tasks']
+    })
+  }
+  console.log('总账户数', accounts.length)
+  for (let account of accounts) {
+    await require(path.join(__dirname, 'tasks', command, command)).start({
+      cookies: account.cookies,
+      options: {
+        NumberOfCoins: account.NumberOfCoins,
+        CoinsForVideo: account.CoinsForVideo,
+        SelectLike: account.SelectLike,
+        username: account.username,
+        password: account.password,
+      }
+    }).catch(err => console.log("bilibili签到任务:", err.message))
+    let hasTasks = await scheduler.hasWillTask(command, {
+      tryrun: 'tryrun' in argv,
+      taskKey: account.username
+    })
+    if (hasTasks) {
+      scheduler.execTask(command, account.tasks).catch(err => console.log("bilibili签到任务:", err.message)).finally(() => {
+        console.log('当前任务执行完毕！')
+      })
+    } else {
+      console.log('暂无可执行任务！')
+    }
   }
 }  

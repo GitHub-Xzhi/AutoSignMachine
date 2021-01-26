@@ -1,5 +1,6 @@
 #!/bin/sh
 
+crontab -r
 if [ ${enable_52pojie} ];then
   echo "10 13 * * *       node /AutoSignMachine/index.js 52pojie --htVD_2132_auth=${htVD_2132_auth} --htVD_2132_saltkey=${htVD_2132_saltkey}" >> /etc/crontabs/root
 fi
