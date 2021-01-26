@@ -85,8 +85,8 @@ var woTree = {
     })
   },
   takeFlow: async (axios, params) => {
-    const useragent = buildUnicomUserAgent(options, 'p')
     const { options, flowChangeList } = params
+    const useragent = buildUnicomUserAgent(options, 'p')
     // type 1 看视频得流量  0 普通任务
     for (let flow of flowChangeList) {
       const { data } = await axios.request({
@@ -107,8 +107,8 @@ var woTree = {
     }
   },
   takePop: async (axios, params) => {
-    const useragent = buildUnicomUserAgent(options, 'p')
     const { options, popList } = params
+    const useragent = buildUnicomUserAgent(options, 'p')
     for (let pop of popList) {
       const { data } = await axios.request({
         baseURL: 'https://m.client.10010.com/',
@@ -128,8 +128,8 @@ var woTree = {
     }
   },
   water: async (axios, options) => {
-    const useragent = buildUnicomUserAgent(options, 'p')
     const { jar } = await woTree.entry(axios, options)
+    const useragent = buildUnicomUserAgent(options, 'p')
 
     const { data } = await axios.request({
       baseURL: 'https://m.client.10010.com/',
