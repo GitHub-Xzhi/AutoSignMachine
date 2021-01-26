@@ -14,7 +14,7 @@ String.prototype.replaceWithMask = function (start, end) {
 
 const randomDate = (options) => {
     let startDate = moment();
-    let endDate = moment().endOf('days');
+    let endDate = moment().endOf('days').subtract(2, 'hours');
     if (options && options.startHours) {
         startDate = moment().startOf('days').add(options.startHours, 'hours')
     }
