@@ -52,7 +52,7 @@ let scheduler = {
                     willTime = moment().startOf('days').add(options.startTime, 'seconds');
                 }
             }
-            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
+            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 200)
             if (scheduler.isTryRun) {
                 willTime = moment().startOf('days');
                 waitTime = 0;
