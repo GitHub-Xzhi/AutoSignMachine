@@ -7,7 +7,7 @@ on:
     #branches: [ main ]
   #workflow_dispatch: # 手动触发
   schedule: # 计划任务触发
-    - cron: '*/30 20-23,0-15 * * *' 
+    - cron: '31 3 6,12,18 * * *' 
     
 
 jobs:
@@ -42,12 +42,11 @@ jobs:
         user: ${{secrets.unicom_user}}
         password: ${{secrets.unicom_password}}
         appid: ${{secrets.unicom_appid}}
-      run: node index.js unicom --user=${user} --password=${password} --appid=${appid}
+      run: node index.js unicom --user=${user} --password=${password} --appid=${appid} --tryrun
    
     - name: Run unicom2 daily task
       env:
         user: ${{secrets.unicom_user2}}
         password: ${{secrets.unicom_password2}}
         appid: ${{secrets.unicom_appid2}}
-      run: node index.js unicom --user=${user} --password=${password} --appid=${appid}
-
+      run: node index.js unicom --user=${user} --password=${password} --appid=${appid} --tryrun
