@@ -96,8 +96,17 @@ let scheduler = {
         scheduler.today = today
     },
     genFileName(command) {
-        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey}.json`)
-        let maskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`)
+        let dir = path.join(os.homedir(), '.AutoSignMachine')
+        if ('TENCENTCLOUD_RUNENV' in process.env && process.env.TENCENTCLOUD_RUNENV === 'SCF') {
+            dir = path.join('/tmp', '.AutoSignMachine')
+            // 暂不支持持久化配置，使用一次性执行机制，函数超时时间受functions.timeout影响
+            scheduler.isTryRun = true
+        }
+        if (!fs.existsSync(dir)) {
+            fs.mkdirpSync(dir)
+        }
+        scheduler.taskFile = path.join(dir, `taskFile_${command}_${scheduler.taskKey}.json`)
+        let maskFile = path.join(dir, `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`)
         scheduler.today = moment().format('YYYYMMDD')
         console.log('获得配置文件', maskFile, '当前日期', scheduler.today)
     },
