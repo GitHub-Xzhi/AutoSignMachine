@@ -89,6 +89,44 @@ var integral = {
       }).catch(reject)
     })
   },
+  addFlow: async (axios, options) => {
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let i = 1
+    do {
+      // 签到看视频流量
+      let { data } = await axios.request({
+        headers: {
+          "user-agent": useragent,
+          "referer": "https://act.10010.com/SigninApp/",
+          "origin": "https://act.10010.com"
+        },
+        url: `https://act.10010.com/SigninApp/mySignin/addFlow`,
+        method: 'post',
+        data: 'stepflag=22'
+      })
+
+      if (data.reason === '00') {
+        console.log('获得流量+', data.addNum)
+      }
+
+      // 签到下载App奖励
+      let { data: datan } = await axios.request({
+        headers: {
+          "user-agent": useragent,
+          "referer": "https://act.10010.com/SigninApp/",
+          "origin": "https://act.10010.com"
+        },
+        url: `https://act.10010.com/SigninApp/mySignin/addFlow`,
+        method: 'post',
+        data: 'stepflag=23'
+      })
+      if (datan.reason === '00') {
+        console.log('获得流量+', datan.addNum)
+      }
+      ++i
+
+    } while (i <= 3)
+  },
   getCoins: (axios, options) => {
     const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
     return new Promise((resolve, reject) => {
