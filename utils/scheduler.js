@@ -8,9 +8,13 @@ const _request = require('./request')
 var crypto = require('crypto');
 const { default: PQueue } = require('p-queue');
 
+String.prototype.replaceWithMask = function (start, end) {
+    return this.substr(0, start) + '******' + this.substr(-end, end)
+}
+
 const randomDate = (options) => {
     let startDate = moment();
-    let endDate = moment().endOf('days');
+    let endDate = moment().endOf('days').subtract(2, 'hours');
     if (options && options.startHours) {
         startDate = moment().startOf('days').add(options.startHours, 'hours')
     }
@@ -92,9 +96,19 @@ let scheduler = {
         scheduler.today = today
     },
     genFileName(command) {
-        scheduler.taskFile = path.join(os.homedir(), '.AutoSignMachine', `taskFile_${command}_${scheduler.taskKey}.json`)
+        let dir = path.join(os.homedir(), '.AutoSignMachine')
+        if ('TENCENTCLOUD_RUNENV' in process.env && process.env.TENCENTCLOUD_RUNENV === 'SCF') {
+            dir = path.join('/tmp', '.AutoSignMachine')
+            // 暂不支持持久化配置，使用一次性执行机制，函数超时时间受functions.timeout影响
+            scheduler.isTryRun = true
+        }
+        if (!fs.existsSync(dir)) {
+            fs.mkdirpSync(dir)
+        }
+        scheduler.taskFile = path.join(dir, `taskFile_${command}_${scheduler.taskKey}.json`)
+        let maskFile = path.join(dir, `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`)
         scheduler.today = moment().format('YYYYMMDD')
-        console.log('获得配置文件', scheduler.taskFile, '当前日期', scheduler.today)
+        console.log('获得配置文件', maskFile, '当前日期', scheduler.today)
     },
     loadTasksQueue: async () => {
         let queues = []
@@ -139,7 +153,7 @@ let scheduler = {
             console.log('!!!当前运行在TryRun模式，仅建议在测试时运行!!!')
             await new Promise((resolve) => setTimeout(resolve, 3000))
         }
-        console.log('将使用', scheduler.taskKey, '作为账户识别码')
+        console.log('将使用', scheduler.taskKey.replaceWithMask(2, 3), '作为账户识别码')
         console.log('计算可执行任务')
         await scheduler.genFileName(command)
         await scheduler.initTasksQueue()

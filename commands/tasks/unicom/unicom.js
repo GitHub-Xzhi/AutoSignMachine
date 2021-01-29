@@ -21,6 +21,7 @@ var start = async (params) => {
   // 每日签到积分
   await scheduler.regTask('dailysignin', async (request) => {
     await require('./dailysignin').doTask(request, options)
+    await require('./integral').addFlow(request, options)
   }, taskOption)
 
   // 冬奥积分活动 20201231
@@ -37,6 +38,7 @@ var start = async (params) => {
   // 每日游戏楼层宝箱
   await scheduler.regTask('dailygamebox', async (request) => {
     await require('./integral').gamebox(request, options)
+    await require('./producGame').gameBox(request, options)
   }, taskOption)
 
   // 每日抽奖

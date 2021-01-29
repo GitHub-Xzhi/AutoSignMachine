@@ -64,17 +64,3 @@ services:
       - QC005= #
       - dfp= #
 
-  asm10086:
-    container_name: asm10086
-    build:
-      context: ./
-      dockerfile: docker/Dockerfile
-    volumes:
-      - ./:/AutoSignMachine #同步脚本地址
-    restart: always
-    tty: true
-    network_mode: "bridge"
-    environment:
-      - enable_10086=false #签到开关
-      - cookies= #
-

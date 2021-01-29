@@ -43,7 +43,7 @@ var dailyGrabdollPage = {
         const { searchParams, ecs_token } = options
         let phone = encryption(options.user, 'gb6YCccUvth75Tm2')
         let timestamp = moment().format('YYYYMMDDHHmmss')
-        let { data } = await axios.request({
+        let { data, config } = await axios.request({
             headers: {
                 "user-agent": useragent,
                 "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/grabdollPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbKHR&userNumber=${options.user}`,
@@ -59,9 +59,15 @@ var dailyGrabdollPage = {
         })
         if (data.code !== 200) {
             console.log('获取任务状态失败')
-            return false
+            return {
+                jar: config.jar,
+                state: false
+            }
         } else {
-            return data.data.grabDollAgain
+            return {
+                jar: config.jar,
+                state: data.data.grabDollAgain
+            }
         }
     },
     doTask: async (axios, options) => {
@@ -98,7 +104,7 @@ var dailyGrabdollPage = {
         if (!ecs_token) {
             throw new Error('ecs_token缺失')
         }
-        let state = await dailyGrabdollPage.getState(axios, {
+        let { state, jar: gjar } = await dailyGrabdollPage.getState(axios, {
             ...options,
             ecs_token,
             searchParams
@@ -151,6 +157,7 @@ var dailyGrabdollPage = {
                         "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/grabdollPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbKHR&userNumber=${options.user}`,
                         "origin": "https://wxapp.msmds.cn"
                     },
+                    jar: gjar,
                     url: `https://wxapp.msmds.cn/jplus/api/channelGrabDoll/playAgainByLookingVideos`,
                     method: 'POST',
                     data: transParams(a)
@@ -170,6 +177,7 @@ var dailyGrabdollPage = {
                     "user-agent": useragent,
                     "referer": `https://wxapp.msmds.cn/h5/react_web/unicom/grabdollPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbKHR&userNumber=${options.user}`,
                 },
+                jar: gjar,
                 url: `https://wxapp.msmds.cn/jplus/api/channelGrabDoll/startGame`,
                 method: 'POST',
                 data: transParams({

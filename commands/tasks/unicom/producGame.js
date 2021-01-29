@@ -28,6 +28,12 @@ let account = {
     "action": "showVideoAd"
 }
 
+var deviceInfos = [
+    'm=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=null',
+    'm=SM-G977N&o=7&a=24&p=1080*1920&f=samsung&mm=5725&cf=1800&cc=8&qqversion=null',
+    'm=Pixel&o=8&a=27&p=1080*1920&f=google&mm=5725&cf=1800&cc=8&qqversion=null'
+]
+var deviceInfo = deviceInfos[Math.floor(Math.random() * deviceInfos.length)]
 
 var producGame = {
     // 娱乐中心每日签到-打卡
@@ -114,7 +120,7 @@ var producGame = {
             let c = {
                 'Seq': Seq,
                 'qua': 'V1_AND_MINISDK_1.5.3_0_RELEASE_B',
-                'deviceInfo': 'm=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=null',
+                'deviceInfo': deviceInfo,
                 'busiBuff': busiBuff,
                 'traceid': traceid,
                 'Module': `mini_app_growguard`,
@@ -190,7 +196,7 @@ var producGame = {
         let c = {
             'Seq': Seq,
             'qua': 'V1_AND_MINISDK_1.5.3_0_RELEASE_B',
-            'deviceInfo': 'm=VKY-AL00&o=9&a=28&p=1080*1920&f=HUAWEI&mm=5725&cf=1800&cc=8&qqversion=null',
+            'deviceInfo': deviceInfo,
             'busiBuff': Buffer.from(JSON.stringify(busiBuff)),
             'traceid': traceid,
             'Module': `mini_app_info`,
@@ -515,6 +521,12 @@ var producGame = {
         } else {
             console.log('获取奖励失败')
         }
+    },
+    gameBox: async (axios, options) => {
+        await producGame.gameIntegralGet(axios, {
+            ...options,
+            taskCenterId: 98
+        })
     }
 }
 

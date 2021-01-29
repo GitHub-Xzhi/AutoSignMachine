@@ -4,13 +4,27 @@ const fs = require('fs-extra')
 
 module.exports = {
     async delCookiesFile(key) {
-        let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
+        let dir = path.join(os.homedir(), '.AutoSignMachine')
+        if ('TENCENTCLOUD_RUNENV' in process.env && process.env.TENCENTCLOUD_RUNENV === 'SCF') {
+            dir = path.join('/tmp', '.AutoSignMachine')
+        }
+        if (!fs.existsSync(dir)) {
+            fs.mkdirpSync(dir)
+        }
+        let cookieFile = path.join(dir, 'cookieFile_' + key + '.txt')
         if (fs.existsSync(cookieFile)) {
             fs.unlinkSync(cookieFile)
         }
     },
     getCookies: (key) => {
-        let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
+        let dir = path.join(os.homedir(), '.AutoSignMachine')
+        if ('TENCENTCLOUD_RUNENV' in process.env && process.env.TENCENTCLOUD_RUNENV === 'SCF') {
+            dir = path.join('/tmp', '.AutoSignMachine')
+        }
+        if (!fs.existsSync(dir)) {
+            fs.mkdirpSync(dir)
+        }
+        let cookieFile = path.join(dir, 'cookieFile_' + key + '.txt')
         if (fs.existsSync(cookieFile)) {
             let cookies = fs.readFileSync(cookieFile).toString('utf-8')
             return cookies
@@ -18,7 +32,14 @@ module.exports = {
         return ''
     },
     saveCookies: (key, cookies, cookiesJar) => {
-        let cookieFile = path.join(os.homedir(), '.AutoSignMachine', 'cookieFile_' + key + '.txt')
+        let dir = path.join(os.homedir(), '.AutoSignMachine')
+        if ('TENCENTCLOUD_RUNENV' in process.env && process.env.TENCENTCLOUD_RUNENV === 'SCF') {
+            dir = path.join('/tmp', '.AutoSignMachine')
+        }
+        if (!fs.existsSync(dir)) {
+            fs.mkdirpSync(dir)
+        }
+        let cookieFile = path.join(dir, 'cookieFile_' + key + '.txt')
         let allcookies = {}
         if (cookies) {
             cookies.split('; ').map(c => {

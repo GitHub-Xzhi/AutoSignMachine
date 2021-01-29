@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_dispatch: # 手动触发
   schedule: # 计划任务触发
-    - cron: '10 5 * * *' # cron表达式，Actions时区是UTC时间，所以要往前推8个小时,如上表示每天13点10分
+    - cron: '*/30 20-23,0-15 * * *' # cron表达式，Actions时区是UTC时间，所以要往前推8个小时(4-23)
     
 
 jobs:
@@ -43,16 +43,45 @@ jobs:
         node-version: ${{ matrix.node-version }}
         registry-url: ${{ matrix.node-registry }}
 
-    # 安装依赖
+    - name: Get npm cache directory
+      id: npm-cache
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+
+    - name: restore npm cache
+      uses: actions/cache@v2
+      id: use-npm-cache
+      with:
+        path: ${{ steps.npm-cache.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+    - name: restore npm dependencies
+      uses: actions/cache@v2
+      id: use-npm-depends
+      with:
+        path: |
+          node_modules
+          */*/node_modules
+        key: ${{ runner.os }}-depends-${{ hashFiles('**/package-lock.json') }}
+
+    - name: restore task cache
+      uses: actions/cache@v2
+      id: use-task-cache
+      with:
+        path: |
+          /home/runner/.AutoSignMachine
+        key: ${{ runner.os }}-task-${{ hashFiles('**/package-lock.json') }}
+
     - name: Install dependencies
+      if: steps.use-npm-cache.outputs.cache-hit != 'true' || steps.use-npm-depends.outputs.cache-hit != 'true'
       run: npm install
        
     # 运行 52pojie 签到任务
     - name: Run 52pojie daily task
       if: ${{ env.ENABLE_52POJIE }}
       env:
-        htVD_2132_auth: ${{secrets.52pojie_htVD_2132_auth}}
-        htVD_2132_saltkey: ${{secrets.52pojie_htVD_2132_saltkey}}
+        htVD_2132_auth: ${{secrets.pojie_htVD_2132_auth}}
+        htVD_2132_saltkey: ${{secrets.pojie_htVD_2132_saltkey}}
       run: node index.js 52pojie --htVD_2132_auth=${htVD_2132_auth} --htVD_2132_saltkey=${htVD_2132_saltkey}
 
     # 运行 bilibili 签到任务
@@ -82,5 +111,5 @@ jobs:
         user: ${{secrets.unicom_user}}
         password: ${{secrets.unicom_password}}
         appid: ${{secrets.unicom_appid}}
-      run: node index.js iqiyi --user=${user} --password=${password} --appid=${appid}
+      run: node index.js unicom --user=${user} --password=${password} --appid=${appid}
 

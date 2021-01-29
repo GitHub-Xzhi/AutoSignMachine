@@ -129,27 +129,6 @@ docker run \
   auto-sign-machine:latest
 ```
 
-## 10086签到任务
-**每日签到领取和微币-微信端**
-
-```sh
-node index.js 10086 --cookies ******
-```
-
-### docker部署
-```sh
-# 构建
-docker build -t auto-sign-machine:latest  -f docker/Dockerfile .
-# 运行
-docker run \
-  --name auto-sign-machine \
-  -d \
-  --label traefik.enable=false \
-  -e enable_10086=true \
-  -e cookies=****** \
-  auto-sign-machine:latest
-```
-
 ### 注意
 #### cron中`%`号需要转义`\%`
 
@@ -185,7 +164,7 @@ docker run \
 ## 该模式不缓存cookie信息，频繁使用将可能导致账号安全警告
 #增加 --tryrun
 
-## 指定任务模式，可以指定仅需要运行的子任务
+## 指定任务模式，可以指定仅需要运行的子任务，多用户使用规则参看`多用户配置`
 #增加 --tasks taskName1,taskName2,taskName3
 ```
 
