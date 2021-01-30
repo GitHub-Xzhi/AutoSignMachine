@@ -38,7 +38,6 @@ var start = async (params) => {
   // 每日游戏楼层宝箱
   await scheduler.regTask('dailygamebox', async (request) => {
     await require('./integral').gamebox(request, options)
-    await require('./producGame').gameBox(request, options)
   }, taskOption)
 
   // 每日抽奖
@@ -165,6 +164,15 @@ var start = async (params) => {
   await scheduler.regTask('dailycomment', async (request) => {
     await require('./commentSystem').commentTask(request, options).catch(console.log)
   }, taskOption)
+
+  // 首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
+  await scheduler.regTask('todayDailyTask', async (request) => {
+    await require('./producGame').gameBox(request, options)
+    await require('./producGame').doTodayDailyTask(request, options).catch(console.log)
+  }, {
+    ...taskOption,
+    startTime: 20 * 3600
+  })
 }
 module.exports = {
   start
