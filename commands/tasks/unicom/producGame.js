@@ -313,6 +313,32 @@ var producGame = {
             console.log('记录失败')
         }
     },
+    queryIntegral: async (axios, options) => {
+        const useragent = buildUnicomUserAgent(options, 'p')
+        let params = {
+            'methodType': 'queryIntegral',
+            'taskCenterId': options.taskCenterId,
+            'videoIntegral': '0',
+            'isVideo': 'Y',
+            'clientVersion': '8.0100',
+            'deviceType': 'Android'
+        }
+        let { data, config } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/producGameTaskCenter`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data.code === '0000') {
+            console.log('获取积分任务状态成功')
+        } else {
+            console.log('获取积分任务状态失败')
+        }
+    },
     getTaskList: async (axios, options) => {
         const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
@@ -372,6 +398,7 @@ var producGame = {
         games = games.filter(g => g.state === '1')
         console.log('剩余未领取game', games.length)
         for (let game of games) {
+            console.log(game.name)
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
             await producGame.gameFlowGet(axios, {
                 ...options,
@@ -583,13 +610,7 @@ var producGame = {
                 ++i
             } while (i <= n)
 
-            await producGame.gameIntegralGet(axios, {
-                ...options,
-                taskCenterId: video_task.id
-            })
-        } else if (video_task.reachState === '1') {
-
-            await producGame.gameIntegralGet(axios, {
+            await producGame.queryIntegral(axios, {
                 ...options,
                 taskCenterId: video_task.id
             })

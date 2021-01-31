@@ -143,6 +143,7 @@ var start = async (params) => {
   // 首页-游戏-娱乐中心-每日打卡
   await scheduler.regTask('producGameSignin', async (request) => {
     await require('./producGame').gameSignin(request, options)
+    await require('./producGame').gameBox(request, options)
   }, taskOption)
 
   // 首页-游戏-娱乐中心-天天领取3G流量包
@@ -154,6 +155,14 @@ var start = async (params) => {
   await scheduler.regTask('dailygameIntegral', async (request) => {
     await require('./producGame').doGameIntegralTask(request, options)
   }, taskOption)
+
+  // 首页-知识-限时免费（连续7天阶梯激励）
+  await scheduler.regTask('dailyCourse', async (request) => {
+    await require('./dailyCourse').doTask(request, options)
+  }, {
+    ...taskOption,
+    startTime: 9 * 3600
+  })
 
   // await require('./integral').getflDetail(request, options)
   // await require('./integral').getTxDetail(request, options)
@@ -167,8 +176,7 @@ var start = async (params) => {
 
   // 首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
   await scheduler.regTask('todayDailyTask', async (request) => {
-    await require('./producGame').gameBox(request, options)
-    await require('./producGame').doTodayDailyTask(request, options).catch(console.log)
+    await require('./producGame').doTodayDailyTask(request, options)
   }, {
     ...taskOption,
     startTime: 20 * 3600
