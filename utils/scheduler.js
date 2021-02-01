@@ -92,6 +92,15 @@ let scheduler = {
                     queues
                 }))
             }
+
+            if (taskJson.queues.length !== Object.keys(tasks).length) {
+                console.log('数量已变更，重新生成任务配置')
+                let queues = await scheduler.buildQueues()
+                fs.writeFileSync(scheduler.taskFile, JSON.stringify({
+                    today,
+                    queues
+                }))
+            }
         }
         scheduler.today = today
     },
