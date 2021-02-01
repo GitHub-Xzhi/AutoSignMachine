@@ -1,5 +1,6 @@
-var crypto = require('crypto');
+const crypto = require('crypto');
 const { RSAUtils } = require('./RSAUtils');
+const moment = require('moment');
 
 //阅读打卡看视频得积分
 
@@ -457,6 +458,13 @@ var dailyVideoBook = {
       Authorization
     })
 
+    if (moment().isBefore(moment('2021-02-07'))) {
+      await dailyVideoBook.readSignUp(axios, {
+        ...options,
+        jar: st_jar
+      })
+    }
+
     await dailyVideoBook.read10(axios, {
       ...options,
       m_jar,
@@ -490,6 +498,23 @@ var dailyVideoBook = {
       console.log('等待3秒')
       await new Promise((resolve, reject) => setTimeout(resolve, 3000))
     } while (n <= 5)
+  },
+  // 阅读拉力赛报名
+  readSignUp: async (axios, options) => {
+    let { jar } = options
+    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+    let { data } = await axios.request({
+      headers: {
+        "user-agent": useragent,
+        "referer": `https://st.woread.com.cn/touchextenernal/readrally/index.action?channelid=18000698&yw_code=&desmobile=${options.user}&version=android@8.010`,
+        "origin": "http://st.woread.com.cn",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      url: `https://st.woread.com.cn/touchextenernal/readrally/signUp.action`,
+      method: 'POST',
+      jar
+    })
+    console.log('getSignUpStatus', data.message)
   },
   read10: async (axios, options) => {
     const { st_jar, m_jar } = options

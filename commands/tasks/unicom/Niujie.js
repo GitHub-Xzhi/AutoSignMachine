@@ -23,7 +23,7 @@ var Niujie = {
                 method: 'POST'
             })
             console.log(data)
-            await new Promise((resolve, reject) => setTimeout(resolve, 1500))
+            await new Promise((resolve, reject) => setTimeout(resolve, 2500))
         } while (--n)
     },
     // 牛气如意-秒杀抢兑
@@ -126,6 +126,7 @@ var Niujie = {
         await Niujie.CalfLottery(axios, options)
     },
     receiveCalf: async (axios, options) => {
+        console.log('开始领取牛气值')
         const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
         await axios.request({
             headers: {
@@ -159,7 +160,7 @@ var Niujie = {
             console.log(data.message)
             await new Promise((resolve, reject) => setTimeout(resolve, 500))
         }
-        console.log('本轮领取完毕')
+        console.log('本轮牛气值领取完毕')
     }
 }
 
