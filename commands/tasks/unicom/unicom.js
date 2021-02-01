@@ -38,7 +38,6 @@ var start = async (params) => {
   // 每日游戏楼层宝箱
   await scheduler.regTask('dailygamebox', async (request) => {
     await require('./integral').gamebox(request, options)
-    await require('./producGame').gameBox(request, options)
   }, taskOption)
 
   // 每日抽奖
@@ -144,6 +143,7 @@ var start = async (params) => {
   // 首页-游戏-娱乐中心-每日打卡
   await scheduler.regTask('producGameSignin', async (request) => {
     await require('./producGame').gameSignin(request, options)
+    await require('./producGame').gameBox(request, options)
   }, taskOption)
 
   // 首页-游戏-娱乐中心-天天领取3G流量包
@@ -156,6 +156,14 @@ var start = async (params) => {
     await require('./producGame').doGameIntegralTask(request, options)
   }, taskOption)
 
+  // 首页-知识-限时免费（连续7天阶梯激励）
+  await scheduler.regTask('dailyCourse', async (request) => {
+    await require('./dailyCourse').doTask(request, options)
+  }, {
+    ...taskOption,
+    startTime: 9 * 3600
+  })
+
   // await require('./integral').getflDetail(request, options)
   // await require('./integral').getTxDetail(request, options)
   // await require('./integral').getDxDetail(request, options)
@@ -165,6 +173,46 @@ var start = async (params) => {
   await scheduler.regTask('dailycomment', async (request) => {
     await require('./commentSystem').commentTask(request, options).catch(console.log)
   }, taskOption)
+
+  // 首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
+  await scheduler.regTask('todayDailyTask', async (request) => {
+    await require('./producGame').doTodayDailyTask(request, options)
+  }, {
+    ...taskOption,
+    startTime: 20 * 3600
+  })
+
+  // 首页-签到有礼-居家娱乐馆
+  await scheduler.regTask('gameYearBox', async (request) => {
+    await require('./gameYearBox').doTask(request, options)
+  }, {
+    ...taskOption,
+    startTime: 20 * 3600
+  })
+
+  // 首页-牛气-秒杀抢兑
+  await scheduler.regTask('NiujieSpikePrize', async (request) => {
+    await require('./Niujie').spikePrize(request, options)
+  }, {
+    ...taskOption,
+    startTime: 9.6 * 3600,
+    ignoreRelay: true
+  })
+
+  // 首页-牛气-转盘抽奖
+  await scheduler.regTask('NiujieTask', async (request) => {
+    await require('./Niujie').doTask(request, options)
+  }, taskOption)
+
+
+  // 首页-牛气-场馆领牛气
+  await scheduler.regTask('NiujieReceiveCalf', async (request) => {
+    await require('./Niujie').receiveCalf(request, options)
+  }, {
+    isCircle: true,
+    intervalTime: 1 * 3600,
+    ...taskOption
+  })
 }
 module.exports = {
   start

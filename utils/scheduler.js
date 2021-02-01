@@ -48,6 +48,7 @@ let scheduler = {
         for (let taskName of taskNames) {
             let options = tasks[taskName].options
             let willTime = moment(randomDate(options));
+            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
             if (options) {
                 if (options.isCircle || options.dev) {
                     willTime = moment().startOf('days');
@@ -55,8 +56,10 @@ let scheduler = {
                 if (options.startTime) {
                     willTime = moment().startOf('days').add(options.startTime, 'seconds');
                 }
+                if (options.ignoreRelay) {
+                    waitTime = 0;
+                }
             }
-            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
             if (scheduler.isTryRun) {
                 willTime = moment().startOf('days');
                 waitTime = 0;
@@ -86,6 +89,15 @@ let scheduler = {
             taskJson = JSON.parse(taskJson)
             if (taskJson.today !== today) {
                 console.log('日期已变更，重新生成任务配置')
+                let queues = await scheduler.buildQueues()
+                fs.writeFileSync(scheduler.taskFile, JSON.stringify({
+                    today,
+                    queues
+                }))
+            }
+
+            if (taskJson.queues.length !== Object.keys(tasks).length) {
+                console.log('数量已变更，重新生成任务配置')
                 let queues = await scheduler.buildQueues()
                 fs.writeFileSync(scheduler.taskFile, JSON.stringify({
                     today,

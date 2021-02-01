@@ -83,3 +83,19 @@ functions:
         parameters:
           cronExpression: '*/30 7-23 * * *'
           enable: true
+  task4:
+    handler: tscf.main_handler
+    runtime: Nodejs12.16
+    memorySize: 256
+    timeout: 900
+    environment:
+      variables:
+        cmd: unicom
+        config: default.json
+        tasks: todayDailyTask
+    events:
+     - timer:
+        name: timer
+        parameters:
+          cronExpression: '*/30 22 * * *'
+          enable: true

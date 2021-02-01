@@ -1,5 +1,6 @@
 // 娱乐中心
 const CryptoJS = require("crypto-js");
+var crypto = require('crypto');
 const { default: PQueue } = require('p-queue');
 const moment = require('moment');
 const path = require('path');
@@ -12,20 +13,16 @@ var transParams = (data) => {
     }
     return params;
 };
-// https://img.client.10010.com/gametask/index.html#/
-// 积分活动相关业务参数
-let account = {
-    "androidCodeId": "945188116",
-    "iosCodeId": "945188122",
-    "acId": "AC20200728150217",
-    "taskId": "96945964804e42299634340cd2650451",
-    "remark": "游戏视频任务积分",
-    "channel": "GGPD",
-    "channelName": "游戏视频任务积分",
-    "unWantedToast": false,
-    "unWantedToast2": true, "rewards": true,
-    "codeId": "945535736",
-    "action": "showVideoAd"
+
+var sign = (data) => {
+    let str = 'integralofficial&'
+    let params = []
+    data.forEach((v, i) => {
+        if (v) {
+            params.push('arguments' + (i + 1) + v)
+        }
+    });
+    return crypto.createHash('md5').update(str + params.join('&')).digest('hex')
 }
 
 var deviceInfos = [
@@ -316,6 +313,32 @@ var producGame = {
             console.log('记录失败')
         }
     },
+    queryIntegral: async (axios, options) => {
+        const useragent = buildUnicomUserAgent(options, 'p')
+        let params = {
+            'methodType': 'queryIntegral',
+            'taskCenterId': options.taskCenterId,
+            'videoIntegral': '0',
+            'isVideo': 'Y',
+            'clientVersion': '8.0100',
+            'deviceType': 'Android'
+        }
+        let { data, config } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/producGameTaskCenter`,
+            method: 'post',
+            data: transParams(params)
+        })
+        if (data.code === '0000') {
+            console.log('获取积分任务状态成功')
+        } else {
+            console.log('获取积分任务状态失败')
+        }
+    },
     getTaskList: async (axios, options) => {
         const useragent = buildUnicomUserAgent(options, 'p')
         let params = {
@@ -375,6 +398,7 @@ var producGame = {
         games = games.filter(g => g.state === '1')
         console.log('剩余未领取game', games.length)
         for (let game of games) {
+            console.log(game.name)
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 15) * 1000))
             await producGame.gameFlowGet(axios, {
                 ...options,
@@ -419,7 +443,6 @@ var producGame = {
         games = cgames.filter(d => d.task === '5' && d.reachState === '1' && d.task_type === 'duration')
         console.log('剩余未领取game', games.length)
         for (let game of games) {
-            console.log(game.name)
             await new Promise((resolve, reject) => setTimeout(resolve, (Math.floor(Math.random() * 10) + 20) * 1000))
             await producGame.gameIntegralGet(axios, {
                 ...options,
@@ -527,6 +550,85 @@ var producGame = {
             ...options,
             taskCenterId: 98
         })
+    },
+    watch3TimesVideoQuery: async (request, options) => {
+        let params = {
+            'arguments1': 'AC20200728150217', // acid
+            'arguments2': 'GGPD', // yhChannel
+            'arguments3': '96945964804e42299634340cd2650451', // yhTaskId menuId
+            'arguments4': new Date().getTime(), // time
+            'arguments6': '',
+            'netWay': 'Wifi',
+            'version': `android@8.0100`,
+        }
+        params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+        return await require('./taskcallback').query(request, {
+            ...options,
+            params
+        })
+    },
+    watch3TimesVideo: async (axios, options) => {
+        const { jar } = options
+        let params = {
+            'arguments1': 'AC20200728150217',
+            'arguments2': 'GGPD',
+            'arguments3': '96945964804e42299634340cd2650451',
+            'arguments4': new Date().getTime(),
+            'arguments6': '',
+            'arguments7': '',
+            'arguments8': '',
+            'arguments9': '',
+            'netWay': 'Wifi',
+            'remark1': '游戏频道看视频得积分',
+            'remark': '游戏视频任务积分',
+            'version': `android@8.0100`,
+            'codeId': 945535736
+        }
+        params['sign'] = sign([params.arguments1, params.arguments2, params.arguments3, params.arguments4])
+        await require('./taskcallback').doTask(axios, {
+            ...options,
+            params,
+            jar
+        })
+    },
+    doTodayDailyTask: async (axios, options) => {
+
+        let { games: v_games } = await producGame.getTaskList(axios, options)
+        let video_task = v_games.find(d => d.task_type === 'video')
+
+        if (video_task.reachState === '0') {
+            let n = parseInt(video_task.task) - parseInt(video_task.progress)
+            console.log('领取视频任务奖励,剩余', n, '次')
+            let { jar } = await producGame.watch3TimesVideoQuery(axios, options)
+            let i = 1
+            do {
+                await producGame.watch3TimesVideo(axios, {
+                    ...options,
+                    jar
+                })
+                ++i
+            } while (i <= n)
+
+            await producGame.queryIntegral(axios, {
+                ...options,
+                taskCenterId: video_task.id
+            })
+
+        }
+
+        let { games } = await producGame.getTaskList(axios, options)
+        let today_task = games.find(d => d.task_type === 'todayTask')
+        if (today_task.reachState === '0') {
+            throw new Error('部分日常任务未完成，下次再尝试领取完成今日任务流量')
+        } else if (today_task.reachState === '1') {
+            await producGame.gameIntegralGet(axios, {
+                ...options,
+                taskCenterId: today_task.id
+            })
+            console.log('领取完成今日任务流量+200')
+        } else if (today_task.reachState === '2') {
+            console.log('每日日常任务已完成')
+        }
     }
 }
 
