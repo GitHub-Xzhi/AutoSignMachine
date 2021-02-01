@@ -181,6 +181,14 @@ var start = async (params) => {
     ...taskOption,
     startTime: 20 * 3600
   })
+
+  // 首页-签到有礼-居家娱乐馆
+  await scheduler.regTask('gameYearBox', async (request) => {
+    await require('./gameYearBox').doTask(request, options)
+  }, {
+    ...taskOption,
+    startTime: 20 * 3600
+  })
 }
 module.exports = {
   start
