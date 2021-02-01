@@ -65,7 +65,64 @@ var Niujie = {
         }
 
     },
+    getTaskList: async (axios, options) => {
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        console.log('获取牛气任务中')
+        let { data } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com/2021springfestival/index.html",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/Niujie/task/getTaskList`,
+            method: 'POST'
+        })
+        return data.data
+    },
+    doNiuqiTask: async (axios, options) => {
+        const { task } = options
+        const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `
+        console.log('完成牛气任务中')
+        let { data } = await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com/2021springfestival/index.html",
+                "origin": "https://img.client.10010.com"
+            },
+            url: `https://m.client.10010.com/Niujie/task/doTask`,
+            method: 'POST',
+            data: transParams({
+                'taskId': task.taskId
+            })
+        })
+        await axios.request({
+            headers: {
+                "user-agent": useragent,
+                "referer": "https://img.client.10010.com/2021springfestival/index.html",
+                "origin": "https://img.client.10010.com"
+            },
+            url: task.taskUrl,
+            method: 'get'
+        })
+        console.log(data)
+        await new Promise((resolve, reject) => setTimeout(resolve, 500))
+    },
+    doNiuqiTasks: async (axios, options) => {
+        let tasklist = await Niujie.getTaskList(axios, options)
+        tasklist = tasklist.filter(t => t.taskStatus === '1')
+        if (!tasklist.length) {
+            console.log('每天领取牛气任务已完成，跳过')
+        }
+        for (let task of tasklist) {
+            console.log('去完成', task.taskName)
+            await Niujie.doNiuqiTask(axios, {
+                ...options,
+                task
+            })
+        }
+    },
     doTask: async (axios, options) => {
+        await Niujie.doNiuqiTasks(axios, options)
         await Niujie.CalfLottery(axios, options)
     }
 }
