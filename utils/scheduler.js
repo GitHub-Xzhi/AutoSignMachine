@@ -48,6 +48,7 @@ let scheduler = {
         for (let taskName of taskNames) {
             let options = tasks[taskName].options
             let willTime = moment(randomDate(options));
+            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
             if (options) {
                 if (options.isCircle || options.dev) {
                     willTime = moment().startOf('days');
@@ -55,8 +56,10 @@ let scheduler = {
                 if (options.startTime) {
                     willTime = moment().startOf('days').add(options.startTime, 'seconds');
                 }
+                if (options.ignoreRelay) {
+                    waitTime = 0;
+                }
             }
-            let waitTime = options.dev ? 0 : Math.floor(Math.random() * 600)
             if (scheduler.isTryRun) {
                 willTime = moment().startOf('days');
                 waitTime = 0;

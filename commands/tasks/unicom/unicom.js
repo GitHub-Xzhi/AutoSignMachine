@@ -195,7 +195,8 @@ var start = async (params) => {
     await require('./Niujie').spikePrize(request, options)
   }, {
     ...taskOption,
-    startTime: 9.6 * 3600
+    startTime: 9.6 * 3600,
+    ignoreRelay: true
   })
 
   // 首页-牛气-转盘抽奖
