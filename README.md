@@ -1,5 +1,8 @@
 # AutoSignMachine
 
+> Due to a third-party risk dispute, this script stopped sharing
+> 由于第三方风险争议，此脚本停止分享
+
 **一个自动执行任务的工具，通过它可以实现账号自动签到，自动领取权益等功能，帮助我们轻松升级。**
 
 ## bilibili签到任务
