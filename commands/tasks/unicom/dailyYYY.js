@@ -234,7 +234,7 @@ var dailyYYY = {
       let i = newjiamarr();
 
       params = {
-        "params": encrypt(JSON.stringify(t), i['zfc']) + n,
+        "params": encrypt(JSON.stringify(p1), i['zfc']) + n,
         "parKey": i['arr']
       }
       res = await axios.request({
@@ -263,7 +263,7 @@ var dailyYYY = {
       //   params: transParams(p1)
       // }).catch(err => console.log(err))
 
-
+      console.log(res.data);
       if (res.data.code !== 0) {
         throw new Error(res.data.message)
       } else {
@@ -277,8 +277,8 @@ var dailyYYY = {
         resultId: res.data.data.resultId
       }
 
-      let n = Math.floor(5 * Math.random())
-      let i = newjiamarr()
+      // n = Math.floor(5 * Math.random())
+      i = newjiamarr()
       params = {
         "params": encrypt(JSON.stringify(t), i['zfc']) + n,
         "parKey": i['arr']
@@ -295,6 +295,7 @@ var dailyYYY = {
         method: 'post',
         data: params
       })
+      console.log(res.data);
       result = res.data
       if (result.code !== 0) {
         console.log("摇一摇送好礼:", result.message)
