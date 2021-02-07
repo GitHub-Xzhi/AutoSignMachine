@@ -295,7 +295,7 @@ var dailyYYY = {
         method: 'post',
         data: params
       })
-      console.log(res.data);
+
       result = res.data
       if (result.code !== 0) {
         console.log("摇一摇送好礼:", result.message)
