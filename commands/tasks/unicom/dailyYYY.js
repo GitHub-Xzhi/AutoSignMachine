@@ -38,6 +38,25 @@ var secretkeyArray = function () {
   return e;
 }
 
+var newjiamarr = () => {
+  for (var e = [], k = '', t = ['0', '1', '2', '3', '4', '5', '6', '7', '8',
+    '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+    'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+    'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+    'y', 'z'], i = 0x0; 0x4 > i; i++) {
+    for (var n = '', s = 0x0; 16 > s; s++) {
+      // var a = Math.floor(62 * Math.random());
+      var a = Math.floor(0x3e * Math.random());
+      n += t[a];
+    }
+    e.push(n), k += n.substring(0x0, 0x4);
+  }
+  return {
+    'arr': e,
+    'zfc': k
+  };
+};
+
 var encrypt = function (word, keyStr) {
   var key = CryptoJS.enc.Utf8.parse(keyStr);
   var srcs = CryptoJS.enc.Utf8.parse(word);
@@ -203,7 +222,7 @@ var dailyYYY = {
           'type': '广告',
           'orderId': params['orderId'],
           'phoneType': 'android',
-          'version': '8.01'
+          'version': '8.0101'
         }
         advertTimes--
 
@@ -211,19 +230,39 @@ var dailyYYY = {
       } else {
         freeTimes--
       }
+      let n = Math.floor(5 * Math.random())
+      let i = newjiamarr();
 
+      params = {
+        "params": encrypt(JSON.stringify(t), i['zfc']) + n,
+        "parKey": i['arr']
+      }
       res = await axios.request({
         headers: {
-          "user-agent": useragent,
           "Authorization": `Bearer ${Authorization}`,
+          "user-agent": useragent,
           "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
-          "Content-Type": "application/x-www-form-urlencoded"
+          "origin": "https://m.jf.10010.com",
+          "Content-Type": "application/json"
         },
-        jar: null,
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/consumptionGameTimes`,
-        method: 'get',
-        params: transParams(p1)
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/minusGameTimes`,
+        method: 'post',
+        data: params
       }).catch(err => console.log(err))
+      //deprecated from official API call
+      // res = await axios.request({
+      //   headers: {
+      //     "user-agent": useragent,
+      //     "Authorization": `Bearer ${Authorization}`,
+      //     "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
+      //     "Content-Type": "application/x-www-form-urlencoded"
+      //   },
+      //   jar: null,
+      //   url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/consumptionGameTimes`,
+      //   method: 'get',
+      //   params: transParams(p1)
+      // }).catch(err => console.log(err))
+
 
       if (res.data.code !== 0) {
         throw new Error(res.data.message)
@@ -239,20 +278,20 @@ var dailyYYY = {
       }
 
       let n = Math.floor(5 * Math.random())
-      let i = secretkeyArray()
-
+      let i = newjiamarr()
       params = {
-        "params": encrypt(JSON.stringify(t), i[n]) + n,
-        "parKey": i
+        "params": encrypt(JSON.stringify(t), i['zfc']) + n,
+        "parKey": i['arr']
       }
       res = await axios.request({
         headers: {
           "Authorization": `Bearer ${Authorization}`,
           "user-agent": useragent,
-          "referer": "https://img.jf.10010.com/",
-          "origin": "https://img.jf.10010.com"
+          "referer": "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/shake/index.html?jump=sign",
+          "origin": "https://m.jf.10010.com",
+          "Content-Type": "application/json;charset=UTF-8"
         },
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/luckDraw`,
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/luckDrawForPrize`,
         method: 'post',
         data: params
       })
