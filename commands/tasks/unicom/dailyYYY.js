@@ -222,7 +222,7 @@ var dailyYYY = {
           'type': '广告',
           'orderId': params['orderId'],
           'phoneType': 'android',
-          'version': '8.0101'
+          'version': '8.0102'
         }
         advertTimes--
 
