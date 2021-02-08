@@ -1,15 +1,11 @@
 var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
-// 快乐摇摇球
-var transParams = (data) => {
-  let params = new URLSearchParams();
-  for (let item in data) {
-    params.append(item, data["" + item + ""]);
-  }
-  return params;
-};
-
+/**
+ * 欢乐摇摇球
+ * 入口:首页=>签到=>免费抽 摇一摇
+ *
+ */
 var sign = (data) => {
   let str = "integralofficial&";
   let params = [];
