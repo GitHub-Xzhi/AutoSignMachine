@@ -20,6 +20,7 @@ module.exports = bcow = {
   postTimesDrawForPrize: async (
     axios,
     options,
+    // eslint-disable-next-line no-unused-vars
     { jfid, searchParams, jar1 },
     { activity, Authorization, freeTimes, advertTimes }
   ) => {
@@ -106,6 +107,7 @@ module.exports = bcow = {
           version: "8.0102",
         };
         advertTimes--;
+        // eslint-disable-next-line no-unused-vars
         orderId = params["orderId"];
       } else {
         freeTimes--;
