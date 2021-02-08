@@ -19,7 +19,7 @@ module.exports = bcow = {
   getOpenPlatLine: gameEvents.getOpenPlatLine(
     `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://m.jf.10010.com/jf-order/avoidLogin/forActive/ncow&duanlianjieabc=tbLlf`
   ),
-  postFreeLoginRock: gameEvents.postFreeLoginRock(referer),
+  postFreeLoginRock: gameEvents.postFreeLoginRock(referer, "Ac-yccnk"),
   postTimesDrawForPrize: async (
     axios,
     options,
@@ -29,7 +29,6 @@ module.exports = bcow = {
   ) => {
     do {
       let orderId = "";
-
       console.log(
         "已消耗机会",
         1 + 4 - (freeTimes + advertTimes),
@@ -101,29 +100,23 @@ module.exports = bcow = {
           method: "GET",
         });
 
+        orderId = params["orderId"];
         p1 = {
           activityId: activity.activityId,
           currentTimes: advertTimes,
           type: "广告",
-          orderId: params["orderId"],
+          orderId: orderId,
           phoneType: "android",
           version: "8.0102",
         };
         advertTimes--;
         // eslint-disable-next-line no-unused-vars
-        orderId = params["orderId"];
       } else {
         freeTimes--;
       }
 
       //join the game
-      let n = Math.floor(5 * Math.random());
-      let i = AES.newjiamarr();
-      let params = {
-        params: AES.encrypt(JSON.stringify(p1), i["zfc"]) + n,
-        parKey: i["arr"],
-      };
-
+      let params = gameEvents.encodeParams(p1, true);
       let res = await axios
         .request({
           baseURL: "https://m.jf.10010.com/",

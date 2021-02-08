@@ -232,27 +232,23 @@ var dailyYYY = {
           method: "GET",
         });
 
+        orderId = params["orderId"];
         p1 = {
           activityId: activity.activityId,
           currentTimes: advertTimes,
           type: "广告",
-          orderId: params["orderId"],
+          orderId: orderId,
           phoneType: "android",
           version: "8.0102",
         };
         advertTimes--;
-
-        orderId = params["orderId"];
       } else {
         freeTimes--;
       }
 
       let n = Math.floor(5 * Math.random());
       let i = newjiamarr();
-      params = {
-        params: encrypt(JSON.stringify(p1), i["zfc"]) + n,
-        parKey: i["arr"],
-      };
+      params = gameEvents.encodeParams(t, true);
 
       res = await axios
         .request({

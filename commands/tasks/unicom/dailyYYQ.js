@@ -14,13 +14,16 @@ let dailyYYQ = {
   doTask: async (axios, options) => {
     console.log("🔔 开始欢乐摇摇球\n");
     let cookies = await dailyYYQ.getOpenPlatLine(axios, options);
-    let data = await dailyYYQ.postFreeLoginRock(axios, options, cookies);
+    let data = await dailyYYQ.postFreeLogin(axios, options, cookies);
     await dailyYYQ.postGame(axios, options, cookies, data);
   },
   getOpenPlatLine: gameEvents.getOpenPlatLine(
     `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://m.jf.10010.com/jf-order/avoidLogin/forActive/stxyndj`
   ),
-  postFreeLoginRock: gameEvents.postFreeLoginRock(referer, "freeLogin"),
+  postFreeLogin: gameEvents.postFreeLogin(
+    referer,
+    "Ac-da377d4512124eb49cc3ea4e0d25e379"
+  ),
   postGame: async (
     axios,
     options,
@@ -41,10 +44,11 @@ let dailyYYQ = {
         advertTimes
       );
 
+      //广告试听
       let res = await axios.request({
         headers: {
           Authorization: `Bearer ${Authorization}`,
-          "user-agent": useragent,
+          "user-agent": useragent(options),
           referer:
             "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=" +
             activity.activityId,
@@ -55,7 +59,7 @@ let dailyYYQ = {
       });
 
       if (res.data.code !== 0) {
-        console.log("签到小游戏买扭蛋机2: " + res.data.message);
+        console.log("签到小游戏视频买扭蛋机: " + res.data.message);
         break;
       }
 
@@ -71,7 +75,7 @@ let dailyYYQ = {
           arguments9: "",
           netWay: "Wifi",
           remark: "签到小游戏买扭蛋机2",
-          version: `android@8.0100`,
+          version: `android@8.0102`,
           codeId: 945535686,
         };
 
@@ -96,38 +100,33 @@ let dailyYYQ = {
         orderId = params["orderId"];
       }
 
-      let n = Math.floor(5 * Math.random());
-      let i = AES.secretkeyArray();
-
+      //join the game
       let t = {
         activityId: activity.activityId,
-        version: 8.01,
+        version: 8.0102,
         orderId: orderId,
         phoneType: "android",
       };
-      let params = {
-        params: AES.encrypt(JSON.stringify(t), i[n]) + n,
-        parKey: i,
-      };
+      let params = gameEvents.encodeParams(t, true);
       res = await axios.request({
         headers: {
           Authorization: `Bearer ${Authorization}`,
-          "user-agent": useragent,
+          "user-agent": useragent(options),
           referer:
             "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=Ac-da377d4512124eb49cc3ea4e0d25e379",
           origin: "https://img.jf.10010.com",
         },
-        url: `https://m.jf.10010.com/jf-yuech/api/gameResult/advertLuckDraw`,
+        url: `https://m.jf.10010.com/jf-yuech/api/gameResult/twisingLuckDraw`,
         method: "post",
         data: params,
       });
       let result = res.data;
       if (result.code !== 0) {
-        console.log("快乐摇摇球:", result.message);
+        console.log("❌ 快乐摇摇球:", result.message);
       } else {
-        console.log("快乐摇摇球:", result.data.prizeName);
+        console.log("🎉 快乐摇摇球:", result.data.prizeName);
         if (result.data.doublingStatus) {
-          console.log("提交积分翻倍");
+          console.log("🎉 提交积分翻倍");
           await dailyYYQ.lookVideoDouble(axios, {
             ...options,
           });
@@ -202,11 +201,10 @@ let dailyYYQ = {
   },
   lookVideoDoubleResult: async (axios, options) => {
     let { Authorization, activityId, winningRecordId } = options;
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`;
     let res = await axios.request({
       headers: {
         Authorization: `Bearer ${Authorization}`,
-        "user-agent": useragent,
+        "user-agent": useragent(options),
         referer: "https://img.jf.10010.com/",
         origin: "https://img.jf.10010.com",
       },
