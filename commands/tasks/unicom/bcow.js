@@ -135,8 +135,6 @@ module.exports = bcow = {
         })
         .catch((err) => console.log(err));
 
-      console.log(res.data);
-      //TODO: coding in here now...
       result = res.data;
       if (result.code !== 0) {
         console.log("翻牛牌送好礼:", result.message);
