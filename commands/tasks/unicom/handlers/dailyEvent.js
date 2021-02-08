@@ -94,7 +94,30 @@ let postFreeLoginRock = (referer) => {
     return { activity, Authorization, freeTimes, advertTimes };
   };
 };
+
+let lookVideoDoubleResult = (title) => {
+  return async (axios, options) => {
+    let { Authorization, activityId, winningRecordId } = options;
+    let res = await axios.request({
+      headers: {
+        Authorization: `Bearer ${Authorization}`,
+        "user-agent": useragent(options),
+        referer: "https://img.jf.10010.com/",
+        origin: "https://img.jf.10010.com",
+      },
+      url: `https://m.jf.10010.com/jf-yuech/api/gameResult/doublingIntegral?activityId=${activityId}&winningRecordId=${winningRecordId}`,
+      method: "get",
+    });
+    result = res.data;
+    if (result.code !== 0) {
+      console.log(`⭕ ${title}翻倍结果:`, result.message);
+    } else {
+      console.log(`❌ ${title}翻倍结果:`, result.data);
+    }
+  };
+};
 module.exports = {
   getOpenPlatLine,
   postFreeLoginRock,
+  lookVideoDoubleResult,
 };

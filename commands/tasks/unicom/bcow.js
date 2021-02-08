@@ -3,19 +3,19 @@ let moment = require("moment");
 let AES = require("./handlers/PAES");
 const useragent = require("./handlers/myPhone").useragent;
 const gameEvents = require("./handlers/dailyEvent");
+const referer =
+  "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-qd/bcow/index.html?jump=sign";
 module.exports = bcow = {
   doTask: async (axios, options) => {
-    console.log("🔔开始抽牛卡\n");
+    console.log("🔔 开始翻牛牌\n");
     let cookies = await bcow.getOpenPlatLine(axios, options);
     let data = await bcow.postFreeLoginRock(axios, options, cookies);
-    let data1 = await bcow.postTimesDrawForPrize(axios, options, cookies, data);
+    await bcow.postTimesDrawForPrize(axios, options, cookies, data);
   },
   getOpenPlatLine: gameEvents.getOpenPlatLine(
     `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://m.jf.10010.com/jf-order/avoidLogin/forActive/ncow&duanlianjieabc=tbLlf`
   ),
-  postFreeLoginRock: gameEvents.postFreeLoginRock(
-    "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-qd/bcow/index.html?jump=sign"
-  ),
+  postFreeLoginRock: gameEvents.postFreeLoginRock(referer),
   postTimesDrawForPrize: async (
     axios,
     options,
@@ -124,8 +124,7 @@ module.exports = bcow = {
           headers: {
             Authorization: `Bearer ${Authorization}`,
             "user-agent": useragent(options),
-            referer:
-              "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-qd/bcow/index.html?jump=sign",
+            referer,
             origin: "https://m.jf.10010.com",
             "Content-Type": "application/json;charset=UTF-8",
           },
@@ -225,23 +224,5 @@ module.exports = bcow = {
       jar,
     });
   },
-  lookVideoDoubleResult: async (axios, options) => {
-    let { Authorization, activityId, winningRecordId } = options;
-    let res = await axios.request({
-      headers: {
-        Authorization: `Bearer ${Authorization}`,
-        "user-agent": useragent(options),
-        referer: "https://img.jf.10010.com/",
-        origin: "https://img.jf.10010.com",
-      },
-      url: `https://m.jf.10010.com/jf-yuech/api/gameResult/doublingIntegral?activityId=${activityId}&winningRecordId=${winningRecordId}`,
-      method: "get",
-    });
-    result = res.data;
-    if (result.code !== 0) {
-      console.log("翻牛牌送好礼翻倍结果:", result.message);
-    } else {
-      console.log("翻牛牌送好礼翻倍结果:", result.data);
-    }
-  },
+  lookVideoDoubleResult: gameEvents.lookVideoDoubleResult("翻牛牌送好礼"),
 };
