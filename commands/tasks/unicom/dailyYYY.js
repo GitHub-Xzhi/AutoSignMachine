@@ -31,7 +31,7 @@ let charMap =  ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C",
 "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
 var secretkeyArray = function () {
-  for (let e = [], t = charMap, i = 0; 5 > i; i++) {
+  for (var e = [], t = charMap, i = 0; 5 > i; i++) {
     for (var n = "", s = 0; 16 > s; s++) {
       let a = Math.floor(62 * Math.random());
       n += t[a];
@@ -42,7 +42,7 @@ var secretkeyArray = function () {
 };
 
 var newjiamarr = () => {
-  for (let e = [], k = "", t = charMap, i = 0x0; 0x4 > i; i++) {
+  for (var e = [], k = "", t = charMap, i = 0x0; 0x4 > i; i++) {
     for (var n = "", s = 0x0; 16 > s; s++) {
       let a = Math.floor(0x3e * Math.random());
       n += t[a];
