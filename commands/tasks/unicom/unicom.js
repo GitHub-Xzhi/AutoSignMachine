@@ -336,9 +336,13 @@ var start = async (params) => {
   );
 
   // 首页-签到有礼-赢vivo X60
-  // await scheduler.regTask('bcow', async (request) => {
-  //   await require('./bcow').doTask(request, options)
-  // }, taskOption)
+  await scheduler.regTask(
+    "bcow",
+    async (request) => {
+      await require("./bcow").doTask(request, options);
+    },
+    taskOption
+  );
 };
 module.exports = {
   start,

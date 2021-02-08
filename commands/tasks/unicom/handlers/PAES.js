@@ -5,6 +5,20 @@
 
 let crypto = require("crypto");
 let CryptoJS = require("crypto-js");
+
+let sign = (data) => {
+  let str = "integralofficial&";
+  let params = [];
+  data.forEach((v, i) => {
+    if (v) {
+      params.push("arguments" + (i + 1) + v);
+    }
+  });
+  return crypto
+    .createHash("md5")
+    .update(str + params.join("&"))
+    .digest("hex");
+};
 // prettier-ignore
 const charset = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E",
 "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
@@ -12,8 +26,8 @@ const charset = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C"
 "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
 let secretkeyArray = () => {
-  for (let e = [], charset, i = 0; 0x05 > i; i++) {
-    for (let n = "", s = 0; 0x10 > s; s++) {
+  for (var e = [], i = 0; 0x05 > i; i++) {
+    for (var n = "", s = 0; 0x10 > s; s++) {
       let a = Math.floor(0x3e * Math.random());
       n += charset[a];
     }
@@ -41,8 +55,8 @@ let decrypt = function (word, keyStr) {
   return decrypted.toString(CryptoJS.enc.Utf8);
 };
 let newjiamarr = () => {
-  for (let e = [], k = "", t = charMap, i = 0x0; 0x4 > i; i++) {
-    for (let n = "", s = 0x0; 16 > s; s++) {
+  for (var e = [], k = "", t = charset, i = 0x0; 0x4 > i; i++) {
+    for (var n = "", s = 0x0; 16 > s; s++) {
       let a = Math.floor(0x3e * Math.random());
       n += t[a];
     }
@@ -58,4 +72,5 @@ module.exports = {
   encrypt,
   decrypt,
   newjiamarr,
+  sign,
 };
