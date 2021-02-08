@@ -26,8 +26,8 @@ const charset = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C"
 "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
 let secretkeyArray = () => {
-  for (var e = [], i = 0; 0x05 > i; i++) {
-    for (var n = "", s = 0; 0x10 > s; s++) {
+  for (var e = [], i = 0x0; 0x05 > i; i++) {
+    for (var n = "", s = 0x0; 0x10 > s; s++) {
       let a = Math.floor(0x3e * Math.random());
       n += charset[a];
     }
@@ -56,7 +56,7 @@ let decrypt = function (word, keyStr) {
 };
 let newjiamarr = () => {
   for (var e = [], k = "", t = charset, i = 0x0; 0x4 > i; i++) {
-    for (var n = "", s = 0x0; 16 > s; s++) {
+    for (var n = "", s = 0x0; 0x10 > s; s++) {
       let a = Math.floor(0x3e * Math.random());
       n += t[a];
     }
