@@ -52,7 +52,7 @@ let getOpenPlatLine = (url) => {
 /**
  * @param {String} referer request referer absolute path
  */
-let postFreeLoginRock = (referer) => {
+let postFreeLoginRock = (referer, freeLoginRock = "freeLoginRock") => {
   return async (axios, options, { jfid, searchParams, jar1 }) => {
     let keyArr = AES.secretkeyArray();
     let keyrdm = Math.floor(Math.random() * 5);
@@ -77,7 +77,7 @@ let postFreeLoginRock = (referer) => {
           "Content-Type": "application/json",
         },
         jar: jar1,
-        url: `/jf-yuech/p/freeLoginRock`,
+        url: `/jf-yuech/p/${freeLoginRock}`,
         method: "post",
         data: reqdata,
       })
@@ -87,10 +87,25 @@ let postFreeLoginRock = (referer) => {
     if (result.code !== 0) {
       throw new Error(result.message);
     }
-    let activity = result.data.activityInfos.activityVOs[0]; //available items on the list from request
-    let Authorization = result.data.token.access_token;
-    let freeTimes = activity.activityTimesInfo.freeTimes;
-    let advertTimes = activity.activityTimesInfo.advertTimes;
+
+    let activity, Authorization, freeTimes, advertTimes;
+    switch (freeLoginRock) {
+      case "freeLogin":
+        activity = result.data.activity;
+        Authorization = result.data.token.access_token;
+        freeTimes = activity.freeGameTimes;
+        advertTimes = activity.advertLimitNum;
+        break;
+      case "freeLoginRock":
+        activity = result.data.activityInfos.activityVOs[0]; //available items on the list from request
+        Authorization = result.data.token.access_token;
+        freeTimes = activity.activityTimesInfo.freeTimes;
+        advertTimes = activity.activityTimesInfo.advertTimes;
+        break;
+      default:
+        throw new Error("new function got!!!");
+    }
+
     return { activity, Authorization, freeTimes, advertTimes };
   };
 };

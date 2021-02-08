@@ -183,14 +183,14 @@ var start = async (params) => {
     taskOption
   );
 
-  // 首页-签到有礼-免费抽-拿iPhone12(摇一摇)
-  await scheduler.regTask(
-    "dailyYYQ",
-    async (request) => {
-      await require("./dailyYYQ").doTask(request, options);
-    },
-    taskOption
-  );
+  // 首页-签到有礼-免费抽-拿iPhone12(摇一摇) TODO: 待上线
+  // await scheduler.regTask(
+  //   "dailyYYQ",
+  //   async (request) => {
+  //     await require("./dailyYYQ").doTask(request, options);
+  //   },
+  //   taskOption
+  // );
 
   // 首页-签到有礼-免费抽-赢Apple Watch(去抽奖)
   await scheduler.regTask(
