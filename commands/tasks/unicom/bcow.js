@@ -1,10 +1,11 @@
 let crypto = require("crypto");
 let moment = require("moment");
-let AES = require("./handlers/PAES");
+let AES = require("./handlers/PAES.js");
 const useragent = require("./handlers/myPhone").useragent;
 const gameEvents = require("./handlers/dailyEvent");
 const referer =
   "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-qd/bcow/index.html?jump=sign";
+let bcow;
 module.exports = bcow = {
   doTask: async (axios, options) => {
     console.log("🔔 开始翻牛牌\n");
@@ -39,7 +40,7 @@ module.exports = bcow = {
         break;
       }
 
-      let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
+      // let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
 
       let p1 = {
         activityId: activity.activityId,
@@ -80,14 +81,14 @@ module.exports = bcow = {
           .digest("hex");
         params["arguments4"] = new Date().getTime();
 
-        result = await require("./taskcallback").reward(axios, {
+        await require("./taskcallback").reward(axios, {
           ...options,
           params,
           jar: jar1,
         });
 
         let timestamp = moment().format("YYYYMMDDHHmmss");
-        result = await axios.request({
+        await axios.request({
           headers: {
             "user-agent": useragent(options),
             referer: `https://img.client.10010.com/`,
@@ -113,12 +114,12 @@ module.exports = bcow = {
       //join the game
       let n = Math.floor(5 * Math.random());
       let i = AES.newjiamarr();
-      params = {
+      let params = {
         params: AES.encrypt(JSON.stringify(p1), i["zfc"]) + n,
         parKey: i["arr"],
       };
 
-      res = await axios
+      let res = await axios
         .request({
           baseURL: "https://m.jf.10010.com/",
           headers: {
@@ -134,7 +135,7 @@ module.exports = bcow = {
         })
         .catch((err) => console.log(err));
 
-      result = res.data;
+      let result = res.data;
       if (result.code !== 0) {
         console.log("翻牛牌送好礼:", result.message);
       } else {

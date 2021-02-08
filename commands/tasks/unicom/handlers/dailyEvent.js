@@ -1,5 +1,5 @@
 const useragent = require("./myPhone").useragent;
-let AES = require("./handlers/PAES");
+let AES = require("./PAES");
 
 /**
  * @param {String} url request url absolute path
@@ -83,7 +83,7 @@ let postFreeLoginRock = (referer) => {
       })
       .catch((err) => console.log(err));
 
-    result = res.data;
+    let result = res.data;
     if (result.code !== 0) {
       throw new Error(result.message);
     }
@@ -108,7 +108,7 @@ let lookVideoDoubleResult = (title) => {
       url: `https://m.jf.10010.com/jf-yuech/api/gameResult/doublingIntegral?activityId=${activityId}&winningRecordId=${winningRecordId}`,
       method: "get",
     });
-    result = res.data;
+    let result = res.data;
     if (result.code !== 0) {
       console.log(`⭕ ${title}翻倍结果:`, result.message);
     } else {

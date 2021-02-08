@@ -23,6 +23,7 @@
     "yargs": "^16.1.0"
   },
   "devDependencies": {
+    "eslint": "^7.19.0",
     "serverless-tencent-scf": "^0.1.7"
   }
 }
