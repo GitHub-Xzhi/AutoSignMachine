@@ -5,6 +5,9 @@ const useragent = require("./handlers/myPhone").useragent;
 const gameEvents = require("./handlers/dailyEvent");
 const referer =
   "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-qd/bcow/index.html?jump=sign";
+/**
+ * 入口:首页=>签到=>免费抽 赢牛拿奖
+ */
 let bcow;
 module.exports = bcow = {
   doTask: async (axios, options) => {
