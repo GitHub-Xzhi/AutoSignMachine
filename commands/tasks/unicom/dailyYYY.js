@@ -1,16 +1,8 @@
 var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 var moment = require("moment");
-
+const gameEvents = require("./handlers/dailyEvent");
 // 摇一摇送好礼
-let transParams = (data) => {
-  let params = new URLSearchParams();
-  for (let item in data) {
-    params.append(item, data["" + item + ""]);
-  }
-  return params;
-};
-
 var sign = (data) => {
   let str = "integralofficial&";
   let params = [];
@@ -63,15 +55,6 @@ var encrypt = function (word, keyStr) {
     padding: CryptoJS.pad.Pkcs7,
   });
   return encrypted.toString();
-};
-
-var decrypt = function (word, keyStr) {
-  var key = CryptoJS.enc.Utf8.parse(keyStr);
-  var decrypted = CryptoJS.AES.decrypt(word, key, {
-    mode: CryptoJS.mode.ECB,
-    padding: CryptoJS.pad.Pkcs7,
-  });
-  return decrypted.toString(CryptoJS.enc.Utf8);
 };
 
 var dailyYYY = {
@@ -165,10 +148,10 @@ var dailyYYY = {
 
     do {
       let orderId = "";
-
+      let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
       console.log(
         "已消耗机会",
-        1 + 4 - (freeTimes + advertTimes),
+        currentTimes,
         "剩余免费机会",
         freeTimes,
         "看视频广告机会",
@@ -179,8 +162,6 @@ var dailyYYY = {
         console.log("没有游戏次数");
         break;
       }
-
-      let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
 
       let p1 = {
         activityId: activity.activityId,
