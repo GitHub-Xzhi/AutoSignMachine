@@ -21,6 +21,7 @@ module.exports = {
   },
   getCookies: (key) => {
     let dir = path.join(os.homedir(), ".AutoSignMachine");
+    let cookies = "";
     if (
       "TENCENTCLOUD_RUNENV" in process.env &&
       process.env.TENCENTCLOUD_RUNENV === "SCF"
@@ -32,10 +33,9 @@ module.exports = {
     }
     let cookieFile = path.join(dir, "cookieFile_" + key + ".txt");
     if (fs.existsSync(cookieFile)) {
-      let cookies = fs.readFileSync(cookieFile).toString("utf-8");
-      return cookies;
+      cookies = fs.readFileSync(cookieFile).toString("utf-8");
     }
-    return "";
+    return cookies;
   },
   saveCookies: (key, cookies, cookiesJar) => {
     let dir = path.join(os.homedir(), ".AutoSignMachine");

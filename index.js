@@ -1,3 +1,3 @@
 (async () => {
-  require('./AutoSignMachine.js').run()
-})()
+  require("./AutoSignMachine.js").run();
+})();
