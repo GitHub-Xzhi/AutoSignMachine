@@ -4,7 +4,7 @@ let AES = require("./PAES");
 /**
  * @param {String} url request url absolute path
  */
-let getOpenPlatLine = (url) => {
+let getOpenPlatLine = (url, cnf = { base: "" }) => {
   return async (axios, options) => {
     let searchParams = {};
     let result = await axios
@@ -40,12 +40,20 @@ let getOpenPlatLine = (url) => {
       throw new Error("ecs_token缺失");
     }
     ecs_token = ecs_token.value;
-    let jfid = cookiesJson.cookies.find((i) => i.key == "_jf_id");
-    if (!jfid) {
-      throw new Error("jfid缺失");
+    let jfid;
+    switch (cnf.base) {
+      case "msmds":
+        console.log("🐱‍🏍 msmds游戏调度");
+        return { ecs_token, searchParams, jar1 };
+      default:
+        console.log("🐱‍🏍 平台游戏调度");
+        jfid = cookiesJson.cookies.find((i) => i.key == "_jf_id");
+        if (!jfid) {
+          throw new Error("jfid缺失");
+        }
+        jfid = jfid.value;
+        return { jfid, searchParams, jar1 };
     }
-    jfid = jfid.value;
-    return { jfid, searchParams, jar1 };
   };
 };
 

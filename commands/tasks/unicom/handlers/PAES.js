@@ -54,6 +54,16 @@ let decrypt = function (word, keyStr) {
   });
   return decrypted.toString(CryptoJS.enc.Utf8);
 };
+
+let encryptPhone = (data, key) => {
+  var iv = "";
+  var cipherEncoding = "base64";
+  var cipher = crypto.createCipheriv("aes-128-ecb", key, iv);
+  cipher.setAutoPadding(true);
+  return Buffer.concat([cipher.update(data), cipher.final()]).toString(
+    cipherEncoding
+  );
+};
 let newjiamarr = () => {
   for (var e = [], k = "", t = charset, i = 0x0; 0x4 > i; i++) {
     for (var n = "", s = 0x0; 0x10 > s; s++) {
@@ -73,4 +83,5 @@ module.exports = {
   decrypt,
   newjiamarr,
   sign,
+  encryptPhone,
 };

@@ -379,6 +379,15 @@ var start = async (params) => {
       ...taskOption,
     }
   );
+
+  //首页-签到有礼-聚宝盆 [广告图]
+  await scheduler.regTask(
+    "ingots",
+    async (request) => {
+      await require("./ingotsPage").doTask(request, options);
+    },
+    taskOption
+  );
 };
 module.exports = {
   start,
