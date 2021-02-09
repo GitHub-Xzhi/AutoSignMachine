@@ -229,8 +229,7 @@ var dailyYYY = {
 
       let n = Math.floor(5 * Math.random());
       let i = newjiamarr();
-      params = gameEvents.encodeParams(t, true);
-
+      params = gameEvents.encodeParams(p1, true);
       res = await axios
         .request({
           headers: {

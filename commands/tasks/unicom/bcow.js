@@ -147,7 +147,7 @@ module.exports = bcow = {
           result.data.drawResultPO !== null &&
           result.data.drawResultPO.doublingStatus
         ) {
-          console.log("🌈提交积分翻倍");
+          console.log("🌈 提交积分翻倍");
           await bcow.lookVideoDouble(axios, {
             ...options,
           });

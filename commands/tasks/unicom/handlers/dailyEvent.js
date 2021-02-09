@@ -149,9 +149,9 @@ let lookVideoDoubleResult = (title) => {
     });
     let result = res.data;
     if (result.code !== 0) {
-      console.log(`⭕ ${title}翻倍结果:`, result.message);
+      console.log(`❌ ${title}翻倍结果:`, result.message);
     } else {
-      console.log(`❌ ${title}翻倍结果:`, result.data);
+      console.log(`⭕ ${title}翻倍结果:`, result.data);
     }
   };
 };
