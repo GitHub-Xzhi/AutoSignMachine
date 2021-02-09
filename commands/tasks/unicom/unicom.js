@@ -1,3 +1,41 @@
+/**
+ * 目前实现的软体业务归总
+ * 每日类:
+ *  每日签到积分
+ *  冬奥积分活动 20201231
+ *  每日定向积分 20201231
+ *  每日游戏楼层宝箱
+ *  每日抽奖
+ *  每日评论积分
+ *  首页-游戏-娱乐中心-沃之树
+ *  首页-小说-阅读越有礼打卡赢话费
+ *  首页-小说-读满10章赢好礼
+ *  首页-小说-阅读福利抽大奖
+ *  首页-签到有礼-免费领-浏览领积分
+ *  首页-签到有礼-免费拿-看视频夺宝 TODO:易出现本次操作需要进行验证，暂时注释
+ *  首页-签到有礼-免费抽-抓OPPO手机
+ *  首页-签到有礼-免费抽-拿666积分-豪礼大派送抽奖
+ *  首页-签到有礼-免费抽-拿苹果iPad Pro(摇一摇)
+ *  首页-签到有礼-免费抽-拆华为Pad(去抽奖)
+ *  首页-签到有礼-免费抽-拿iPhone12(摇一摇)
+ *  首页-签到有礼-免费抽-赢Apple Watch(去抽奖)
+ *  首页-签到有礼-赢vivo X60(翻牛牌)
+ *  首页-签到有礼-赚更多福利-看视频奖励5积分
+ *  首页-签到有礼-赚更多福利-天天抽好礼
+ *  首页-签到有礼-居家娱乐馆
+ *  首页-游戏-娱乐中心-每日打卡
+ *  首页-游戏-娱乐中心-天天领取3G流量包
+ *  首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
+ *  首页-积分查询-游戏任务
+ *  首页-知识-限时免费（连续7天阶梯激励）
+ * 节日类
+ *  首页-牛气-秒杀抢兑
+ *  首页-牛气-转盘抽奖
+ *  首页-牛气-场馆领牛气
+ *
+ *
+ *
+ */
 const { scheduler } = require("../../../utils/scheduler");
 const { getCookies, saveCookies } = require("../../../utils/util");
 const _request = require("../../../utils/request");
@@ -65,6 +103,17 @@ var start = async (params) => {
     taskOption
   );
 
+  // 每日评论积分
+  await scheduler.regTask(
+    "dailycomment",
+    async (request) => {
+      await require("./commentSystem")
+        .commentTask(request, options)
+        .catch(console.log);
+    },
+    taskOption
+  );
+
   // 首页-游戏-娱乐中心-沃之树
   await scheduler.regTask(
     "dailywoTree",
@@ -74,10 +123,10 @@ var start = async (params) => {
     taskOption
   );
 
+  // 首页-小说-阅读越有礼打卡赢话费
   await scheduler.regTask(
     "dailyBookRead",
     async (request) => {
-      // 首页-小说-阅读越有礼打卡赢话费
       await require("./dailyBookRead").doTask(request, options);
       await require("./dailyVideoBook").doTask(request, options);
     },
@@ -101,10 +150,10 @@ var start = async (params) => {
     taskOption
   );
 
+  // 首页-小说-阅读福利抽大奖
   await scheduler.regTask(
     "dailyBookLuckdraw",
     async (request) => {
-      // 首页-小说-阅读福利抽大奖
       await require("./dailyBookLuckdraw").doTask(request, options);
     },
     taskOption
@@ -183,7 +232,7 @@ var start = async (params) => {
     taskOption
   );
 
-  // 首页-签到有礼-免费抽-拿iPhone12(摇一摇) TODO: 待上线
+  // 首页-签到有礼-免费抽-拿iPhone12(摇一摇)
   await scheduler.regTask(
     "dailyYYQ",
     async (request) => {
@@ -197,6 +246,15 @@ var start = async (params) => {
     "dailyTurntablePage",
     async (request) => {
       await require("./dailyTurntablePage").doTask(request, options);
+    },
+    taskOption
+  );
+
+  // 首页-签到有礼-赢vivo X60(翻牛牌)
+  await scheduler.regTask(
+    "bcow",
+    async (request) => {
+      await require("./bcow").doTask(request, options);
     },
     taskOption
   );
@@ -219,6 +277,18 @@ var start = async (params) => {
     taskOption
   );
 
+  // 首页-签到有礼-居家娱乐馆
+  await scheduler.regTask(
+    "gameYearBox",
+    async (request) => {
+      await require("./gameYearBox").doTask(request, options);
+    },
+    {
+      ...taskOption,
+      startTime: 20 * 3600,
+    }
+  );
+
   // 首页-游戏-娱乐中心-每日打卡
   await scheduler.regTask(
     "producGameSignin",
@@ -236,6 +306,18 @@ var start = async (params) => {
       await require("./producGame").doGameFlowTask(request, options);
     },
     taskOption
+  );
+
+  // 首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
+  await scheduler.regTask(
+    "todayDailyTask",
+    async (request) => {
+      await require("./producGame").doTodayDailyTask(request, options);
+    },
+    {
+      ...taskOption,
+      startTime: 20 * 3600,
+    }
   );
 
   // 首页-积分查询-游戏任务
@@ -263,41 +345,6 @@ var start = async (params) => {
   // await require('./integral').getTxDetail(request, options)
   // await require('./integral').getDxDetail(request, options)
   // await require('./integral').getCoins(request, options)
-
-  // 每日评论积分
-  await scheduler.regTask(
-    "dailycomment",
-    async (request) => {
-      await require("./commentSystem")
-        .commentTask(request, options)
-        .catch(console.log);
-    },
-    taskOption
-  );
-
-  // 首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
-  await scheduler.regTask(
-    "todayDailyTask",
-    async (request) => {
-      await require("./producGame").doTodayDailyTask(request, options);
-    },
-    {
-      ...taskOption,
-      startTime: 20 * 3600,
-    }
-  );
-
-  // 首页-签到有礼-居家娱乐馆
-  await scheduler.regTask(
-    "gameYearBox",
-    async (request) => {
-      await require("./gameYearBox").doTask(request, options);
-    },
-    {
-      ...taskOption,
-      startTime: 20 * 3600,
-    }
-  );
 
   // 首页-牛气-秒杀抢兑
   await scheduler.regTask(
@@ -333,15 +380,6 @@ var start = async (params) => {
       startTime: 1,
       ...taskOption,
     }
-  );
-
-  // 首页-签到有礼-赢vivo X60
-  await scheduler.regTask(
-    "bcow",
-    async (request) => {
-      await require("./bcow").doTask(request, options);
-    },
-    taskOption
   );
 };
 module.exports = {
