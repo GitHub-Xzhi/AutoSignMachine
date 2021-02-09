@@ -81,7 +81,7 @@ let scheduler = {
   initTasksQueue: async () => {
     const today = moment().format("YYYYMMDD");
     if (!fs.existsSync(scheduler.taskFile)) {
-      console.log("任务配置文件不存在，创建配置中");
+      console.log("📑 任务配置文件不存在，创建配置中");
       let queues = await scheduler.buildQueues();
       fs.createFileSync(scheduler.taskFile);
       fs.writeFileSync(
@@ -98,7 +98,7 @@ let scheduler = {
       let taskJson = fs.readFileSync(scheduler.taskFile).toString("utf-8");
       taskJson = JSON.parse(taskJson);
       if (taskJson.today !== today) {
-        console.log("日期已变更，重新生成任务配置");
+        console.log("📑  日期已变更，重新生成任务配置");
         let queues = await scheduler.buildQueues();
         fs.writeFileSync(
           scheduler.taskFile,
@@ -113,7 +113,7 @@ let scheduler = {
       }
 
       if (taskJson.queues.length !== Object.keys(tasks).length) {
-        console.log("数量已变更，重新生成任务配置");
+        console.log("📑 数量已变更，重新生成任务配置");
         let queues = await scheduler.buildQueues();
         fs.writeFileSync(
           scheduler.taskFile,
@@ -207,7 +207,7 @@ let scheduler = {
       scheduler.taskKey.replaceWithMask(2, 3),
       "作为账户识别码"
     );
-    console.log("计算可执行任务...");
+    console.log("🤨 计算可执行任务...");
     scheduler.genFileName(command);
     await scheduler.initTasksQueue();
     let { will_queues } = await scheduler.loadTasksQueue();
