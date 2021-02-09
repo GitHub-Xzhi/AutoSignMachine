@@ -37,8 +37,6 @@
  *
  */
 const { scheduler } = require("../../../utils/scheduler");
-const { getCookies, saveCookies } = require("../../../utils/util");
-const _request = require("../../../utils/request");
 
 var start = async (params) => {
   const { cookies, options } = params;
