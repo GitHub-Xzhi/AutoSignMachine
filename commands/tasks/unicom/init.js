@@ -34,11 +34,11 @@ var transParams = (data) => {
   return params;
 };
 
-var chars = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+var chars = ["1", "2", "3", "4", "5", "6", "7", "8", "9","0","a","b","c","d","e","f"];
 function generateMixed(n) {
   let res = "";
   for (var i = 0; i < n; i++) {
-    var id = Math.ceil(Math.random() * 61);
+    var id = Math.floor(16 * Math.random());
     res += chars[id];
   }
   return res;
@@ -95,7 +95,7 @@ module.exports = async (axios, params) => {
     } else if (!cookies) {
       throw new Error("需要提供登录信息，使用密码账号或者cookies");
     }
-    const deviceId = generateMixed(15);
+    const deviceId = generateMixed(32);
     var params1 = {
       // ChinaunicomMobileBusiness
       appId: appId || options.appid,
@@ -138,7 +138,7 @@ module.exports = async (axios, params) => {
     );
     console.log("获得登录状态成功");
   } else {
-    const deviceId = generateMixed(15);
+    const deviceId = generateMixed(32);
     params = {
       appId: appId,
       deviceBrand: "samsung",
