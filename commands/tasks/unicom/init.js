@@ -1,4 +1,4 @@
-const { getCookies, saveCookies } = require("../../../utils/util");
+const { saveCookies } = require("../../../utils/util");
 var crypto = require("crypto");
 var moment = require("moment");
 moment.locale("zh-cn");
