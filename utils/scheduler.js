@@ -23,7 +23,8 @@ const randomDate = (options) => {
   }
   // eslint-disable-next-line prettier/prettier
   return new Date(
-    startDate.toDate() + Math.random() * (endDate.toDate() - startDate.toDate())
+    +startDate.toDate() +
+      Math.random() * (endDate.toDate() - startDate.toDate())
   );
 };
 let tasks = {};
