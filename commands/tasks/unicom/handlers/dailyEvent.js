@@ -163,21 +163,19 @@ let lookVideoDoubleResult = (title) => {
  */
 let encodeParams = (p1, isNewGame = false) => {
   let n = Math.floor(5 * Math.random());
-  let params;
   if (isNewGame) {
     //join the game
     let i = AES.newjiamarr();
-    params = {
+    return {
       params: AES.encrypt(JSON.stringify(p1), i["zfc"]) + n,
       parKey: i["arr"],
     };
   } else {
     let i = AES.secretkeyArray();
-    params = {
+    return {
       params: AES.encrypt(JSON.stringify(p1), i[n]) + n,
       parKey: i,
     };
-    return params;
   }
 };
 module.exports = {

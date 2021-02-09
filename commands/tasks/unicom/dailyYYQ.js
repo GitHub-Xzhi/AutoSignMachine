@@ -99,7 +99,6 @@ let dailyYYQ = {
 
         orderId = params["orderId"];
       }
-
       //join the game
       let t = {
         activityId: activity.activityId,
@@ -114,7 +113,7 @@ let dailyYYQ = {
           "user-agent": useragent(options),
           referer:
             "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/eggachine/index.html?id=Ac-da377d4512124eb49cc3ea4e0d25e379",
-          origin: "https://img.jf.10010.com",
+          origin: "https://m.jf.10010.com",
         },
         url: `https://m.jf.10010.com/jf-yuech/api/gameResult/twisingLuckDraw`,
         method: "post",
