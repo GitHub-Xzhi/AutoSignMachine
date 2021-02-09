@@ -148,10 +148,10 @@ var dailyYYY = {
 
     do {
       let orderId = "";
-      let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
+      // let currentTimes = 1 + 4 - (freeTimes + advertTimes) + 1;
       console.log(
         "已消耗机会",
-        currentTimes,
+        1 + 4 - (freeTimes + advertTimes),
         "剩余免费机会",
         freeTimes,
         "看视频广告机会",
@@ -320,6 +320,7 @@ var dailyYYY = {
       }
 
       console.log("等待15秒再继续");
+      // eslint-disable-next-line no-unused-vars
       await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
     } while (freeTimes || advertTimes);
   },
@@ -379,26 +380,7 @@ var dailyYYY = {
       jar,
     });
   },
-  lookVideoDoubleResult: async (axios, options) => {
-    let { Authorization, activityId, winningRecordId } = options;
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`;
-    let res = await axios.request({
-      headers: {
-        Authorization: `Bearer ${Authorization}`,
-        "user-agent": useragent,
-        referer: "https://img.jf.10010.com/",
-        origin: "https://img.jf.10010.com",
-      },
-      url: `https://m.jf.10010.com/jf-yuech/api/gameResult/doublingIntegral?activityId=${activityId}&winningRecordId=${winningRecordId}`,
-      method: "get",
-    });
-    result = res.data;
-    if (result.code !== 0) {
-      console.log("摇一摇送好礼翻倍结果:", result.message);
-    } else {
-      console.log("摇一摇送好礼翻倍结果:", result.data);
-    }
-  },
+  lookVideoDoubleResult: gameEvents.lookVideoDoubleResult("摇一摇送好礼"),
 };
 
 module.exports = dailyYYY;

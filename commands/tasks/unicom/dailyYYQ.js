@@ -198,25 +198,9 @@ let dailyYYQ = {
       jar,
     });
   },
-  lookVideoDoubleResult: async (axios, options) => {
-    let { Authorization, activityId, winningRecordId } = options;
-    let res = await axios.request({
-      headers: {
-        Authorization: `Bearer ${Authorization}`,
-        "user-agent": useragent(options),
-        referer: "https://img.jf.10010.com/",
-        origin: "https://img.jf.10010.com",
-      },
-      url: `https://m.jf.10010.com/jf-yuech/api/gameResult/doublingIntegral?activityId=${activityId}&winningRecordId=${winningRecordId}`,
-      method: "get",
-    });
-    let result = res.data;
-    if (result.code !== 0) {
-      console.log("签到小游戏买扭蛋机2翻倍结果:", result.message);
-    } else {
-      console.log("签到小游戏买扭蛋机2翻倍结果:", result.data);
-    }
-  },
+  lookVideoDoubleResult: gameEvents.lookVideoDoubleResult(
+    "签到小游戏买扭蛋机2"
+  ),
 };
 
 module.exports = dailyYYQ;
