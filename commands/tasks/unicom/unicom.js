@@ -191,7 +191,7 @@ var start = async (params) => {
   await scheduler.regTask(
     "jflottery",
     async (request) => {
-      await require("./jflottery").timesDraw(request, options);
+      await require("./jflottery").doTask(request, options);
     },
     taskOption
   );
