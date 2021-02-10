@@ -84,7 +84,10 @@ let ingotsPage = {
   },
   signDouble: async (axios, options, cookies) => {
     console.log("😒 聚宝盆签到翻倍...测试");
+    console.log("等待15秒再继续");
     console.log(cookies.double);
+    // eslint-disable-next-line no-unused-vars
+    await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
     // return;
     // if (!cookies.double) {
     //   console.log("❌ 聚宝盆签到翻倍失败");
@@ -92,7 +95,7 @@ let ingotsPage = {
     // }
     try {
       await ingotsPage.lookVideoDouble(axios, { ...options, ...cookies });
-      console.log("😒 聚宝盆签到完成");
+      console.log("⭕ 聚宝盆签到完成");
     } catch (err) {
       console.log("❌ 聚宝盆签到报错: ", err);
     }
