@@ -128,7 +128,7 @@ let ingotsPage = {
     params = {
       arguments1: "AC20200716103629", // acid
       arguments2: "GGPD", // yhChannel
-      arguments3: "73e3907bbf9c4748b2fe9a053cee5e82", // yhTaskId menuId
+      arguments3: "45d6dbc3ad144c938cfa6b8e81803b85", // yhTaskId menuId
       arguments4: new Date().getTime(), // time
       arguments6: "517050707",
       arguments7: "517050707",
