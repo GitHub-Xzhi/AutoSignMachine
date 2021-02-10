@@ -92,6 +92,7 @@ let ingotsPage = {
     // }
     try {
       await ingotsPage.lookVideoDouble(axios, { ...options, ...cookies });
+      console.log("😒 聚宝盆签到完成");
     } catch (err) {
       console.log("❌ 聚宝盆签到报错: ", err);
     }
