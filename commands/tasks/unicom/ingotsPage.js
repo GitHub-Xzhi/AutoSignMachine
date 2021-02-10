@@ -105,6 +105,7 @@ let ingotsPage = {
       arguments4: new Date().getTime(), // time
       arguments6: "517050707",
       arguments7: "517050707",
+      arguments8: "123456",
       arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
       version: `android@8.0102`,
@@ -129,10 +130,10 @@ let ingotsPage = {
       arguments2: "GGPD", // yhChannel
       arguments3: "73e3907bbf9c4748b2fe9a053cee5e82", // yhTaskId menuId
       arguments4: new Date().getTime(), // time
-      arguments6: "",
-      arguments7: "",
-      arguments8: "",
-      arguments9: "",
+      arguments6: "517050707",
+      arguments7: "517050707",
+      arguments8: "123456",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
       orderId: crypto
         .createHash("md5")
         .update(new Date().getTime() + "")
