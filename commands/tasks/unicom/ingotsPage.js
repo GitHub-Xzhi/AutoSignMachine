@@ -65,8 +65,7 @@ let ingotsPage = {
     });
     switch (result.data.code) {
       case 200:
-        next(result.data.data);
-        break;
+        return next(result.data.data);
       case 500:
         console.log("😒 聚宝盆签到:" + result.data["msg"]);
         return { double: false };
@@ -76,8 +75,7 @@ let ingotsPage = {
     function next(data) {
       console.log("😒 聚宝盆签到获取积分:" + data["prizeName"]);
       console.log(
-        "😒 聚宝盆签到翻倍状态:" + (data["double"] ? "可翻倍" : "不可翻倍"),
-        "预计视频奖励测试: 4"
+        "😒 聚宝盆签到翻倍状态:" + (data["double"] ? "可翻倍" : "不可翻倍")
       );
       return { recordId: data["recordId"], double: data["double"] };
     }
