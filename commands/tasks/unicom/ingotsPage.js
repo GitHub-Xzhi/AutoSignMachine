@@ -1,7 +1,7 @@
 let crypto = require("crypto");
 let moment = require("moment");
 let { encryptPhone, sign, encrypt } = require("./handlers/PAES.js");
-const { useragent, randomNumber } = require("./handlers/myPhone");
+const { useragent, randomNumber, getCodeId } = require("./handlers/myPhone");
 const gameEvents = require("./handlers/dailyEvent");
 let { transParams } = require("./handlers/gameUtils");
 let ingotsPage = {
@@ -106,6 +106,7 @@ let ingotsPage = {
     console.log(freeTimes, advertTimes);
     let phone = encryptPhone(options.user, "gb6YCccUvth75Tm2");
     let data;
+    let UA = useragent(options);
     //check game time information
     do {
       console.log(
@@ -131,7 +132,7 @@ let ingotsPage = {
           remark1: "签到看视频得积分2",
           remark: "签到看视频得积分2",
           version: `android@8.0102`,
-          codeId: 945757412,
+          codeId: getCodeId(UA),
         };
         params["sign"] = sign([
           params.arguments1,
@@ -162,7 +163,7 @@ let ingotsPage = {
         let timestamp = moment().format("YYYYMMDDHHmmss");
         let result = await axios.request({
           headers: {
-            "user-agent": useragent(options),
+            "user-agent": UA,
             referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
             origin: "https://wxapp.msmds.cn",
           },
@@ -185,7 +186,7 @@ let ingotsPage = {
       let timestamp = moment().format("YYYYMMDDHHmmss");
       let result = await axios.request({
         headers: {
-          "user-agent": useragent(options),
+          "user-agent": UA,
           referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=iphone_c@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
           origin: "https://wxapp.msmds.cn",
           "Content-Type": "application/x-www-form-urlencoded",
@@ -272,7 +273,7 @@ let ingotsPage = {
       netWay: "Wifi",
       remark: "签到小游戏聚宝盆",
       version: `android@8.0102`,
-      codeId: 945757412,
+      codeId: getCodeId("Android"),
     };
     params["sign"] = sign([
       params.arguments1,
@@ -330,7 +331,7 @@ let ingotsPage = {
       netWay: "Wifi",
       remark: "签到小游戏聚宝盆",
       version: `android@8.0102`,
-      codeId: 945757412,
+      codeId: getCodeId("Android"),
     };
     params["sign"] = sign([
       params.arguments1,
