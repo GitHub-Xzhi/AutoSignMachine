@@ -84,10 +84,12 @@ let ingotsPage = {
   },
   signDouble: async (axios, options, cookies) => {
     console.log("😒 聚宝盆签到翻倍...测试");
-    if (!cookies.double) {
-      console.log("❌ 聚宝盆签到翻倍失败");
-      return;
-    }
+    console.log(cookies.double);
+    // return;
+    // if (!cookies.double) {
+    //   console.log("❌ 聚宝盆签到翻倍失败");
+    //   return;
+    // }
     try {
       await ingotsPage.lookVideoDouble(axios, { ...options, ...cookies });
     } catch (err) {

@@ -211,14 +211,14 @@ var taskcallback = {
     let params = options.params;
     params["orderId"] = result["orderId"];
     delete params.codeId;
-    // const useragent = `okhttp/4.4.0`;
-    const useragent = ` ChinaUnicom4.x/1.0 CFNetwork/1209 Darwin/20.2.0`;
+    const useragent = `okhttp/4.4.0`;
+    // const useragent = ` ChinaUnicom4.x/1.0 CFNetwork/1209 Darwin/20.2.0`;
     let { data } = await axios.request({
       baseURL: "https://m.client.10010.com/",
       headers: {
         "user-agent": useragent,
-        referer: `https://img.client.10010.com/`,
-        origin: "https://img.client.10010.com",
+        referer: `https://m.client.10010.com/`,
+        origin: "https://m.client.10010.com",
       },
       url: `/taskcallback/taskfilter/dotasks`,
       method: "POST",
