@@ -122,7 +122,7 @@ let ingotsPage = {
         let params = {
           arguments1: "AC20200716103629", // acid
           arguments2: "GGPD", // yhChannel
-          arguments3: "45d6dbc3ad144c938cfa6b8e81803b85", // yhTaskId menuId
+          arguments3: "56ff7ad4a6e84886b18ae8716dfd1d6d", // yhTaskId menuId
           arguments4: new Date().getTime(), // time
           arguments6: "517050707",
           arguments7: "517050707",
@@ -156,7 +156,7 @@ let ingotsPage = {
           channelId: "LT_channel",
           phone: phone,
           token: ecs_token,
-          videoOrderNo: "3EE16FBF54F3942BDDC0FE121360661A",
+          videoOrderNo: "83C87F22F5C687BAA914B07ECC5174F1",
           sourceCode: "lt_ingots",
         };
 
@@ -164,8 +164,9 @@ let ingotsPage = {
         let result = await axios.request({
           headers: {
             "user-agent": UA,
-            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
+            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
             origin: "https://wxapp.msmds.cn",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
           jar: jar1,
           url: `https://wxapp.msmds.cn/jplus/h5/greetGoldIngot/playAgainByLookingVideos`,
@@ -187,7 +188,7 @@ let ingotsPage = {
       let result = await axios.request({
         headers: {
           "user-agent": UA,
-          referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=02&ticket=${searchParams.ticket}&version=iphone_c@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
+          referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=iphone_c@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
           origin: "https://wxapp.msmds.cn",
           "Content-Type": "application/x-www-form-urlencoded",
           jar: jar1,

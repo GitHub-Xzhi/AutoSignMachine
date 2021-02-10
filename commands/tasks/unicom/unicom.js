@@ -19,6 +19,7 @@
  *  首页-签到有礼-免费抽-拆华为Pad(去抽奖)
  *  首页-签到有礼-免费抽-拿iPhone12(摇一摇)
  *  首页-签到有礼-免费抽-赢Apple Watch(去抽奖) [活动取消]
+ *  首页-签到有礼-免费抽-华为mate40pro(刮刮乐)
  *  首页-签到有礼-赢vivo X60(翻牛牌)
  *  首页-签到有礼-赚更多福利-看视频奖励5积分
  *  首页-签到有礼-赚更多福利-天天抽好礼
@@ -28,6 +29,7 @@
  *  首页-游戏-娱乐中心-每日打卡-完成今日任务(200m)
  *  首页-积分查询-游戏任务
  *  首页-知识-限时免费（连续7天阶梯激励）
+ *  首页-积分商城-10分精彩看视频得积分-三只松鼠 [支付页]
  * 节日类
  *  首页-牛气-秒杀抢兑
  *  首页-牛气-转盘抽奖
@@ -385,6 +387,15 @@ var start = async (params) => {
     "ingots",
     async (request) => {
       await require("./ingotsPage").doTask(request, options);
+    },
+    taskOption
+  );
+
+  //首页-积分商城-10分精彩看视频得积分-三只松鼠 [支付页]
+  await scheduler.regTask(
+    "threeSquirrels",
+    async (request) => {
+      await require("./threeSquirrels").doTask(request, options);
     },
     taskOption
   );
