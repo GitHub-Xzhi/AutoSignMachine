@@ -105,6 +105,7 @@ let ingotsPage = {
       arguments4: new Date().getTime(), // time
       arguments6: "517050707",
       arguments7: "517050707",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
       version: `android@8.0102`,
     };
