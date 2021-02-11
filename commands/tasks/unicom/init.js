@@ -2,6 +2,7 @@ const { saveCookies } = require("../../../utils/util");
 var crypto = require("crypto");
 var moment = require("moment");
 moment.locale("zh-cn");
+const { useragent } = require("./handlers/myPhone");
 // 联通APP版本
 const unicom_version = "8.0100";
 
@@ -47,16 +48,16 @@ function generateMixed(n) {
 
 module.exports = async (axios, params) => {
   let { cookies, options } = params;
-  const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0102,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `;
   let token_online;
   let appId;
   let data;
+  const UA = useragent(options);
 
   if (cookies) {
     let res = await axios.request({
       baseURL: "https://m.client.10010.com",
       headers: {
-        "user-agent": useragent,
+        "user-agent": UA,
         referer: "https://m.client.10010.com",
         origin: "https://m.client.10010.com",
       },
@@ -120,7 +121,7 @@ module.exports = async (axios, params) => {
     const { data, config } = await axios.request({
       baseURL: "https://m.client.10010.com",
       headers: {
-        "user-agent": useragent,
+        "user-agent": UA,
         referer: "https://m.client.10010.com",
         origin: "https://m.client.10010.com",
       },
@@ -164,7 +165,7 @@ module.exports = async (axios, params) => {
       .request({
         baseURL: "https://m.client.10010.com",
         headers: {
-          "user-agent": useragent,
+          "user-agent": UA,
           referer: "https://m.client.10010.com",
           origin: "https://m.client.10010.com",
         },
