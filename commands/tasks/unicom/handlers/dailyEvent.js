@@ -1,6 +1,5 @@
 const useragent = require("./myPhone").useragent;
 let AES = require("./PAES");
-let crypto = require("crypto");
 /**
  * @param {String} url request url absolute path
  */
@@ -164,6 +163,7 @@ let lookVideoDoubleResult = (title) => {
   };
 };
 let lookVideoDouble = (params1, params2, title) => {
+  console.log(`😒 ${title}游玩开始翻倍`);
   return async (axios, options) => {
     params1["sign"] = AES.sign([
       params1.arguments1,
@@ -171,9 +171,9 @@ let lookVideoDouble = (params1, params2, title) => {
       params1.arguments3,
       params1.arguments4,
     ]);
-    let { num, jar } = await require("./taskcallback").query(axios, {
+    let { num, jar } = await require("../taskcallback").query(axios, {
       ...options,
-      params1,
+      params: params1,
     });
 
     if (!num) {
@@ -189,9 +189,9 @@ let lookVideoDouble = (params1, params2, title) => {
         params2.arguments3,
         params2.arguments4,
       ]);
-      await require("./taskcallback").doTask(axios, {
+      await require("../taskcallback").doTask(axios, {
         ...options,
-        params2,
+        params: params2,
         jar,
       });
       if (num) {

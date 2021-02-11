@@ -1,5 +1,4 @@
 var crypto = require("crypto");
-let AES = require("./handlers/PAES.js");
 const useragent = require("./handlers/myPhone").useragent;
 const gameEvents = require("./handlers/dailyEvent");
 // 疯狂刮刮乐

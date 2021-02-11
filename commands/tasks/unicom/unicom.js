@@ -254,7 +254,7 @@ var start = async (params) => {
   await scheduler.regTask(
     "bcow",
     async (request) => {
-      await require("./bcow").doTask(request, options);
+      await require("./dailyBcow").doTask(request, options);
     },
     taskOption
   );
@@ -395,7 +395,7 @@ var start = async (params) => {
   await scheduler.regTask(
     "threeSquirrels",
     async (request) => {
-      await require("./threeSquirrels").doTask(request, options);
+      await require("./dailyThreeSquirrels.js").doTask(request, options);
     },
     taskOption
   );

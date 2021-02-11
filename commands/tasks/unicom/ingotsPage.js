@@ -1,7 +1,7 @@
 let crypto = require("crypto");
 let moment = require("moment");
 let { encryptPhone, sign, encrypt } = require("./handlers/PAES.js");
-const { useragent, randomNumber, getCodeId } = require("./handlers/myPhone");
+const { useragent, randomNumber } = require("./handlers/myPhone");
 const gameEvents = require("./handlers/dailyEvent");
 let { transParams } = require("./handlers/gameUtils");
 let ingotsPage = {
@@ -132,7 +132,7 @@ let ingotsPage = {
           remark1: "签到看视频得积分2",
           remark: "签到看视频得积分2",
           version: `android@8.0102`,
-          codeId: getCodeId(UA),
+          codeId: 945597742,
         };
         params["sign"] = sign([
           params.arguments1,
@@ -146,22 +146,22 @@ let ingotsPage = {
           .digest("hex");
         params["arguments4"] = new Date().getTime();
 
-        await require("./taskcallback").reward(axios, {
+        let result = await require("./taskcallback").reward(axios, {
           ...options,
           params,
           jar: jar1,
         });
-
+        console.log(result);
         let a = {
           channelId: "LT_channel",
           phone: phone,
           token: ecs_token,
-          videoOrderNo: params["orderId"],
+          videoOrderNo: result["orderId"],
           sourceCode: "lt_ingots",
         };
 
         let timestamp = moment().format("YYYYMMDDHHmmss");
-        let result = await axios.request({
+        result = await axios.request({
           headers: {
             "user-agent": UA,
             referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
@@ -223,42 +223,23 @@ let ingotsPage = {
     } while (freeTimes || advertTimes);
     return data;
   },
-  postGameDouble: async (axios, options, cookies) => {
-    console.log("😒 聚宝盆游玩开始翻倍");
-    console.log("等待15秒再继续");
-    console.log(cookies.double);
-    // eslint-disable-next-line no-unused-vars
-    await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
-
-    let params = {
-      arguments1: "AC20200716103629", // acid
-      arguments2: "GGPD", // yhChannel
-      // arguments3: "56ff7ad4a6e84886b18ae8716dfd1d6d", // yhTaskId menuId
-      arguments3: "56ff7ad4a6e84886b18ae8716dfd1d6d", // yhTaskId menuId
-      arguments4: new Date().getTime(), // time
+  postGameDouble: gameEvents.lookVideoDouble(
+    {
+      arguments1: "AC20200716103629",
+      arguments2: "GGPD",
+      arguments3: "56ff7ad4a6e84886b18ae8716dfd1d6d",
+      arguments4: new Date().getTime(),
       arguments6: "517050707",
       arguments7: "517050707",
       arguments8: "123456",
       arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
+      remark1: "签到小游戏聚宝盆",
+      remark: "签到看视频翻倍得积分",
       version: `android@8.0102`,
-    };
-    params["sign"] = sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    let { num, jar } = await require("./taskcallback").query(axios, {
-      ...options,
-      params,
-    });
-
-    if (!num) {
-      console.log("😒 签到小游戏聚宝盆: 今日已完成");
-      return;
-    }
-    params = {
+      codeId: 945689604,
+    },
+    {
       arguments1: "AC20200716103629", // acid
       arguments2: "GGPD", // yhChannel
       arguments3: "56ff7ad4a6e84886b18ae8716dfd1d6d", // yhTaskId menuId
@@ -272,51 +253,29 @@ let ingotsPage = {
         .update(new Date().getTime() + "")
         .digest("hex"),
       netWay: "Wifi",
-      remark: "签到小游戏聚宝盆",
+      remark: "签到小游戏翻倍得积分",
       version: `android@8.0102`,
-      codeId: getCodeId("Android"),
-    };
-    params["sign"] = sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    await require("./taskcallback").doTask(axios, {
-      ...options,
-      params,
-      jar,
-    });
-  },
-  lookVideoDouble: async (axios, options) => {
-    let params = {
-      arguments1: "AC20200716103629", // acid
-      arguments2: "GGPD", // yhChannel
-      arguments3: "45d6dbc3ad144c938cfa6b8e81803b85", // yhTaskId menuId
-      arguments4: new Date().getTime(), // time
+      codeId: 945689604,
+    },
+    "聚宝盆"
+  ),
+  lookVideoDouble: gameEvents.lookVideoDouble(
+    {
+      arguments1: "AC20200716103629",
+      arguments2: "GGPD",
+      arguments3: "45d6dbc3ad144c938cfa6b8e81803b85",
+      arguments4: new Date().getTime(),
       arguments6: "517050707",
       arguments7: "517050707",
       arguments8: "123456",
       arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
+      remark1: "签到小游戏聚宝盆",
+      remark: "签到看视频翻倍得积分",
       version: `android@8.0102`,
-    };
-    params["sign"] = sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    let { num, jar } = await require("./taskcallback").query(axios, {
-      ...options,
-      params,
-    });
-
-    if (!num) {
-      console.log("😒 签到小游戏聚宝盆: 今日已完成");
-      return;
-    }
-    params = {
+      codeId: 945689604,
+    },
+    {
       arguments1: "AC20200716103629", // acid
       arguments2: "GGPD", // yhChannel
       arguments3: "45d6dbc3ad144c938cfa6b8e81803b85", // yhTaskId menuId
@@ -330,22 +289,12 @@ let ingotsPage = {
         .update(new Date().getTime() + "")
         .digest("hex"),
       netWay: "Wifi",
-      remark: "签到小游戏聚宝盆",
+      remark: "签到小游戏翻倍得积分",
       version: `android@8.0102`,
-      codeId: getCodeId("Android"),
-    };
-    params["sign"] = sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    await require("./taskcallback").doTask(axios, {
-      ...options,
-      params,
-      jar,
-    });
-  },
+      codeId: 945689604,
+    },
+    "聚宝盆"
+  ),
   getOpenPlatLine: gameEvents.getOpenPlatLine(
     `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&duanlianjieabc=tbLm0`,
     {
