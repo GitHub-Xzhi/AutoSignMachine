@@ -172,8 +172,8 @@ var dailyVideoScratchcard = {
       console.log("暂无可刮得商品");
     }
   },
-  lookVideoDouble: async (axios, options) => {
-    let params = {
+  lookVideoDouble: gameEvents.lookVideoDouble(
+    {
       arguments1: "AC20200716103629",
       arguments2: "GGPD",
       arguments3: "79b0275d6a5742ce96af76a663cde0ab",
@@ -187,61 +187,27 @@ var dailyVideoScratchcard = {
       remark: "签到看视频翻倍得积分",
       version: `android@8.0102`,
       codeId: 945689604,
-    };
-    params["sign"] = AES.sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    let { num, jar } = await require("./taskcallback").query(axios, {
-      ...options,
-      params,
-    });
-
-    if (!num) {
-      console.log("签到小游戏幸运刮刮卡: 今日已完成");
-      return;
-    }
-
-    do {
-      console.log("🎞 看视频第", num, "次");
-      params = {
-        arguments1: "AC20200716103629", // acid
-        arguments2: "GGPD", // yhChannel
-        arguments3: "79b0275d6a5742ce96af76a663cde0ab", // yhTaskId menuId
-        arguments4: new Date().getTime(), // time
-        arguments6: "517050707",
-        arguments7: "517050707",
-        arguments8: "123456",
-        arguments9: "4640b530b3f7481bb5821c6871854ce5",
-        orderId: crypto
-          .createHash("md5")
-          .update(new Date().getTime() + "")
-          .digest("hex"),
-        netWay: "Wifi",
-        remark: "签到小游戏翻倍得积分",
-        version: `android@8.0102`,
-        codeId: 945689604,
-      };
-      params["sign"] = AES.sign([
-        params.arguments1,
-        params.arguments2,
-        params.arguments3,
-        params.arguments4,
-      ]);
-      await require("./taskcallback").doTask(axios, {
-        ...options,
-        params,
-        jar,
-      });
-      if (num) {
-        console.log("等待15秒再继续");
-        // eslint-disable-next-line no-unused-vars
-        await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
-      }
-    } while (--num);
-  },
+    },
+    {
+      arguments1: "AC20200716103629", // acid
+      arguments2: "GGPD", // yhChannel
+      arguments3: "79b0275d6a5742ce96af76a663cde0ab", // yhTaskId menuId
+      arguments4: new Date().getTime(), // time
+      arguments6: "517050707",
+      arguments7: "517050707",
+      arguments8: "123456",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
+      orderId: crypto
+        .createHash("md5")
+        .update(new Date().getTime() + "")
+        .digest("hex"),
+      netWay: "Wifi",
+      remark: "签到小游戏翻倍得积分",
+      version: `android@8.0102`,
+      codeId: 945689604,
+    },
+    "幸运刮刮卡"
+  ),
   lookVideoDoubleResult: gameEvents.lookVideoDoubleResult("幸运刮刮卡"),
 };
 
