@@ -132,7 +132,7 @@ let ingotsPage = {
           remark1: "签到看视频得积分2",
           remark: "签到看视频得积分2",
           version: `android@8.0102`,
-          codeId: 945597742,
+          codeId: 945535695,
         };
         params["sign"] = sign([
           params.arguments1,
@@ -156,7 +156,7 @@ let ingotsPage = {
           channelId: "LT_channel",
           phone: phone,
           token: ecs_token,
-          videoOrderNo: result["orderId"],
+          videoOrderNo: params["orderId"],
           sourceCode: "lt_ingots",
         };
 
@@ -207,19 +207,47 @@ let ingotsPage = {
       if (result.data.code !== 200) {
         throw new Error("❌ something errors: ", result.data.msg);
       }
-      console.log("😒 聚宝盆游玩获得积分: ", result.data.data.prizeName);
-      if (!result.data.double) {
-        console.log(result.data.double);
-        console.log("❌ 聚宝盆游玩暂无翻倍");
-        data = { double: false };
-      } else {
-        data = { double: true };
-      }
-      await ingotsPage.postGameDouble(axios, options, data);
 
-      console.log("等待15秒再继续");
-      // eslint-disable-next-line no-unused-vars
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+      if (result.data.data.length > 0) {
+        for (let i of result.data.data) {
+          console.log("😒 聚宝盆游玩获得: ", i["prizeName"]);
+          if (i["recordId"] != null && i["double"]) {
+            console.log("尝试翻倍");
+            let recordId = i["recordId"];
+            let timestamp = moment().format("YYYYMMDDHHmmss");
+            let result = await axios.request({
+              headers: {
+                "user-agent": UA,
+                referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=iphone_c@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
+                origin: "https://wxapp.msmds.cn",
+                "Content-Type": "application/x-www-form-urlencoded",
+                jar: jar1,
+              },
+              url: `https://wxapp.msmds.cn/jplus/h5/greetGoldIngot/creditsDouble`,
+              method: "POST",
+              data: transParams({
+                channelId: "LT_channel",
+                phone: phone,
+                token: ecs_token,
+                recordId: recordId,
+                sourceCode: "lt_ingots",
+              }),
+            });
+            console.log(result);
+            data = { double: false };
+            console.log("😒 聚宝盆游玩翻倍 测试");
+            console.log("等待15秒再继续");
+            // eslint-disable-next-line no-unused-vars
+            await new Promise((resolve, reject) =>
+              setTimeout(resolve, 15 * 1000)
+            );
+            await ingotsPage.postGameDouble(axios, options);
+          } else {
+            console.log("❌ 聚宝盆游玩暂无翻倍");
+            data = { double: false };
+          }
+        }
+      }
     } while (freeTimes || advertTimes);
     return data;
   },

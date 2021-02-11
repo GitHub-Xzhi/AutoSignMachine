@@ -20,6 +20,7 @@ function encryption(data, key) {
 }
 
 //data 是你的准备解密的字符串,key是你的密钥
+// eslint-disable-next-line no-unused-vars
 function decryption(data, key) {
   var iv = "";
   var clearEncoding = "utf8";
