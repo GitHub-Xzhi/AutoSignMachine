@@ -1,5 +1,7 @@
 var crypto = require("crypto");
-
+let AES = require("./handlers/PAES.js");
+const useragent = require("./handlers/myPhone").useragent;
+const gameEvents = require("./handlers/dailyEvent");
 // 疯狂刮刮乐
 var transParams = (data) => {
   let params = new URLSearchParams();
@@ -45,10 +47,9 @@ function encryption(data, key) {
 var dailyVideoScratchcard = {
   getGoodsList: async (axios, options) => {
     let phone = encryption(options.user, "gb6YCccUvth75Tm2");
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}    `;
     let result = await axios.request({
       headers: {
-        "user-agent": useragent,
+        "user-agent": useragent(options),
         referer: `https://wxapp.msmds.cn/`,
         origin: "https://wxapp.msmds.cn",
       },
@@ -63,47 +64,17 @@ var dailyVideoScratchcard = {
     });
     return result.data.data.allCards.filter((c) => !c.status);
   },
+  getOpenPlatLine: gameEvents.getOpenPlatLine(
+    `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardPage?source=unicom&duanlianjieabc=tbkR2`,
+    { base: "msmds" }
+  ),
   doTask: async (axios, options) => {
     console.log("🤔 刮刮卡游玩开始...");
-    const useragent = `Mozilla/5.0 (Linux; Android 7.1.2; SM-G977N Build/LMY48Z; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/75.0.3770.143 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:${options.user}};devicetype{deviceBrand:samsung,deviceModel:SM-G977N};{yw_code:}`;
-    let searchParams = {};
-    let result = await axios
-      .request({
-        baseURL: "https://m.client.10010.com/",
-        headers: {
-          "user-agent": useragent,
-          referer: `https://img.client.10010.com/`,
-          origin: "https://img.client.10010.com",
-        },
-        url: `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardPage?source=unicom&duanlianjieabc=tbkR2`,
-        method: "get",
-        transformResponse: (data, headers) => {
-          if ("location" in headers) {
-            let uu = new URL(headers.location);
-            let pp = {};
-            for (let p of uu.searchParams) {
-              pp[p[0]] = p[1];
-            }
-            if ("ticket" in pp) {
-              searchParams = pp;
-            }
-          }
-          return data;
-        },
-      })
-      .catch((err) => console.log(err));
-
-    let jar1 = result.config.jar;
-
-    let cookiesJson = jar1.toJSON();
-    let ecs_token = cookiesJson.cookies.find((i) => i.key == "ecs_token");
-    if (!ecs_token) {
-      throw new Error("ecs_token缺失");
-    }
-    ecs_token = ecs_token.value;
-
+    let { ecs_token, jar1 } = await dailyVideoScratchcard.getOpenPlatLine(
+      axios,
+      options
+    );
     let phone = encryption(options.user, "gb6YCccUvth75Tm2");
-
     let goods = await dailyVideoScratchcard.getGoodsList(axios, {
       ...options,
       ecs_token,
@@ -111,18 +82,18 @@ var dailyVideoScratchcard = {
     });
 
     let params = {
-      arguments1: "",
-      arguments2: "",
-      arguments3: "",
+      arguments1: "AC20200716103629",
+      arguments2: "GGPD",
+      arguments3: "79b0275d6a5742ce96af76a663cde0ab",
       arguments4: new Date().getTime(),
-      arguments6: "",
-      arguments7: "",
-      arguments8: "",
-      arguments9: "",
+      arguments6: "517050707",
+      arguments7: "517050707",
+      arguments8: "123456",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
       remark: "签到小游戏幸运刮刮卡",
-      version: `android@8.0100`,
-      codeId: 945597731,
+      version: `android@8.0102`,
+      codeId: 945597742,
     };
     params["sign"] = sign([
       params.arguments1,
@@ -133,14 +104,14 @@ var dailyVideoScratchcard = {
 
     if (goods.length) {
       for (let good of goods) {
-        console.log("开始处理", good.name);
+        console.log("开始处理: ", good.name);
         params["orderId"] = crypto
           .createHash("md5")
           .update(new Date().getTime() + "")
           .digest("hex");
         params["arguments4"] = new Date().getTime();
 
-        result = await require("./taskcallback").reward(axios, {
+        let result = await require("./taskcallback").reward(axios, {
           ...options,
           params,
           jar: jar1,
@@ -154,7 +125,7 @@ var dailyVideoScratchcard = {
         };
         result = await axios.request({
           headers: {
-            "user-agent": useragent,
+            "user-agent": useragent(options),
             referer: `https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardItemPage`,
             origin: "https://wxapp.msmds.cn",
           },
@@ -170,8 +141,31 @@ var dailyVideoScratchcard = {
             "提交任务成功",
             `+${result.data.data.prizeType ? result.data.data.integral : 0}`
           );
+          let a = {
+            channelId: "LT_channel",
+            phone: phone,
+            token: ecs_token,
+            id: good.id,
+            sourceCode: "lt_scratchcard",
+          };
+          console.log("测试 视频翻倍");
+          result = await axios.request({
+            headers: {
+              "user-agent": useragent(options),
+              referer: `https://wxapp.msmds.cn/h5/react_web/unicom/scratchcardItemPage`,
+              origin: "https://wxapp.msmds.cn",
+            },
+            url: `https://wxapp.msmds.cn/jplus/h5/channelScratchCard/lookVideoDouble`,
+            method: "POST",
+            data: w(a),
+          });
+
+          await dailyVideoScratchcard.lookVideoDouble(axios, {
+            ...options,
+          });
         }
         console.log("等待15秒再继续");
+        // eslint-disable-next-line no-unused-vars
         await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
       }
     } else {
@@ -180,16 +174,16 @@ var dailyVideoScratchcard = {
   },
   lookVideoDouble: async (axios, options) => {
     let params = {
-      arguments1: "AC20200611152252",
+      arguments1: "AC20200716103629",
       arguments2: "GGPD",
-      arguments3: "4640b530b3f7481bb5821c6871854ce5",
+      arguments3: "79b0275d6a5742ce96af76a663cde0ab",
       arguments4: new Date().getTime(),
       arguments6: "517050707",
       arguments7: "517050707",
       arguments8: "123456",
       arguments9: "4640b530b3f7481bb5821c6871854ce5",
       netWay: "Wifi",
-      remark1: "签到翻牛牌活动",
+      remark1: "签到小游戏幸运刮刮卡",
       remark: "签到看视频翻倍得积分",
       version: `android@8.0102`,
       codeId: 945689604,
@@ -206,41 +200,49 @@ var dailyVideoScratchcard = {
     });
 
     if (!num) {
-      console.log("签到小游戏翻牛牌: 今日已完成");
+      console.log("签到小游戏幸运刮刮卡: 今日已完成");
       return;
     }
 
-    params = {
-      arguments1: "AC20200611152252", // acid
-      arguments2: "GGPD", // yhChannel
-      arguments3: "627292f1243148159c58fd58917c3e67", // yhTaskId menuId
-      arguments4: new Date().getTime(), // time
-      arguments6: "",
-      arguments7: "",
-      arguments8: "",
-      arguments9: "",
-      orderId: crypto
-        .createHash("md5")
-        .update(new Date().getTime() + "")
-        .digest("hex"),
-      netWay: "Wifi",
-      remark: "签到小游戏翻牛牌",
-      version: `android@8.0100`,
-      codeId: 945689604,
-    };
-    params["sign"] = AES.sign([
-      params.arguments1,
-      params.arguments2,
-      params.arguments3,
-      params.arguments4,
-    ]);
-    await require("./taskcallback").doTask(axios, {
-      ...options,
-      params,
-      jar,
-    });
+    do {
+      console.log("🎞 看视频第", num, "次");
+      params = {
+        arguments1: "AC20200716103629", // acid
+        arguments2: "GGPD", // yhChannel
+        arguments3: "79b0275d6a5742ce96af76a663cde0ab", // yhTaskId menuId
+        arguments4: new Date().getTime(), // time
+        arguments6: "517050707",
+        arguments7: "517050707",
+        arguments8: "123456",
+        arguments9: "4640b530b3f7481bb5821c6871854ce5",
+        orderId: crypto
+          .createHash("md5")
+          .update(new Date().getTime() + "")
+          .digest("hex"),
+        netWay: "Wifi",
+        remark: "签到小游戏翻倍得积分",
+        version: `android@8.0102`,
+        codeId: 945689604,
+      };
+      params["sign"] = AES.sign([
+        params.arguments1,
+        params.arguments2,
+        params.arguments3,
+        params.arguments4,
+      ]);
+      await require("./taskcallback").doTask(axios, {
+        ...options,
+        params,
+        jar,
+      });
+      if (num) {
+        console.log("等待15秒再继续");
+        // eslint-disable-next-line no-unused-vars
+        await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+      }
+    } while (--num);
   },
-  lookVideoDoubleResult: gameEvents.lookVideoDoubleResult("翻牛牌送好礼"),
+  lookVideoDoubleResult: gameEvents.lookVideoDoubleResult("幸运刮刮卡"),
 };
 
 module.exports = dailyVideoScratchcard;

@@ -156,7 +156,7 @@ let ingotsPage = {
           channelId: "LT_channel",
           phone: phone,
           token: ecs_token,
-          videoOrderNo: "83C87F22F5C687BAA914B07ECC5174F1",
+          videoOrderNo: params["orderId"],
           sourceCode: "lt_ingots",
         };
 
