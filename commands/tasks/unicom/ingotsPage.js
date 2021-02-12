@@ -129,10 +129,10 @@ let ingotsPage = {
           arguments8: "123456",
           arguments9: "4640b530b3f7481bb5821c6871854ce5",
           netWay: "Wifi",
-          remark1: "签到看视频得积分2",
-          remark: "签到看视频得积分2",
+          remark1: "签到小游戏聚宝盆",
+          remark: "签到页小游戏",
           version: `android@8.0102`,
-          codeId: 945535695,
+          codeId: 945757409,
         };
         params["sign"] = sign([
           params.arguments1,
@@ -156,6 +156,7 @@ let ingotsPage = {
           channelId: "LT_channel",
           phone: phone,
           token: ecs_token,
+          // videoOrderNo: "eef1e9b47e419c37a6cf3029671669a7",
           videoOrderNo: params["orderId"],
           sourceCode: "lt_ingots",
         };
@@ -167,6 +168,7 @@ let ingotsPage = {
             referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
             origin: "https://wxapp.msmds.cn",
             "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "com.sinovatech.unicom.ui",
           },
           jar: jar1,
           url: `https://wxapp.msmds.cn/jplus/h5/greetGoldIngot/playAgainByLookingVideos`,
@@ -183,15 +185,16 @@ let ingotsPage = {
       } else {
         freeTimes--;
       }
-      let score = encrypt(randomNumber(12, 20) * 10, "gb6YCccUvth75Tm2");
+      let score = encrypt(randomNumber(12, 17) * 10, "gb6YCccUvth75Tm2");
       let timestamp = moment().format("YYYYMMDDHHmmss");
       let result = await axios.request({
         headers: {
           "user-agent": UA,
-          referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=iphone_c@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
+          referer: `https://wxapp.msmds.cn/h5/react_web/unicom/ingotsPage?source=unicom&type=06&ticket=${searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${searchParams.postage}&duanlianjieabc=tbLm0&userNumber=${options.user}`,
           origin: "https://wxapp.msmds.cn",
           "Content-Type": "application/x-www-form-urlencoded",
           jar: jar1,
+          "X-Requested-With": "com.sinovatech.unicom.ui",
         },
         url: `https://wxapp.msmds.cn/jplus/h5/greetGoldIngot/startGame`,
         method: "POST",
@@ -213,6 +216,13 @@ let ingotsPage = {
           console.log("😒 聚宝盆游玩获得: ", i["prizeName"]);
           if (i["recordId"] != null && i["double"]) {
             console.log("尝试翻倍");
+            console.log("😒 聚宝盆游玩翻倍 测试");
+            await ingotsPage.postGameDouble(axios, options);
+            console.log("等待15秒再继续");
+            // eslint-disable-next-line no-unused-vars
+            await new Promise((resolve, reject) =>
+              setTimeout(resolve, 15 * 1000)
+            );
             let recordId = i["recordId"];
             let timestamp = moment().format("YYYYMMDDHHmmss");
             let result = await axios.request({
@@ -235,13 +245,6 @@ let ingotsPage = {
             });
             console.log(result);
             data = { double: false };
-            console.log("😒 聚宝盆游玩翻倍 测试");
-            console.log("等待15秒再继续");
-            // eslint-disable-next-line no-unused-vars
-            await new Promise((resolve, reject) =>
-              setTimeout(resolve, 15 * 1000)
-            );
-            await ingotsPage.postGameDouble(axios, options);
           } else {
             console.log("❌ 聚宝盆游玩暂无翻倍");
             data = { double: false };
