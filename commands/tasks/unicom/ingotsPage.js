@@ -160,10 +160,9 @@ let ingotsPage = {
           videoOrderNo: params["orderId"],
           sourceCode: "lt_ingots",
         };
-
-        console.log("等待30秒再继续");
+        console.log("等待35秒再继续");
         // eslint-disable-next-line no-unused-vars
-        await new Promise((resolve, reject) => setTimeout(resolve, 30 * 1000));
+        await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000));
         let timestamp = moment().format("YYYYMMDDHHmmss");
         result = await axios.request({
           headers: {
@@ -188,9 +187,9 @@ let ingotsPage = {
       } else {
         freeTimes--;
       }
-      console.log("等待15秒再继续");
+      console.log("等待35秒再继续");
       // eslint-disable-next-line no-unused-vars
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+      await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000));
       let score = encrypt(randomNumber(12, 17) * 10, "gb6YCccUvth75Tm2");
       let timestamp = moment().format("YYYYMMDDHHmmss");
       let result = await axios.request({
@@ -224,10 +223,10 @@ let ingotsPage = {
             console.log("尝试翻倍");
             console.log("😒 聚宝盆游玩翻倍 测试");
             await ingotsPage.postGameDouble(axios, options);
-            console.log("等待30秒再继续");
+            console.log("等待35秒再继续");
             // eslint-disable-next-line no-unused-vars
             await new Promise((resolve, reject) =>
-              setTimeout(resolve, 30 * 1000)
+              setTimeout(resolve, 35 * 1000)
             );
             let recordId = i["recordId"];
             let timestamp = moment().format("YYYYMMDDHHmmss");
