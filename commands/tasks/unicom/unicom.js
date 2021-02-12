@@ -399,6 +399,15 @@ var start = async (params) => {
     },
     taskOption
   );
+
+  //首页-下载app
+  await scheduler.regTask(
+    "freeDownFloorAd",
+    async (request) => {
+      await require("./freeDownFloorAd.js").doTask(request, options);
+    },
+    taskOption
+  );
 };
 module.exports = {
   start,
