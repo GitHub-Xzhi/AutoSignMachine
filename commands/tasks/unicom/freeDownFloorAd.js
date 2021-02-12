@@ -44,6 +44,7 @@ let freeDownFloorAd = {
     await freeDownFloorAd.onAdAppDownloadSucceed(axios, options, Data);
     await freeDownFloorAd.onAdAppInstall(axios, options, Data);
     await freeDownFloorAd.onAdAppActive(axios, options, Data);
+    await freeDownFloorAd.lookVideoDouble(axios, options);
     await freeDownFloorAd.getIntegralFree(axios, options, jar1);
     await freeDownFloorAd.onAdDisplay(axios, options, Data);
   },
@@ -234,5 +235,41 @@ let freeDownFloorAd = {
       .catch((err) => console.log(err));
     console.log(res.data);
   },
+  lookVideoDouble: gameEvents.lookVideoDouble(
+    {
+      arguments1: "AC20200624091508",
+      arguments2: "GGPD",
+      arguments3: "f65cd1e62af1407f88b069c0ffd4e1d8",
+      arguments4: new Date().getTime(),
+      arguments6: "517050707",
+      arguments7: "517050707",
+      arguments8: "123456",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
+      netWay: "Wifi",
+      remark1: "签到任务下载应用得积分",
+      remark: "签到任务下载应用得积分",
+      version: `android@8.0102`,
+      codeId: 812759,
+    },
+    {
+      arguments1: "AC20200624091508", // acid
+      arguments2: "GGPD", // yhChannel
+      arguments3: "f65cd1e62af1407f88b069c0ffd4e1d8", // yhTaskId menuId
+      arguments4: new Date().getTime(), // time
+      arguments6: "517050707",
+      arguments7: "517050707",
+      arguments8: "123456",
+      arguments9: "4640b530b3f7481bb5821c6871854ce5",
+      orderId: crypto
+        .createHash("md5")
+        .update(new Date().getTime() + "")
+        .digest("hex"),
+      netWay: "Wifi",
+      remark: "签到任务下载应用得积分",
+      version: `android@8.0102`,
+      codeId: 812759,
+    },
+    "任务下载应用得积分"
+  ),
 };
 module.exports = freeDownFloorAd;
