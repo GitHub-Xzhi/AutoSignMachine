@@ -162,6 +162,12 @@ let lookVideoDoubleResult = (title) => {
     }
   };
 };
+/**
+ *
+ * @param {json} params1 https://m.client.10010.com/taskcallback/taskfilter/query
+ * @param {*} params2 https://m.client.10010.com/taskcallback/taskfilter/dotasks
+ * @param {*} title
+ */
 let lookVideoDouble = (params1, params2, title) => {
   console.log(`😒 ${title}游玩开始翻倍`);
   return async (axios, options) => {
