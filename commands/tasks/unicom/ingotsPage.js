@@ -243,7 +243,7 @@ let ingotsPage = {
                 sourceCode: "lt_ingots",
               }),
             });
-            console.log(result);
+            console.log(result.data);
             data = { double: false };
           } else {
             console.log("❌ 聚宝盆游玩暂无翻倍");
