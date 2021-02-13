@@ -180,6 +180,7 @@ let ingotsPage = {
         console.log(result.data);
         if (result.data.code !== 200) {
           console.log("提交任务失败", result.data.msg);
+          break;
         } else {
           console.log("提交任务成功", `${result.data.data}`);
         }

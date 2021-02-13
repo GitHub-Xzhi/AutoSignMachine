@@ -4,6 +4,7 @@ let { encryptPhone, sign, encrypt } = require("./handlers/PAES.js");
 const { useragent, randomNumber } = require("./handlers/myPhone");
 const gameEvents = require("./handlers/dailyEvent");
 let { transParams } = require("./handlers/gameUtils");
+const { v4: uuidv4 } = require("uuid");
 const appList = [
   {
     mMainTitle: "线上桌游吧，随时随地玩桌游",
@@ -38,7 +39,8 @@ let freeDownFloorAd = {
     Data.params.serialNumber = options.user;
     Data.params.appList.push(appList[0]);
     let jar1 = await freeDownFloorAd.onAdDisplay(axios, options, Data);
-    await freeDownFloorAd.onAdClick(axios, options, Data);
+    let { citycode } = await freeDownFloorAd.onAdClick(axios, options, Data);
+    await freeDownFloorAd.getCoins(axios, options, citycode);
     await freeDownFloorAd.findAll(axios, options);
     await freeDownFloorAd.onAdAppDownloadStart(axios, options, Data);
     await freeDownFloorAd.onAdAppDownloadSucceed(axios, options, Data);
@@ -84,6 +86,7 @@ let freeDownFloorAd = {
     await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
     return jar1;
   },
+  // eslint-disable-next-line no-unused-vars
   findAll: async (axios, options) => {
     let res = await axios
       .request({
@@ -118,9 +121,18 @@ let freeDownFloorAd = {
       })
       .catch((err) => console.log(err));
     console.log(res.data);
+    let jar1 = res.config.jar;
+
+    let cookiesJson = jar1.toJSON();
+    let citycode = cookiesJson.cookies.find((i) => i.key == "city");
+    if (!citycode) {
+      throw new Error("citycode缺失");
+    }
+    citycode = citycode.value;
     console.log("等待15秒再继续");
     // eslint-disable-next-line no-unused-vars
     await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+    return { citycode: citycode };
   },
   onAdAppDownloadStart: async (axios, options, appinfo) => {
     let currentTime = moment().format("YYYYMMDDHHmmssSSS");
@@ -214,10 +226,20 @@ let freeDownFloorAd = {
       })
       .catch((err) => console.log(err));
     console.log(res.data);
+    let jar1 = res.config.jar;
+
+    let cookiesJson = jar1.toJSON();
+    let citycode = cookiesJson.cookies.find((i) => i.key == "city");
+    if (!citycode) {
+      throw new Error("citycode缺失");
+    }
+    citycode = citycode.value;
     console.log("等待15秒再继续");
     // eslint-disable-next-line no-unused-vars
     await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+    return { citycode: citycode };
   },
+  // eslint-disable-next-line no-unused-vars
   getIntegralFree: async (axios, options, jar) => {
     let res = await axios
       .request({
@@ -235,8 +257,33 @@ let freeDownFloorAd = {
       .catch((err) => console.log(err));
     console.log(res.data);
   },
-  lookVideoDouble: gameEvents.lookVideoDouble(
-    {
+  getCoins: async (axios, options, { citycode }) => {
+    let URL =
+      `https://img.client.10010.com/SigininApp/index.html?` +
+      `yw_code=&desmobile=${options.user}&version=android@8.0102#/&` +
+      `operation=click&localUrl=https://img.client.10010.com/SigininApp/index.html?yw_code=&desmobile=${
+        options.user
+      }&version=android@8.0102&nodename=DIV&path=wrap0item0item-wrap0items-wrap0content2container6home0app&stc=&citycode=${citycode}&jfuser=${
+        options.user
+      }||&t=${new Date().getTime()}&uuid=${uuidv4()}`;
+    URL =
+      "https://m.jf.10010.com/jf-log/4.gif?domain=img.client.10010.com&href=" +
+      encodeURIComponent(URL);
+    await axios
+      .request({
+        headers: {
+          "user-agent": useragent(options),
+          origin: "https://img.client.10010.com",
+        },
+        url: URL,
+        method: "get",
+        Referer: `https://img.client.10010.com/SigininApp/index.html?yw_code=&desmobile=${options.user}&version=android@8.0102`,
+        "X-Requested-With": "com.sinovatech.unicom.ui",
+      })
+      .catch((err) => console.log(err));
+  },
+  lookVideoDouble: async (axios, options) => {
+    let params1 = {
       arguments1: "AC20200624091508",
       arguments2: "GGPD",
       arguments3: "f65cd1e62af1407f88b069c0ffd4e1d8",
@@ -250,26 +297,22 @@ let freeDownFloorAd = {
       remark: "签到任务下载应用得积分",
       version: `android@8.0102`,
       codeId: 812759,
-    },
-    {
-      arguments1: "AC20200624091508", // acid
-      arguments2: "GGPD", // yhChannel
-      arguments3: "f65cd1e62af1407f88b069c0ffd4e1d8", // yhTaskId menuId
-      arguments4: new Date().getTime(), // time
-      arguments6: "517050707",
-      arguments7: "517050707",
-      arguments8: "123456",
-      arguments9: "4640b530b3f7481bb5821c6871854ce5",
-      orderId: crypto
-        .createHash("md5")
-        .update(new Date().getTime() + "")
-        .digest("hex"),
-      netWay: "Wifi",
-      remark: "签到任务下载应用得积分",
-      version: `android@8.0102`,
-      codeId: 812759,
-    },
-    "任务下载应用得积分"
-  ),
+    };
+    params1["sign"] = sign([
+      params1.arguments1,
+      params1.arguments2,
+      params1.arguments3,
+      params1.arguments4,
+    ]);
+    let { num, jar } = await require("./taskcallback").query(axios, {
+      ...options,
+      params: params1,
+    });
+
+    if (!num) {
+      console.log(`签到小游戏: 今日已完成`);
+      return;
+    }
+  },
 };
 module.exports = freeDownFloorAd;

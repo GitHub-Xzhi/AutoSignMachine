@@ -5,7 +5,11 @@ let transParams = (data) => {
   }
   return params;
 };
-
+let sleep = async (seconds) => {
+  console.log(`☕ 等待${seconds}秒再继续`);
+  // eslint-disable-next-line no-unused-vars
+  return new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000));
+};
 //OLD=>NEW
 var codeMap = {
   945510695: "945535750", //android-游戏频道看视频得积分2-激励视频
@@ -66,4 +70,5 @@ var codeMap = {
 };
 module.exports = {
   transParams,
+  sleep,
 };

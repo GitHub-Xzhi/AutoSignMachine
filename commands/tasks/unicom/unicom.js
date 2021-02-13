@@ -170,13 +170,17 @@ var start = async (params) => {
 
   // 首页-签到有礼-免费拿-看视频夺宝
   // 易出现本次操作需要进行验证，暂时注释
-  // await scheduler.regTask('dailyVideoFreeGoods', async (request) => {
-  //   await require('./dailyVideoFreeGoods').doTask(request, options)
-  // }, {
-  //   isCircle: true,
-  //   startTime: 10 * 3600,
-  //   intervalTime: 4 * 3600
-  // })
+  await scheduler.regTask(
+    "dailyVideoFreeGoods",
+    async (request) => {
+      await require("./dailyVideoFreeGoods").doTask(request, options);
+    },
+    {
+      isCircle: true,
+      startTime: 10 * 3600,
+      intervalTime: 4 * 3600,
+    }
+  );
 
   // 首页-签到有礼-免费抽-抓OPPO手机
   await scheduler.regTask(
