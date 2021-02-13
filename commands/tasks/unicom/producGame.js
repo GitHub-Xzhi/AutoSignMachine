@@ -673,7 +673,7 @@ var producGame = {
           jar,
         });
         await new Promise((resolve, reject) =>
-          setTimeout(resolve, (Math.floor(Math.random() * 5) + 2) * 200)
+          setTimeout(resolve, (Math.floor(Math.random() * 5) + 3) * 300)
         );
         await producGame.getTaskList(axios, options);
         await producGame.queryIntegral(axios, {
