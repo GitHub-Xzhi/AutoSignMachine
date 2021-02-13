@@ -138,9 +138,9 @@ let dailyYYQ = {
         }
       }
 
-      console.log("等待15秒再继续");
+      console.log("在看视频，等待35秒再继续");
       // eslint-disable-next-line no-unused-vars
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+      await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000));
     } while (--times);
   },
   lookVideoDouble: async (axios, options) => {
