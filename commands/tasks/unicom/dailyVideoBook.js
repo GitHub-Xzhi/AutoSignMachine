@@ -495,8 +495,8 @@ var dailyVideoBook = {
         }
       }
       ++n
-      console.log('等待3秒')
-      await new Promise((resolve, reject) => setTimeout(resolve, 3000))
+      console.log('等待13秒')
+      await new Promise((resolve, reject) => setTimeout(resolve, 13000))
     } while (n <= 5)
   },
   // 阅读拉力赛报名
@@ -596,8 +596,8 @@ var dailyVideoBook = {
           jar: st_jar
         })
 
-        console.log('等待3秒')
-        await new Promise((resolve, reject) => setTimeout(resolve, 3000))
+        console.log('等待13秒')
+        await new Promise((resolve, reject) => setTimeout(resolve, 13000))
       } while (--n)
 
       console.log('阅读10章完成')
