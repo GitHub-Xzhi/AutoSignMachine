@@ -209,8 +209,8 @@ var dailyGrabdollPage = {
         console.log("阅读开心抓大奖", result.msg);
       }
 
-      console.log("等待15秒再继续");
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+      console.log("等待35秒再继续");
+      await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000));
     } while (--times);
   },
 };
