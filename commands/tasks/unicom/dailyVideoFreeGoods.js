@@ -3,32 +3,33 @@ var moment = require("moment");
 const gameEvents = require("./handlers/dailyEvent");
 let { encryptPhone, sign, encrypt } = require("./handlers/PAES.js");
 const { useragent } = require("./handlers/myPhone");
-const { transParams, sleep } = require("./handlers/gameUtils");
+const {
+  transParams,
+  sleep,
+  UnicomRequest,
+  encodePhone,
+} = require("./handlers/gameUtils");
 // 签到小游戏买什么都省免费夺宝 [夺宝大挑战]
 
 var dailyVideoFreeGoods = {
   // eslint-disable-next-line no-unused-vars
   getGoodsList: async (axios, options, { ecs_token, searchParams, jar1 }) => {
-    let phone = encryptPhone(options.user, "gb6YCccUvth75Tm2");
-    let res = await axios.request({
-      headers: {
-        "user-agent": useragent(options),
-        referer: `https://wxapp.msmds.cn/`,
-        origin: "https://wxapp.msmds.cn",
-      },
-      url: `https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/findAll`,
-      method: "POST",
-      data: transParams({
-        fromType: "22",
-        status: "0",
-        pageNo: "1",
-        pageSize: "30",
-        channelId: "LT_channel",
-        phone: phone,
-        token: ecs_token,
-        sourceCode: "lt_freeTake",
-      }),
-    });
+    let phone = encodePhone(options.user);
+    let request = new UnicomRequest(axios, options);
+    let body = {
+      fromType: "22",
+      status: "0",
+      pageNo: "1",
+      pageSize: "30",
+      channelId: "LT_channel",
+      phone: phone,
+      token: ecs_token,
+      sourceCode: "lt_freeTake",
+    };
+    let res = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/findAll",
+      body
+    );
     let result = res.data;
     return {
       goods: result.data.goodsList.data,
@@ -92,7 +93,7 @@ var dailyVideoFreeGoods = {
       params.arguments4,
     ]);
 
-    let phone = encryptPhone(options.user, "gb6YCccUvth75Tm2");
+    let phone = encodePhone(options.user);
 
     // 同一期商品最多3次机会，每4小时可获得5次机会
     console.log("注意本接口只获取积分！");
@@ -116,18 +117,21 @@ var dailyVideoFreeGoods = {
         //请求抽奖次数情况
         console.log("查询抽奖时效");
         let timestamp = moment().format("YYYYMMDDHHmmss");
-        let result = await axios.request({
-          baseURL: "https://m.client.10010.com/",
-          headers: {
-            "user-agent": useragent(options),
-            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${cookies.searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${cookies.searchParams.postage}&userNumber=${options.user}        `,
+        let body = {
+          channelId: "LT_channel",
+          phone: phone,
+          token: cookies.ecs_token,
+          sourceCode: "lt_freeTake",
+        };
+        let request = new UnicomRequest(axios, options);
+        let result = await request.getMsmds(
+          "https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/getTimes",
+          body,
+          {
+            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${cookies.searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${cookies.searchParams.postage}&userNumber=${options.user}`,
             origin: "https://wxapp.msmds.cn",
-          },
-          url: `https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/getTimes`,
-          method: "GET",
-          params: transParams(p),
-        });
-
+          }
+        );
         // console.log(result.data);
         if (result.data.data.time) {
           console.log(
@@ -148,26 +152,25 @@ var dailyVideoFreeGoods = {
         });
 
         timestamp = moment().format("YYYYMMDDHHmmss");
-        result = await axios.request({
-          headers: {
-            "user-agent": useragent(options),
-            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${cookies.searchParams.ticket}&version=android@8.0100&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${cookies.searchParams.postage}&userNumber=${options.user}`,
+        body = {
+          channelId: "LT_channel",
+          code: "",
+          flag: "",
+          id: good.id,
+          phone: phone,
+          sourceCode: "lt_freeTake",
+          taskId: "",
+          token: cookies.ecs_token,
+          videoOrderNo: params.orderId,
+        };
+        result = await request.postMsmds(
+          "https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/doFreeGoods",
+          body,
+          {
+            referer: `https://wxapp.msmds.cn/h5/react_web/unicom/freeTakeGoodDetail/${good.id}?source=unicom&type=02&ticket=${cookies.searchParams.ticket}&version=android@8.0102&timestamp=${timestamp}&desmobile=${options.user}&num=0&postage=${cookies.searchParams.postage}&userNumber=${options.user}`,
             origin: "https://wxapp.msmds.cn",
-          },
-          url: `https://wxapp.msmds.cn/jplus/api/channel/integral/free/goods/doFreeGoods`,
-          method: "POST",
-          data: transParams({
-            channelId: "LT_channel",
-            code: "",
-            flag: "",
-            id: good.id,
-            phone: phone,
-            sourceCode: "lt_freeTake",
-            taskId: "",
-            token: cookies.ecs_token,
-            videoOrderNo: params.orderId,
-          }),
-        });
+          }
+        );
         // console.log(result.data);
         if (result.data.code !== 2000) {
           console.log(result.data.msg);

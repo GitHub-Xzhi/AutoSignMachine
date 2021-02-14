@@ -1,7 +1,9 @@
 const useragent = require("./myPhone").useragent;
 let AES = require("./PAES");
 /**
- * @param {String} url request url absolute path
+ *
+ * @param {*} url request url absolute path
+ * @param {*} cnf = {base 平台类别[msmds,]如果是自身平台无需参数绑定 }
  */
 let getOpenPlatLine = (url, cnf = { base: "" }) => {
   return async (axios, options) => {
