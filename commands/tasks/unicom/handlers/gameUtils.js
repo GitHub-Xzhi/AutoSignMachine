@@ -1,5 +1,6 @@
 let AES = require("./PAES");
 let { useragent } = require("./myPhone");
+let gameEvents = require("./dailyEvent");
 
 let transParams = (data) => {
   let params = new URLSearchParams();
@@ -56,7 +57,7 @@ class UnicomRequest {
     headers = { referer: null, origin: null },
     USER_AGENTS = null
   ) {
-    return await axios.request({
+    return await this.axios.request({
       // baseURL: "https://m.client.10010.com/",
       headers: {
         "user-agent": USER_AGENTS ? USER_AGENTS : useragent(this.options),
@@ -67,6 +68,37 @@ class UnicomRequest {
       method: "GET",
       params: transParams(data),
     });
+  }
+}
+/**
+ * 针对通用活动业务封装后得组件库
+ */
+class UnicomComponent {
+  axios;
+  options;
+  UA;
+  phone;
+  task;
+  constructor(axios, options, taskname, platform = "") {
+    this.axios = axios;
+    this.options = options;
+    this.phone = encodePhone(options.user);
+    this.UA = useragent(options);
+    this.platform = platform;
+    this.taskname = taskname;
+  }
+  async do(title, callback = function () {}) {
+    return async () => {
+      task[title] = callback();
+    };
+  }
+  async login(url) {
+    return gameEvents.getOpenPlatLine(
+      url.indexOf("openPlatLine.htm") > -1
+        ? url
+        : `https://m.client.10010.com/mobileService/openPlatform/openPlatLine.htm?to_url=${url}`,
+      { base: this.platform }
+    );
   }
 }
 
