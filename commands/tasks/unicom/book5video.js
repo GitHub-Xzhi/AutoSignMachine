@@ -19,17 +19,17 @@ let account = {
     yhChannel: "GGPD",
     accountChannel: "517050707",
     accountUserName: "517050707",
-    accountPassword: "123456",
+    accountPassword: "a123456",
     accountToken: "4640b530b3f7481bb5821c6871854ce5",
 };
 var book5video = {
     query: async (request, options) => {
         let params = {
-            arguments1: "AC20200624091508", // acid
+            arguments1: "AC20200521222721", // acid
             arguments2: account.yhChannel, // yhChannel
             arguments3: account.yhTaskId, // yhTaskId menuId
             arguments4: new Date().getTime(), // time
-            arguments6: account.accountChannel,
+            arguments6: "",
             netWay: "Wifi",
             version: `android@8.0102`,
         };
@@ -50,14 +50,14 @@ var book5video = {
             num,
             jar
         } = await book5video.query(request, options);
-        console.log(num);
+//        console.log(num);
 
         if (!num) {
             console.log("🐀 看书中广告得积分: 今日已完成");
             return;
         }
         do {
-            console.log("还有", num, "次");
+//            console.log("还有", num, "次");
             let params = {
                 arguments1: "AC20200521222721", // acid
                 arguments2: account.yhChannel, // yhChannel
@@ -74,6 +74,7 @@ var book5video = {
                 netWay: "Wifi",
                 remark: "章节视频得积分",
                 version: `android@8.0102`,
+                //orderId: "0923fca6d5ffb8ec017fc6b3cbc5c9c0",
             };
             params["sign"] = sign([
                 params.arguments1,
@@ -87,7 +88,7 @@ var book5video = {
                 jar,
             });
 
-            let s = Math.floor(Math.random() * 20);
+            let s = Math.floor(Math.random() * 30);
             console.log("☕ 等待%s秒再继续", s);
             // eslint-disable-next-line no-unused-vars
             await new Promise((resolve, reject) => setTimeout(resolve, s * 1000));
