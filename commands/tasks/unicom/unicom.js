@@ -353,7 +353,7 @@ var start = async (params) => {
   // await require('./integral').getTxDetail(request, options)
   // await require('./integral').getDxDetail(request, options)
   // await require('./integral').getCoins(request, options)
-
+/***
   // 首页-牛气-秒杀抢兑
   await scheduler.regTask(
     "NiujieSpikePrize",
@@ -389,7 +389,7 @@ var start = async (params) => {
       ...taskOption,
     }
   );
-
+***/
   //首页-签到有礼-聚宝盆 [广告图]
   await scheduler.regTask(
     "ingots",
