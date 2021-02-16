@@ -5,7 +5,7 @@ let AES = require("./PAES");
  * @param {*} url request url absolute path
  * @param {*} cnf = {base 平台类别[msmds,]如果是自身平台无需参数绑定
  */
-let getOpenPlatLine = (url, cnf = { base: "" }) => {
+let getOpenPlatLine = (url, cnf = { base: "" }, cb = function () {}) => {
   return async (axios, options) => {
     let searchParams = {};
     let result = await axios
@@ -45,6 +45,7 @@ let getOpenPlatLine = (url, cnf = { base: "" }) => {
     switch (cnf.base) {
       case "msmds":
         console.log("🐱‍🏍 msmds游戏调度");
+        cb({ ecs_token, searchParams, jar1 });
         return { ecs_token, searchParams, jar1 };
       default:
         console.log("🐱‍🏍 平台游戏调度");
@@ -53,6 +54,7 @@ let getOpenPlatLine = (url, cnf = { base: "" }) => {
           throw new Error("jfid缺失");
         }
         jfid = jfid.value;
+        cb({ ecs_token, searchParams, jar1 });
         return { jfid, searchParams, jar1 };
     }
   };
@@ -142,7 +144,46 @@ let postFreeLogin = (referer, freeLoginID) => {
     return { activity, Authorization, freeTimes, advertTimes };
   };
 };
-
+let postFreeLoginGuessWithCallBack = (
+  referer,
+  freeLoginID,
+  callback = null
+) => {
+  return async (axios, options, { jfid, searchParams, jar1 }) => {
+    let params = {
+      activityId: freeLoginID,
+      userCookie: jfid,
+      userNumber: searchParams.userNumber,
+      time: new Date().getTime(),
+    };
+    let reqdata = encodeParams(params, false);
+    let res = await axios
+      .request({
+        baseURL: "https://m.jf.10010.com/",
+        headers: {
+          "user-agent": useragent(options),
+          Authorization: "Bearer null",
+          referer,
+          origin: "https://img.jf.10010.com",
+          "Content-Type": "application/json",
+        },
+        jar: jar1,
+        url: `/jf-yuech/p/freeLoginGuess`,
+        method: "post",
+        data: reqdata,
+      })
+      .catch((err) => console.log(err));
+    let result = res.data;
+    if (result.code !== 0) {
+      throw new Error(result.message);
+    }
+    // let activity, Authorization, freeTimes, advertTimes;
+    if (typeof callback === "function") {
+      result = callback(result);
+    }
+    return result;
+  };
+};
 let lookVideoDoubleResult = (title) => {
   return async (axios, options) => {
     let { Authorization, activityId, winningRecordId } = options;
@@ -240,4 +281,5 @@ module.exports = {
   lookVideoDoubleResult,
   encodeParams,
   lookVideoDouble,
+  postFreeLoginGuessWithCallBack,
 };

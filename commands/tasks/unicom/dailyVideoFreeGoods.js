@@ -98,7 +98,19 @@ var dailyVideoFreeGoods = {
     // 同一期商品最多3次机会，每4小时可获得5次机会
     console.log("注意本接口只获取积分！");
     console.log("抽奖时,可能会出现[不存在的奖品],此状态为无库存");
-    for (let good of goods) {
+    let desc = (key) => {
+      return (m, n) => {
+        let a = m[key].replace("积分", "");
+        let b = n[key].replace("积分", "");
+        return b - a;
+      };
+    };
+    let items = goods.filter((item) => {
+      if (item.goodsName.indexOf("积分") > -1) {
+        return item;
+      }
+    });
+    for (let good of items.sort(desc("goodsName"))) {
       if (good.id !== null && good.goodsName.indexOf("积分") > -1) {
         console.log("开始抽奖: ", good.goodsName);
         params["orderId"] = crypto
@@ -106,13 +118,6 @@ var dailyVideoFreeGoods = {
           .update(new Date().getTime() + "")
           .digest("hex");
         params["arguments4"] = new Date().getTime();
-
-        let p = {
-          channelId: "LT_channel",
-          phone: phone,
-          token: cookies.ecs_token,
-          sourceCode: "lt_freeTake",
-        };
 
         //请求抽奖次数情况
         console.log("查询抽奖时效");
@@ -141,7 +146,7 @@ var dailyVideoFreeGoods = {
                 .format("YYYY-MM-DD HH:mm:ss") +
               " 后可再次尝试，跳过"
           );
-          break;
+          continue;
         }
         await sleep(30);
         console.log("查询抽奖接口");

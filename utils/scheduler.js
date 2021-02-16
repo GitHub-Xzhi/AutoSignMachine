@@ -360,6 +360,11 @@ let scheduler = {
       }
       await queue.onIdle();
     } else {
+      console.log(
+        `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
+          queues.filter((q) => q.taskState === 1).length
+        }，截至当前可执行任务数${will_tasks.length}`
+      );
       console.log("⭕ 暂无需要执行的任务");
     }
   },

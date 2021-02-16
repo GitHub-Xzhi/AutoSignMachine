@@ -45,6 +45,7 @@ let freeDownFloorAd = {
     await freeDownFloorAd.onAdAppDownloadStart(axios, options, Data);
     await freeDownFloorAd.onAdAppDownloadSucceed(axios, options, Data);
     await freeDownFloorAd.onAdAppInstall(axios, options, Data);
+    await freeDownFloorAd.onAdAppInstalled(axios, options, Data);
     await freeDownFloorAd.onAdAppActive(axios, options, Data);
     await freeDownFloorAd.lookVideoDouble(axios, options);
     await freeDownFloorAd.getIntegralFree(axios, options, jar1);
@@ -183,6 +184,30 @@ let freeDownFloorAd = {
     await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
   },
   onAdAppInstall: async (axios, options, appinfo) => {
+    let currentTime = moment().format("YYYYMMDDHHmmssSSS");
+    let traceId = "100008" + currentTime + "215210247";
+    appinfo.commonInfo.traceId = traceId;
+    appinfo.commonInfo.currentTime = currentTime;
+    appinfo.params.operator = "onAdAppInstall";
+    let res = await axios
+      .request({
+        baseURL: "https://m.client.10010.com/",
+        headers: {
+          "user-agent": "okhttp/4.4.0",
+          origin: "https://m.client.10010.com",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        url: `/uniAdmsInterface/getFreeDownFloorAd`,
+        method: "post",
+        data: appinfo,
+      })
+      .catch((err) => console.log(err));
+    console.log(res.data);
+    console.log("等待15秒再继续");
+    // eslint-disable-next-line no-unused-vars
+    await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+  },
+  onAdAppInstalled: async (axios, options, appinfo) => {
     let currentTime = moment().format("YYYYMMDDHHmmssSSS");
     let traceId = "100008" + currentTime + "215210247";
     appinfo.commonInfo.traceId = traceId;
