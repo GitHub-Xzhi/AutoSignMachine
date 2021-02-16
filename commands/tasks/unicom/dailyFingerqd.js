@@ -121,7 +121,7 @@ let dailyFingerqd = {
       };
       let { data } = await request.get(config);
       // console.log(data);
-      if (data.code !== 0) {
+      if (data.code !== 0 || data.data.code !== "0") {
         throw new Error("something went wrong:", data.message);
       }
       //游戏要进行三轮,如果得不到积分就机会-1 正常情况是玩不到三轮的.
