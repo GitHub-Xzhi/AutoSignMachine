@@ -353,7 +353,7 @@ var start = async (params) => {
   // await require('./integral').getTxDetail(request, options)
   // await require('./integral').getDxDetail(request, options)
   // await require('./integral').getCoins(request, options)
-/***
+  /***
   // 首页-牛气-秒杀抢兑
   await scheduler.regTask(
     "NiujieSpikePrize",
@@ -425,7 +425,7 @@ var start = async (params) => {
     taskOption
   );
 
-//首页-小说-任意一本小说内页章节中间 [看书里面的5个视频]
+  //首页-小说-任意一本小说内页章节中间 [看书里面的5个视频]
   await scheduler.regTask(
     "book5video",
     async (request) => {
@@ -442,18 +442,15 @@ var start = async (params) => {
     },
     taskOption
   );
-  
-    // 积分商城-积分猜拳-猜拳二号                 
-  await scheduler.regTask(                                                    
-    "dailyFingerqd2",                                                          
-    async (request) => {                                              
+
+  // 积分商城-积分猜拳-猜拳二号
+  await scheduler.regTask(
+    "dailyFingerqd2",
+    async (request) => {
       await require("./dailyFingerqd2.js").doTask(request, options);
-    },                                                                            
-    taskOption                                                         
-  );     
-
-  
-
+    },
+    taskOption
+  );
 };
 module.exports = {
   start,
