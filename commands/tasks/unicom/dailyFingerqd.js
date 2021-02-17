@@ -20,20 +20,59 @@ let dailyFingerqd = {
       "Ac-yc0001,Ac-yc0002,Ac-yc0003",
       cookies,
       (data) => {
+        let temp = [
+          {
+            activityId: "Ac-yc0002",
+            integral: 50,
+            roundGame: null,
+            activityName: "刘备",
+          }, // 刘备
+          {
+            activityId: "Ac-yc0001",
+            integral: 50,
+            roundGame: null,
+            activityName: "关羽",
+          }, // 关羽
+          {
+            activityId: "Ac-yc0003",
+            integral: 50,
+            roundGame: null,
+            activityName: "张飞",
+          }, // 张飞
+        ];
+        let activity = [];
+        if (data.data.roundGame !== null) {
+          temp.map((value, i) => {
+            if (value.activityId == data.data.roundGame.activityId) {
+              temp[i]["roundGame"] = data.data.roundGame;
+            } else {
+              temp[i]["roundGame"] = null;
+            }
+          });
+          let currentIdx = temp.findIndex(
+            (v) => v.activityId == data.data.roundGame.activityId
+          );
+          activity.push(temp[currentIdx]);
+          temp.splice(currentIdx, 1);
+          activity = activity.concat(temp);
+        } else {
+          activity = temp;
+        }
+        for (let game of data.data.activityInfos.activityVOs) {
+          for (let item of activity) {
+            if (item.activityId === game.activityId) {
+              item["freeTimes"] = game.activityTimesInfo.freeTimes;
+              item["advertTimes"] = game.activityTimesInfo.advertTimes;
+            }
+          }
+        }
+        console.log(activity);
+        // exit(0);
         // console.log(data);
         return {
-          //默认只和刘备猜拳
-          freeTimes:
-            data.data.activityInfos.activityVOs[0].activityTimesInfo.freeTimes,
-          advertTimes:
-            data.data.activityInfos.activityVOs[0].activityTimesInfo
-              .advertTimes,
           Authorization: data.data.token.access_token,
-          roundGame: data.data.roundGame,
-          activityId:
-            data.data.roundGame == null
-              ? "Ac-yc0002"
-              : data.data.roundGame.activityId,
+          // roundGame: data.data.roundGame,
+          activity: activity,
         };
       }
     );
@@ -43,152 +82,162 @@ let dailyFingerqd = {
     axios,
     options,
     { ecs_token, searchParams, jar1 },
-    { Authorization, freeTimes, advertTimes, roundGame, activityId }
+    { Authorization, activity }
   ) => {
     let request = new UnicomComponent(axios, options, "猜拳拿奖");
-    do {
-      console.log(
-        "已消耗机会",
-        1 + 4 - (freeTimes + advertTimes),
-        "剩余免费机会",
-        freeTimes,
-        "看视频广告机会",
-        advertTimes
-      );
-      let playParams;
-      //免费机会为0,需要看视频
-      if (!freeTimes && advertTimes) {
-        console.log("视频补充");
-        let params = {
-          arguments1: "AC20200611152252", // acid
-          arguments2: "GGPD", // yhChannel
-          arguments3: "627292f1243148159c58fd58917c3e67", // yhTaskId menuId
-          arguments4: new Date().getTime(), // time
-          arguments6: "517050707",
-          arguments7: "517050707",
-          arguments8: "123456",
-          arguments9: "4640b530b3f7481bb5821c6871854ce5",
-          netWay: "Wifi",
-          remark1: "签到小游戏猜拳拿奖",
-          remark: "签到页小游戏",
-          version: `android@8.0102`,
-          codeId: 945757409,
-        };
-        params["sign"] = AES.sign([
-          params.arguments1,
-          params.arguments2,
-          params.arguments3,
-          params.arguments4,
-        ]);
-        params["orderId"] = crypto
-          .createHash("md5")
-          .update(new Date().getTime() + "")
-          .digest("hex");
-        params["arguments4"] = new Date().getTime();
 
-        let result = await require("./taskcallback").reward(axios, {
-          ...options,
-          params,
-          jar: jar1,
-        });
-        console.log(result);
-        playParams = {
-          activityId: activityId,
-          currentTimes: advertTimes,
-          type: "广告",
-          integral: 50,
-          orderId: params["orderId"],
-          phoneType: "android",
-          version: "8.0102",
-        };
-        await sleep(30);
-        advertTimes--;
-        // eslint-disable-next-line no-unused-vars
-      } else {
-        playParams = {
-          activityId: activityId,
-          currentTimes: freeTimes,
-          integral: 50,
-          type: "免费",
-        };
-        freeTimes--;
-      }
-      // console.log(playParams);
-      let roundId;
-      if (roundGame == null) {
-        let body = gameEvents.encodeParams(playParams, true);
-        let config = {
-          url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/minusRondGames`,
-          body,
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${Authorization}`,
-            referer:
-              "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/fingerqd/index.html?jump=sign",
-            options: "https://m.jf.10010.com",
-          },
-        };
-        let { data } = await request.get(config);
-        // console.log(data);
-        if (data.code !== 0 || data.data.code !== "0") {
-          throw new Error("something went wrong:", data.message);
+    for (let item of activity) {
+      console.log(`与${item.activityName}进行猜拳...`);
+      let { freeTimes, advertTimes, activityId, roundGame, integral } = item;
+      do {
+        console.log(
+          "已消耗机会",
+          1 + 4 - (freeTimes + advertTimes),
+          "剩余免费机会",
+          freeTimes,
+          "看视频广告机会",
+          advertTimes
+        );
+        let playParams;
+        //免费机会为0,需要看视频
+        if (freeTimes == 0 && advertTimes == 0) {
+          console.log(`与${item.activityName}猜拳无机会!,进行下一轮`);
+          continue;
         }
-        roundId = data.data.roundGame.roundId;
-      } else {
-        roundId = roundGame.roundId;
-      }
+        if (!freeTimes && advertTimes) {
+          console.log("视频补充");
+          let params = {
+            arguments1: "AC20200611152252", // acid
+            arguments2: "GGPD", // yhChannel
+            arguments3: "627292f1243148159c58fd58917c3e67", // yhTaskId menuId
+            arguments4: new Date().getTime(), // time
+            arguments6: "517050707",
+            arguments7: "517050707",
+            arguments8: "123456",
+            arguments9: "4640b530b3f7481bb5821c6871854ce5",
+            netWay: "Wifi",
+            remark1: "签到小游戏猜拳拿奖",
+            remark: "签到页小游戏",
+            version: `android@8.0102`,
+            codeId: 945757409,
+          };
+          params["sign"] = AES.sign([
+            params.arguments1,
+            params.arguments2,
+            params.arguments3,
+            params.arguments4,
+          ]);
+          params["orderId"] = crypto
+            .createHash("md5")
+            .update(new Date().getTime() + "")
+            .digest("hex");
+          params["arguments4"] = new Date().getTime();
 
-      //游戏要进行三轮,如果得不到积分就机会-1 正常情况是玩不到三轮的.
-
-      let gamebits = {
-        activityId: activityId,
-        resultId: roundId,
-      };
-      for (let i = 0; i < 2; i++) {
-        console.log(`第${i + 1}轮猜拳...`);
-        await sleep(10);
-        let body = gameEvents.encodeParams(gamebits, true);
-        let config = {
-          url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/roundGameForPrize`,
-          body: body,
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${Authorization}`,
-            referer:
-              "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/fingerqd/index.html?jump=sign",
-            options: "https://m.jf.10010.com",
-          },
-        };
-        let { data } = await request.get(config);
-        // console.log(data);
-        if (data.code !== 0) {
-          console.log("猜拳拿奖:", data.message);
+          let result = await require("./taskcallback").reward(axios, {
+            ...options,
+            params,
+            jar: jar1,
+          });
+          console.log(result);
+          playParams = {
+            activityId: activityId,
+            currentTimes: advertTimes,
+            type: "广告",
+            integral: integral,
+            orderId: params["orderId"],
+            phoneType: "android",
+            version: "8.0102",
+          };
+          await sleep(30);
+          advertTimes--;
+          // eslint-disable-next-line no-unused-vars
         } else {
-          console.log(
-            "猜拳拿奖:",
-            data.data.drawResultPO !== null
-              ? data.data.drawResultPO.prizeName
-              : "未中奖"
-          );
-          if (
-            data.data.drawResultPO !== null &&
-            data.data.drawResultPO.doublingStatus
-          ) {
-            console.log("🌈 提交积分翻倍");
-            await sleep(30);
-            await dailyFingerqd.lookVideoDouble(axios, {
-              ...options,
-            });
-            await dailyFingerqd.lookVideoDoubleResult(axios, {
-              ...options,
-              Authorization,
-              activityId: activityId,
-              winningRecordId: data.data.drawResultPO.winningRecordId,
-            });
+          playParams = {
+            activityId: activityId,
+            currentTimes: freeTimes,
+            integral: integral,
+            type: "免费",
+          };
+          freeTimes--;
+        }
+        // console.log(playParams);
+        let roundId;
+        if (roundGame == null) {
+          let body = gameEvents.encodeParams(playParams, true);
+          let config = {
+            url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/minusRondGames`,
+            body,
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${Authorization}`,
+              referer:
+                "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/fingerqd/index.html?jump=sign",
+              options: "https://m.jf.10010.com",
+            },
+          };
+          let { data } = await request.get(config);
+          // console.log(data);
+          if (data.code !== 0 || data.data.code !== "0") {
+            console.log("something went wrong:", data);
+            continue;
+          }
+          roundId = data.data.roundGame.roundId;
+        } else {
+          roundId = roundGame.roundId;
+        }
+
+        //游戏要进行三轮,如果得不到积分就机会-1 正常情况是玩不到三轮的.
+
+        let gamebits = {
+          activityId: activityId,
+          resultId: roundId,
+        };
+        for (let i = 0; i < 2; i++) {
+          console.log(`第${i + 1}轮猜拳...`);
+          await sleep(10);
+          let body = gameEvents.encodeParams(gamebits, true);
+          let config = {
+            url: `https://m.jf.10010.com/jf-yuech/api/gameResultV2/roundGameForPrize`,
+            body: body,
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${Authorization}`,
+              referer:
+                "https://m.jf.10010.com/cms/yuech/unicom-integral-ui/yuech-Blindbox/fingerqd/index.html?jump=sign",
+              options: "https://m.jf.10010.com",
+            },
+          };
+          let { data } = await request.get(config);
+          // console.log(data);
+          if (data.code !== 0) {
+            console.log("猜拳拿奖:", data.message);
+          } else {
+            console.log(
+              "猜拳拿奖:",
+              data.data.drawResultPO !== null
+                ? data.data.drawResultPO.prizeName
+                : "未中奖"
+            );
+            if (
+              data.data.drawResultPO !== null &&
+              data.data.drawResultPO.doublingStatus
+            ) {
+              console.log("🌈 提交积分翻倍");
+              await sleep(30);
+              await dailyFingerqd.lookVideoDouble(axios, {
+                ...options,
+              });
+              await dailyFingerqd.lookVideoDoubleResult(axios, {
+                ...options,
+                Authorization,
+                activityId: activityId,
+                winningRecordId: data.data.drawResultPO.winningRecordId,
+              });
+            }
           }
         }
-      }
-    } while (freeTimes || advertTimes);
+      } while (freeTimes || advertTimes);
+    }
   },
   lookVideoDouble: async (axios, options) => {
     let params = {
