@@ -66,7 +66,7 @@ let dailyFingerqd = {
             }
           }
         }
-        console.log(activity);
+        // console.log(activity);
         // exit(0);
         // console.log(data);
         return {
