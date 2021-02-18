@@ -103,7 +103,6 @@ let dailyBaWangcard = {
           jar: jar1,
         });
         console.log(`广告ID:`, result["orderId"]);
-        // channelId=unicom_scratch_card&phone=J0c5lPxzAsbEhu4SB7h%2BDg%3D%3D&num=4&token=eyJkYXRhIjoiNWVjMzc1MzNjZDhiYmJhZTEwYWQ1NDMzYjIyNDJkODc2M2Q4ZWU2M2U4ZjAxYTk5OGEzNTQ2NDcwMDFmNzI3NDIyNDc0ZWNiNDM4MjJlOWI1Mjc4NjM3YjhkMzQ4ODJlZTZkMmJjZjk2OGRkNjIxMzI1ZWIwYzQ2NzMwOWVjYTFhYzVkYWQ4MjQwYWIzM2MxZTVhYTRhMDE3OWEyNWU0YWM0MzEwNGRkYTIyNzFhYzhmMTRjYTY2Mjc1MGQ2ODVlIiwidmVyc2lvbiI6IjAwIn0%3D
         let body = {
           channelId: "unicom_scratch_card",
           phone: phone,
