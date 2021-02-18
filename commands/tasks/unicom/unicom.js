@@ -451,6 +451,19 @@ var start = async (params) => {
     },
     taskOption
   );
+  
+  //套餐看视频得积分
+//活动入口：主页-套餐页面-2个视频
+  await scheduler.regTask(
+    "taocan",
+    async (request) => {
+      await require("./taocan.js").doTask(request, options);
+    },
+    taskOption
+  );
+
+  
+  
 };
 module.exports = {
   start,
