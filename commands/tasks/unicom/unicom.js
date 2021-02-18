@@ -422,11 +422,7 @@ var start = async (params) => {
     async (request) => {
       await require("./dailyBaWangcard.js").doTask(request, options);
     },
-    {
-      isCircle: true,
-      intervalTime: 4 * 3600,
-      ...taskOption,
-    }
+    taskOption
   );
 
   //首页-小说-任意一本小说内页章节中间 [看书里面的5个视频]
