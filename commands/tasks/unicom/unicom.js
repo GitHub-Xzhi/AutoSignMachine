@@ -422,7 +422,11 @@ var start = async (params) => {
     async (request) => {
       await require("./dailyBaWangcard.js").doTask(request, options);
     },
-    taskOption
+    {
+      isCircle: true,
+      intervalTime: 4 * 3600,
+      ...taskOption,
+    }
   );
 
   //首页-小说-任意一本小说内页章节中间 [看书里面的5个视频]
@@ -451,9 +455,9 @@ var start = async (params) => {
     },
     taskOption
   );
-  
+
   //套餐看视频得积分
-//活动入口：主页-套餐页面-2个视频
+  //活动入口：主页-套餐页面-2个视频
   await scheduler.regTask(
     "taocan",
     async (request) => {
@@ -461,9 +465,6 @@ var start = async (params) => {
     },
     taskOption
   );
-
-  
-  
 };
 module.exports = {
   start,
