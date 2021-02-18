@@ -92,7 +92,7 @@ let dailyFingerqd = {
       do {
         console.log(
           "已消耗机会",
-          1 + 4 - (freeTimes + advertTimes),
+          1 + 3 - (freeTimes + advertTimes),
           "剩余免费机会",
           freeTimes,
           "看视频广告机会",
