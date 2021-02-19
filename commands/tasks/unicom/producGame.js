@@ -62,7 +62,11 @@ var producGame = {
             if (result.respCode !== "0000") {
               console.log("娱乐中心每日签到失败", result.respDesc);
             } else {
-              console.log("娱乐中心每日签到获得+" + result.currentIntegral);
+              if (result.currentIntegral === undefined) {
+                console.log("娱乐中心每日签到：" + result.respDesc);
+              } else {
+                console.log("娱乐中心每日签到获得+" + result.currentIntegral);
+              }
             }
           } else {
             console.log("娱乐中心每日签到失败");

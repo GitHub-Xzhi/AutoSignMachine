@@ -220,7 +220,7 @@ let ingotsPage = {
       if (result.data.data.length > 0) {
         for (let i of result.data.data) {
           console.log("😒 聚宝盆游玩获得: ", i["prizeName"]);
-          if (i["recordId"] != null && i["double"]) {
+          if (i["recordId"] != null && i["doubleNum"] != null) {
             console.log("尝试翻倍");
             console.log("😒 聚宝盆游玩翻倍 测试");
             await ingotsPage.postGameDouble(axios, options);
