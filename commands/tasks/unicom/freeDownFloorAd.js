@@ -22,9 +22,8 @@ let Data = {
   params: {
     serialNumber: "",
     appList: [],
-    operator: "onAdClick",
   },
-  methodType: "2",
+  methodType: "2", //1 游戏 2 app
 };
 
 let freeDownFloorAd = {
@@ -38,6 +37,7 @@ let freeDownFloorAd = {
     Data.commonInfo.currentTime = currentTime;
     Data.params.serialNumber = options.user;
     Data.params.appList.push(appList[0]);
+    await freeDownFloorAd.begin(axios, options, Data);
     let jar1 = await freeDownFloorAd.onAdDisplay(axios, options, Data);
     let { citycode } = await freeDownFloorAd.onAdClick(axios, options, Data);
     await freeDownFloorAd.getCoins(axios, options, citycode);
@@ -50,6 +50,42 @@ let freeDownFloorAd = {
     await freeDownFloorAd.lookVideoDouble(axios, options);
     await freeDownFloorAd.getIntegralFree(axios, options, jar1);
     await freeDownFloorAd.onAdDisplay(axios, options, Data);
+  },
+  begin: async (axios, options, appinfo) => {
+    let currentTime = moment().format("YYYYMMDDHHmmssSSS");
+    let traceId = "100008" + currentTime + "215210247";
+    appinfo.commonInfo.traceId = traceId;
+    appinfo.commonInfo.traceId = traceId;
+    appinfo.methodType = "1";
+    let res = await axios
+      .request({
+        baseURL: "https://m.client.10010.com/",
+        headers: {
+          "user-agent": "okhttp/4.4.0",
+          origin: "https://m.client.10010.com/",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+        url: `/uniAdmsInterface/getFreeDownFloorAd`,
+        method: "post",
+        data: appinfo,
+      })
+      .catch((err) => console.log(err));
+    let jar1 = res.config.jar.toJSON();
+    jar1.cookies.push({
+      key: "req_wheel",
+      value: "ssss",
+      expires: "2021-02-13T09:43:35.000Z",
+      domain: "10010.com",
+      path: "/",
+      hostOnly: false,
+      creation: "2021-02-12T08:43:35.008Z",
+      lastAccessed: "2021-02-12T08:43:35.008Z",
+    });
+    console.log(res.data);
+    console.log("等待15秒再继续");
+    // eslint-disable-next-line no-unused-vars
+    await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000));
+    return jar1;
   },
   onAdDisplay: async (axios, options, appinfo) => {
     let currentTime = moment().format("YYYYMMDDHHmmssSSS");
