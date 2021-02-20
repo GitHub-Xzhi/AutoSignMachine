@@ -1,66 +1,54 @@
 const path = require("path");
+const { exit } = require("yargs");
 const { scheduler } = require("../utils/scheduler");
 
 exports.command = "unicom";
 
 exports.describe = "unicom任务";
-
+const UNICOM_USERNAME = "UNICOM_USERNAME";
+const UNICOM_PASSWORD = "UNICOM_PASSWORD";
+const UNICOM_APPID = "UNICOM_APPID";
+let env = require("dotenv").config({
+  path: path.resolve(process.cwd(), "config", ".env"),
+}).parsed;
+if (!env) {
+  throw new Error("missing env file,please check it as well");
+}
 exports.builder = function (yargs) {
   return yargs
-    .option("user", {
-      describe: "用于登录的手机号码",
-      default: "",
-      type: "string",
-    })
-    .option("password", {
-      describe: "用于登录的账户密码",
-      default: "",
-      type: "string",
-    })
-    .option("appid", {
-      describe: "appid",
-      default: "",
-      type: "string",
-    })
-    .option("cookies", {
-      describe: "签到cookies",
-      default: "",
-      type: "string",
-    })
     .help()
     .showHelpOnFail(true, "使用--help查看有效选项")
     .epilog("copyright 2020 LunnLew");
 };
 
+let getAccount = (data, cb = null) => {
+  let account = [];
+  let users = data[UNICOM_USERNAME].split(",").map((i) => i.trim());
+  let pwd = data[UNICOM_PASSWORD].split(",").map((i) => i.trim());
+  let appid = data[UNICOM_APPID].split(",").map((i) => i.trim());
+  if (!users.length || !pwd.length || users.length !== pwd.length) {
+    throw new Error("Please check your username and password");
+  }
+  if (
+    Object.prototype.toString.call(users) !== "[object Array]" &&
+    Object.prototype.toString.call(pwd) !== "[object Array]"
+  ) {
+    throw new Error("username and password 非法");
+  }
+  users.forEach((user, i) => {
+    account.push({ user: user, password: pwd[i], appid: appid[i] });
+  });
+  return typeof cb === "function" ? cb(account) : account;
+};
 exports.handler = async function (argv) {
   var command = argv._[0];
   var accounts = [];
-  if ("accountSn" in argv && argv.accountSn) {
-    let accountSns = (argv.accountSn + "").split(",");
-    for (let sn of accountSns) {
-      if ("user-" + sn in argv) {
-        let account = {
-          cookies: argv["cookies-" + sn],
-          user: argv["user-" + sn] + "",
-          password: argv["password-" + sn] + "",
-          appid: argv["appid-" + sn],
-          tasks: argv["tasks-" + sn] || argv["tasks"],
-        };
-        if ("tryrun-" + sn in argv) {
-          account["tryrun"] = true;
-        }
-        accounts.push(account);
-      }
-    }
-  } else {
-    accounts.push({
-      cookies: argv["cookies"],
-      user: argv["user"] + "",
-      password: argv["password"] + "",
-      appid: argv["appid"],
-      tasks: argv["tasks"],
+  accounts = getAccount(env, (data) => {
+    data.map((i) => {
+      i.tasks = argv["tasks"];
     });
-  }
+    return data;
+  });
   console.log("总账户数", accounts.length);
   for (let account of accounts) {
     await require(path.join(__dirname, "tasks", command, command))
