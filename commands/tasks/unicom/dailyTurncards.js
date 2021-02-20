@@ -55,54 +55,54 @@ let dailyTurncards = {
       throw new Error("❌ something errors: ", result.data.msg);
     }
     console.log("获取操作");
-    // result = await request.postMsmds(
-    //   "https://wxapp.msmds.cn/jplus/h5/unicomComm/getRecordOperation",
-    //   {
-    //     key: "welfare0",
-    //     phone: options.user,
-    //     value: 0,
-    //   },
-    //   {
-    //     referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
-    //     origin: "https://jxbwlsali.kuaizhan.com",
-    //   }
-    // );
-    // if (result.data.code !== 200) {
-    //   throw new Error("❌ something errors: ", result.data.msg);
-    // }
-    // result = await request.postMsmds(
-    //   "https://wxapp.msmds.cn/jplus/h5/unicomComm/getRecordOperation",
-    //   {
-    //     key: "welfare1",
-    //     phone: options.user,
-    //     value: 0,
-    //   },
-    //   {
-    //     referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
-    //     origin: "https://jxbwlsali.kuaizhan.com",
-    //   }
-    // );
-    // if (result.data.code !== 200) {
-    //   throw new Error("❌ something errors: ", result.data.msg);
-    // }
-    // console.log("获取信息");
-    // result = await request.postMsmds(
-    //   "https://wxapp.msmds.cn/jplus/h5/unicomTask/findUserTaskInfo",
-    //   {
-    //     phone: phone,
-    //     type: 1,
-    //     token: ecs_token,
-    //   },
-    //   {
-    //     referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
-    //     origin: "https://jxbwlsali.kuaizhan.com",
-    //   }
-    // );
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomComm/getRecordOperation",
+      {
+        key: "welfare0",
+        phone: options.user,
+        value: 0,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+      }
+    );
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomComm/getRecordOperation",
+      {
+        key: "welfare1",
+        phone: options.user,
+        value: 0,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+      }
+    );
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
+    console.log("获取信息");
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomTask/findUserTaskInfo",
+      {
+        phone: phone,
+        type: 1,
+        token: ecs_token,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+      }
+    );
 
     // console.log(result.data);
-    // if (result.data.code !== 200) {
-    //   throw new Error("❌ something errors: ", result.data.msg);
-    // }
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
     console.log("奖励开始");
     result = await request.postMsmds(
       "https://wxapp.msmds.cn/jplus/h5/unicomTask/doTask",
@@ -122,22 +122,22 @@ let dailyTurncards = {
     if (result.data.code !== 200) {
       throw new Error("❌ something errors: ", result.data.msg);
     }
-    // console.log("获取信息");
-    // result = await request.postMsmds(
-    //   "https://wxapp.msmds.cn/jplus/h5/unicomTask/findUserTaskInfo",
-    //   {
-    //     type: 1,
-    //     phone: phone,
-    //     token: ecs_token,
-    //   },
-    //   {
-    //     referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
-    //     origin: "https://jxbwlsali.kuaizhan.com",
-    //   }
-    // );
-    // if (result.data.code !== 200) {
-    //   throw new Error("❌ something errors: ", result.data.msg);
-    // }
+    console.log("获取信息");
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomTask/findUserTaskInfo",
+      {
+        type: 1,
+        phone: phone,
+        token: ecs_token,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+      }
+    );
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
     // console.log(result.data);
     let meituanParams = {
       arguments1: "AC20200716103629",
