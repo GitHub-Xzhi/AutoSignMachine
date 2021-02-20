@@ -1,5 +1,4 @@
 const path = require("path");
-const { exit } = require("yargs");
 const { scheduler } = require("../utils/scheduler");
 
 exports.command = "unicom";
@@ -27,13 +26,13 @@ let getAccount = (data, cb = null) => {
   let pwd = data[UNICOM_PASSWORD].split(",").map((i) => i.trim());
   let appid = data[UNICOM_APPID].split(",").map((i) => i.trim());
   if (!users.length || !pwd.length || users.length !== pwd.length) {
-    throw new Error("Please check your username and password");
+    throw new Error("Please check your usernames and passwords in env file");
   }
   if (
     Object.prototype.toString.call(users) !== "[object Array]" &&
     Object.prototype.toString.call(pwd) !== "[object Array]"
   ) {
-    throw new Error("username and password 非法");
+    throw new Error("usernames and passwords are illegal");
   }
   users.forEach((user, i) => {
     account.push({ user: user, password: pwd[i], appid: appid[i] });
@@ -45,7 +44,7 @@ exports.handler = async function (argv) {
   var accounts = [];
   accounts = getAccount(env, (data) => {
     data.map((i) => {
-      i.tasks = argv["tasks"];
+      if ("tasks" in argv) i.tasks = argv["tasks"];
     });
     return data;
   });
