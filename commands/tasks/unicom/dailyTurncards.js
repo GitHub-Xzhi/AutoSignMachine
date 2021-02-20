@@ -1,14 +1,11 @@
 const {
   UnicomRequest,
-  UnicomComponent,
   generateOrderid,
   sleep,
   encodePhone,
 } = require("./handlers/gameUtils");
-let crypto = require("crypto");
 const gameEvents = require("./handlers/dailyEvent");
 const { sign } = require("./handlers/PAES");
-const { exit } = require("process");
 
 let dailyTurncards = {
   getOpenPlatLine: gameEvents.getOpenPlatLine(
@@ -32,11 +29,7 @@ let dailyTurncards = {
       phone,
     });
   },
-  doMeituanTask: async (
-    axios,
-    options,
-    { ecs_token, searchParams, jar1, phone }
-  ) => {
+  doMeituanTask: async (axios, options, { ecs_token, jar1, phone }) => {
     let request = new UnicomRequest(axios, options);
     console.log("美团积分开始...");
     let result = await request.postMsmds(
@@ -122,11 +115,29 @@ let dailyTurncards = {
     if (result.data.code !== 200) {
       throw new Error("❌ something errors: ", result.data.msg);
     }
-    console.log("获取信息");
     result = await request.postMsmds(
-      "https://wxapp.msmds.cn/jplus/h5/unicomTask/findUserTaskInfo",
+      "https://wxapp.msmds.cn/jplus/h5/unicomTask/doTask",
       {
-        type: 1,
+        phone: phone,
+        type: 6,
+        token: ecs_token,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+        "Content-Type": "application/x-www-form-urlencoded",
+      }
+    );
+
+    // console.log(result.data);
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
+    console.log("开优惠券");
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomTask/receiveDouling",
+      {
+        type: 6,
         phone: phone,
         token: ecs_token,
       },
@@ -309,6 +320,22 @@ let dailyTurncards = {
     );
 
     // console.log(result.data);
+    if (result.data.code !== 200) {
+      throw new Error("❌ something errors: ", result.data.msg);
+    }
+    console.log("开优惠券");
+    result = await request.postMsmds(
+      "https://wxapp.msmds.cn/jplus/h5/unicomTask/receiveDouling",
+      {
+        type: 6,
+        phone: phone,
+        token: ecs_token,
+      },
+      {
+        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
+        origin: "https://jxbwlsali.kuaizhan.com",
+      }
+    );
     if (result.data.code !== 200) {
       throw new Error("❌ something errors: ", result.data.msg);
     }
