@@ -147,9 +147,9 @@ let dailyTurncards = {
       }
     );
     if (result.data.code !== 200) {
-      throw new Error("❌ something errors: ", result.data.msg);
+      console.log("❌ something errors: ", result.data.msg);
     }
-    // console.log(result.data);
+    console.log(result.data);
     let meituanParams = {
       arguments1: "AC20200716103629",
       arguments2: "GGPD",
@@ -327,7 +327,7 @@ let dailyTurncards = {
     result = await request.postMsmds(
       "https://wxapp.msmds.cn/jplus/h5/unicomTask/receiveDouling",
       {
-        type: 6,
+        type: 1,
         phone: phone,
         token: ecs_token,
       },
@@ -336,8 +336,9 @@ let dailyTurncards = {
         origin: "https://jxbwlsali.kuaizhan.com",
       }
     );
+    // console.log(result.data);
     if (result.data.code !== 200) {
-      throw new Error("❌ something errors: ", result.data.msg);
+      console.log("❌ something errors: ", result.data.msg);
     }
     console.log("获取信息");
     result = await request.postMsmds(
