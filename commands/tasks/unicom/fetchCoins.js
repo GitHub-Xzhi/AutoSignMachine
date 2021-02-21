@@ -23,7 +23,6 @@ let fetchCoins = {
       return;
     }
     let availablescore = data.resdata.score.availablescore;
-    console.log(availablescore);
     let startDate = moment().startOf("days");
     let consumeCoins = 0;
     let awardCoins = 0;
