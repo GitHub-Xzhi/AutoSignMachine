@@ -257,16 +257,9 @@ let scheduler = {
           (selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1))
     );
 
-    scheduler.isTryRun
-      ? console.log(`👇 获取总任务数: ${selectedTasks.length}`)
-      : console.log(
-          `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
-            queues.filter((q) => q.taskState === 1).length
-          }，截至当前可执行任务数${will_tasks.length}`
-        );
-
     switch (scheduler.getTaskStatus()) {
       case 1: {
+        console.log(`👇 获取总任务数: ${selectedTasks.length}`);
         let currentTasks = [];
         selectedTasks.forEach((v) => {
           if (
@@ -343,6 +336,11 @@ let scheduler = {
         break;
       }
       case 2:
+        console.log(
+          `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
+            queues.filter((q) => q.taskState === 1).length
+          }，截至当前可执行任务数${will_tasks.length}`
+        );
         if (will_tasks.length) {
           let init_funcs = {};
           let init_funcs_result = {};
