@@ -15,6 +15,10 @@ if (!env) {
 }
 exports.builder = function (yargs) {
   return yargs
+    .option("leftTasks", {
+      describe: "剩余任务统计",
+      type: "boolean",
+    })
     .help()
     .showHelpOnFail(true, "使用--help查看有效选项")
     .epilog("copyright 2020 LunnLew");

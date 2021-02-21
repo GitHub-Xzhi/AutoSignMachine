@@ -72,7 +72,7 @@ class UnicomRequest {
         "user-agent": USER_AGENTS ? USER_AGENTS : useragent(this.options),
         referer: headers.referer ? headers.referer : Referer_msmds,
         origin: headers.origin ? headers.origin : Origin_msmds,
-        Authorization: headers.Authorization,
+        Authorization: headers.Authorization ? headers.Authorization : "",
       },
       url,
       method: "POST",
@@ -204,7 +204,7 @@ class UnicomComponent {
   }
 
   async get(
-    data = { url, body, method: "POST", headers: { referer: "", options: "" } },
+    data = { url, body, method: "POST", headers: { referer: "", origin: "" } },
     callback = null
   ) {
     let { url, body, method, headers } = data;

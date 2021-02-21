@@ -470,6 +470,20 @@ var start = async (params) => {
     },
     taskOption
   );
+
+  //积分查询
+  await scheduler.regTask(
+    "fetchCoins",
+    async (request) => {
+      await require("./fetchCoins.js").doTask(request, options);
+    },
+    {
+      ...taskOption,
+      ...taskOption,
+      startTime: 21 * 3600,
+      ignoreRelay: true,
+    }
+  );
 };
 module.exports = {
   start,
