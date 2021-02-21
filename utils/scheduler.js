@@ -130,28 +130,32 @@ let scheduler = {
     scheduler.today = today;
   },
   genFileName(command) {
-    let dir = path.join(os.homedir(), ".AutoSignMachine");
-    if (
-      "TENCENTCLOUD_RUNENV" in process.env &&
-      process.env.TENCENTCLOUD_RUNENV === "SCF"
-    ) {
-      dir = path.join("/tmp", ".AutoSignMachine");
-      // 暂不支持持久化配置，使用一次性执行机制，函数超时时间受functions.timeout影响
-      scheduler.isTryRun = true;
-    }
-    if (!fs.existsSync(dir)) {
-      fs.mkdirpSync(dir);
-    }
-    scheduler.taskFile = path.join(
-      dir,
-      `taskFile_${command}_${scheduler.taskKey}.json`
-    );
-    let maskFile = path.join(
-      dir,
-      `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`
-    );
-    scheduler.today = moment().format("YYYYMMDD");
-    console.log("获得配置文件", maskFile, "当前日期", scheduler.today);
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
+      let dir = path.join(os.homedir(), ".AutoSignMachine");
+      if (
+        "TENCENTCLOUD_RUNENV" in process.env &&
+        process.env.TENCENTCLOUD_RUNENV === "SCF"
+      ) {
+        dir = path.join("/tmp", ".AutoSignMachine");
+        // 暂不支持持久化配置，使用一次性执行机制，函数超时时间受functions.timeout影响
+        scheduler.isTryRun = true;
+      }
+      if (!fs.existsSync(dir)) {
+        fs.mkdirpSync(dir);
+      }
+      scheduler.taskFile = path.join(
+        dir,
+        `taskFile_${command}_${scheduler.taskKey}.json`
+      );
+      let maskFile = path.join(
+        dir,
+        `taskFile_${command}_${scheduler.taskKey.replaceWithMask(2, 3)}.json`
+      );
+      scheduler.today = moment().format("YYYYMMDD");
+      console.log("获得配置文件", maskFile, "当前日期", scheduler.today);
+      resolve();
+    });
   },
   loadTasksQueue: async () => {
     let queues = [];
@@ -198,28 +202,44 @@ let scheduler = {
     scheduler.clean();
     scheduler.isTryRun = tryrun;
     scheduler.taskKey = taskKey || "default";
-    if (scheduler.isTryRun) {
-      console.log("👉 当前运行在TryRun模式，仅建议在测试时运行!");
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-    }
     console.log(
       "将使用",
       scheduler.taskKey.replaceWithMask(2, 3),
       "作为账户识别码"
     );
     console.log("🤨 计算可执行任务...");
-    scheduler.genFileName(command);
-    await scheduler.initTasksQueue();
-    let { will_queues } = await scheduler.loadTasksQueue();
-    scheduler.isRunning = true;
-    return will_queues.length;
+    if (scheduler.isTryRun) {
+      console.log("👉 当前运行在TryRun模式，仅建议在测试时运行!");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return 1;
+      // return 1;
+    } else {
+      await scheduler.genFileName(command);
+      await scheduler.initTasksQueue();
+      let { will_queues } = await scheduler.loadTasksQueue();
+      scheduler.isRunning = true;
+      return will_queues.length;
+    }
   },
-  execTask: async (command, selectedTasks) => {
-    console.log("🤨 开始执行任务");
-    if (!scheduler.isRunning) {
+  //生成任务队列文件并且初始化队列数据
+  fetchTasks: async (command) => {
+    if (!scheduler.isRunning && !scheduler.isTryRun) {
       await scheduler.genFileName(command);
       await scheduler.initTasksQueue();
     }
+  },
+  //状态码 0x1 tryrun模式 0x2 队列模式
+  // eslint-disable-next-line no-unused-vars
+  getTaskStatus: (command) => {
+    if (scheduler.isTryRun) return 0x1;
+    return 0x2;
+  },
+  execTask: async (command, selectedTasks) => {
+    console.log("🤨 开始执行任务");
+    if (process.env.GITHUB_ACTIONS) {
+      return;
+    }
+    await scheduler.fetchTasks(command);
     if (Object.prototype.toString.call(selectedTasks) == "[object String]") {
       selectedTasks = selectedTasks.split(",").filter((q) => q);
     } else {
@@ -237,139 +257,254 @@ let scheduler = {
           (selectedTasks.length && selectedTasks.indexOf(task.taskName) !== -1))
     );
 
-    console.log(
-      `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
-        queues.filter((q) => q.taskState === 1).length
-      }，截至当前可执行任务数${will_tasks.length}`
-    );
+    scheduler.isTryRun
+      ? console.log(`👇 获取总任务数: ${selectedTasks.length}`)
+      : console.log(
+          `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
+            queues.filter((q) => q.taskState === 1).length
+          }，截至当前可执行任务数${will_tasks.length}`
+        );
 
-    if (will_tasks.length) {
-      //TODO: deprecated Cookies will be deleted on TryRun mode
-      // if (scheduler.isTryRun) {
-      //   console.log("👉 TryRun模式将清除CK操作");
-      //   await delCookiesFile([command, scheduler.taskKey].join("_"));
-      // }
-      // 初始化处理
-      if (process.env.GITHUB_ACTIONS) {
-        return;
-      }
-      let init_funcs = {};
-      let init_funcs_result = {};
-      for (let task of will_tasks) {
-        let ttt = tasks[task.taskName];
-        let tttOptions = ttt.options || {};
-        let savedCookies =
-          getCookies([command, scheduler.taskKey].join("_")) ||
-          tttOptions.cookies;
-        let request = _request(savedCookies);
-
-        if (tttOptions.init) {
+    switch (scheduler.getTaskStatus()) {
+      case 1: {
+        let currentTasks = [];
+        selectedTasks.forEach((v) => {
           if (
-            Object.prototype.toString.call(tttOptions.init) ===
-            "[object AsyncFunction]"
+            tasks[v] !== undefined &&
+            Object.prototype.toString.call(tasks[v]) == "[object Object]"
           ) {
-            let hash = crypto
-              .createHash("md5")
-              .update(tttOptions.init.toString())
-              .digest("hex");
-            if (!(hash in init_funcs)) {
-              init_funcs_result[task.taskName + "_init"] = await tttOptions[
-                "init"
-              ](request, savedCookies);
-              init_funcs[hash] = task.taskName + "_init";
-            } else {
-              init_funcs_result[task.taskName + "_init"] =
-                init_funcs_result[init_funcs[hash]];
-            }
-          } else {
-            console.log("not apply");
+            currentTasks.push({ taskName: v, task: tasks[v] });
           }
-        } else {
-          init_funcs_result[task.taskName + "_init"] = { request };
-        }
-      }
+        });
+        let { init_funcs_result } = await scheduler.pushTaskQueue(
+          command,
+          currentTasks
+        );
+        console.log("tryrun 任务模式启动");
+        if (!currentTasks.length) return console.log("无任务");
+        let queue = new PQueue({ concurrency: 2 });
+        console.log("👉 调度任务中", "并发数", 2);
+        for (let task of currentTasks) {
+          queue.add(async () => {
+            try {
+              let ttt = tasks[task.taskName];
+              if (
+                Object.prototype.toString.call(ttt.callback) ===
+                "[object AsyncFunction]"
+              ) {
+                await ttt.callback.apply(
+                  this,
+                  Object.values(init_funcs_result[task.taskName + "_init"])
+                );
+              } else {
+                console.log("❌ 任务执行内容空");
+              }
 
-      // 任务执行
-      let queue = new PQueue({ concurrency: 2 });
-      console.log("👉 调度任务中", "并发数", 2);
-      for (let task of will_tasks) {
-        queue.add(async () => {
-          try {
-            if (task.waitTime) {
-              console.log(
-                "☕ 延迟执行",
-                task.taskName,
-                task.waitTime,
-                "seconds"
-              );
-              // eslint-disable-next-line no-unused-vars
-              await new Promise((resolve, reject) =>
-                setTimeout(resolve, task.waitTime * 1000)
-              );
-            }
-
-            let ttt = tasks[task.taskName];
-            if (
-              Object.prototype.toString.call(ttt.callback) ===
-              "[object AsyncFunction]"
-            ) {
-              await ttt.callback.apply(
-                this,
-                Object.values(init_funcs_result[task.taskName + "_init"])
-              );
-            } else {
-              console.log("❌ 任务执行内容空");
-            }
-
-            let isupdate = false;
-            let newTask = {};
-            if (ttt.options) {
-              if (!ttt.options.isCircle) {
+              let isupdate = false;
+              let newTask = {};
+              if (ttt.options) {
+                if (!ttt.options.isCircle) {
+                  newTask.taskState = 1;
+                  isupdate = true;
+                }
+                if (ttt.options.isCircle && ttt.options.intervalTime) {
+                  newTask.willTime = moment()
+                    .add(ttt.options.intervalTime, "seconds")
+                    .format("YYYY-MM-DD HH:mm:ss");
+                  isupdate = true;
+                }
+              } else {
                 newTask.taskState = 1;
                 isupdate = true;
               }
-              if (ttt.options.isCircle && ttt.options.intervalTime) {
-                newTask.willTime = moment()
-                  .add(ttt.options.intervalTime, "seconds")
-                  .format("YYYY-MM-DD HH:mm:ss");
-                isupdate = true;
+
+              if (isupdate && !scheduler.isTryRun) {
+                let taskindex = queues.findIndex(
+                  (q) => q.taskName === task.taskName
+                );
+                if (taskindex !== -1) {
+                  taskJson.queues[taskindex] = {
+                    ...task,
+                    ...newTask,
+                  };
+                }
+                console.log("📑 任务执行完毕 等待5秒再继续");
+                // eslint-disable-next-line no-unused-vars
+                await new Promise((resolve, reject) =>
+                  setTimeout(resolve, 5 * 1000)
+                );
+              }
+            } catch (err) {
+              console.log("❌ 任务错误：", err);
+            }
+          });
+        }
+        await queue.onIdle();
+        break;
+      }
+      case 2:
+        if (will_tasks.length) {
+          let init_funcs = {};
+          let init_funcs_result = {};
+          for (let task of will_tasks) {
+            let ttt = tasks[task.taskName];
+            let tttOptions = ttt.options || {};
+            let savedCookies =
+              getCookies([command, scheduler.taskKey].join("_")) ||
+              tttOptions.cookies;
+            let request = _request(savedCookies);
+
+            if (tttOptions.init) {
+              if (
+                Object.prototype.toString.call(tttOptions.init) ===
+                "[object AsyncFunction]"
+              ) {
+                let hash = crypto
+                  .createHash("md5")
+                  .update(tttOptions.init.toString())
+                  .digest("hex");
+                if (!(hash in init_funcs)) {
+                  init_funcs_result[task.taskName + "_init"] = await tttOptions[
+                    "init"
+                  ](request, savedCookies);
+                  init_funcs[hash] = task.taskName + "_init";
+                } else {
+                  init_funcs_result[task.taskName + "_init"] =
+                    init_funcs_result[init_funcs[hash]];
+                }
+              } else {
+                console.log("not apply");
               }
             } else {
-              newTask.taskState = 1;
-              isupdate = true;
+              init_funcs_result[task.taskName + "_init"] = { request };
             }
-
-            if (isupdate) {
-              let taskindex = queues.findIndex(
-                (q) => q.taskName === task.taskName
-              );
-              if (taskindex !== -1) {
-                taskJson.queues[taskindex] = {
-                  ...task,
-                  ...newTask,
-                };
-              }
-              fs.writeFileSync(scheduler.taskFile, JSON.stringify(taskJson));
-              console.log("📑 任务配置文件更新完毕 等待5秒再继续");
-              // eslint-disable-next-line no-unused-vars
-              await new Promise((resolve, reject) =>
-                setTimeout(resolve, 5 * 1000)
-              );
-            }
-          } catch (err) {
-            console.log("❌ 任务错误：", err);
           }
-        });
-      }
-      await queue.onIdle();
-    } else {
-      console.log(
-        `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
-          queues.filter((q) => q.taskState === 1).length
-        }，截至当前可执行任务数${will_tasks.length}`
-      );
-      console.log("⭕ 暂无需要执行的任务");
+
+          // 任务执行
+          let queue = new PQueue({ concurrency: 2 });
+          console.log("👉 调度任务中", "并发数", 2);
+          for (let task of will_tasks) {
+            queue.add(async () => {
+              try {
+                if (task.waitTime) {
+                  console.log(
+                    "☕ 延迟执行",
+                    task.taskName,
+                    task.waitTime,
+                    "seconds"
+                  );
+                  // eslint-disable-next-line no-unused-vars
+                  await new Promise((resolve, reject) =>
+                    setTimeout(resolve, task.waitTime * 1000)
+                  );
+                }
+
+                let ttt = tasks[task.taskName];
+                if (
+                  Object.prototype.toString.call(ttt.callback) ===
+                  "[object AsyncFunction]"
+                ) {
+                  await ttt.callback.apply(
+                    this,
+                    Object.values(init_funcs_result[task.taskName + "_init"])
+                  );
+                } else {
+                  console.log("❌ 任务执行内容空");
+                }
+
+                let isupdate = false;
+                let newTask = {};
+                if (ttt.options) {
+                  if (!ttt.options.isCircle) {
+                    newTask.taskState = 1;
+                    isupdate = true;
+                  }
+                  if (ttt.options.isCircle && ttt.options.intervalTime) {
+                    newTask.willTime = moment()
+                      .add(ttt.options.intervalTime, "seconds")
+                      .format("YYYY-MM-DD HH:mm:ss");
+                    isupdate = true;
+                  }
+                } else {
+                  newTask.taskState = 1;
+                  isupdate = true;
+                }
+
+                if (isupdate && !scheduler.isTryRun) {
+                  let taskindex = queues.findIndex(
+                    (q) => q.taskName === task.taskName
+                  );
+                  if (taskindex !== -1) {
+                    taskJson.queues[taskindex] = {
+                      ...task,
+                      ...newTask,
+                    };
+                  }
+                  fs.writeFileSync(
+                    scheduler.taskFile,
+                    JSON.stringify(taskJson)
+                  );
+                  console.log("📑 任务配置文件更新完毕 等待5秒再继续");
+                  // eslint-disable-next-line no-unused-vars
+                  await new Promise((resolve, reject) =>
+                    setTimeout(resolve, 5 * 1000)
+                  );
+                }
+              } catch (err) {
+                console.log("❌ 任务错误：", err);
+              }
+            });
+          }
+          await queue.onIdle();
+        } else {
+          console.log(
+            `👇 获取总任务数${taskJson.queues.length}，已完成任务数${
+              queues.filter((q) => q.taskState === 1).length
+            }，截至当前可执行任务数${will_tasks.length}`
+          );
+        }
+        break;
+      default:
+        console.log("⭕ 暂无需要执行的任务");
     }
+  },
+  pushTaskQueue: async (command, selectedTasks) => {
+    let init_funcs = {};
+    let init_funcs_result = {};
+    for (let task of selectedTasks) {
+      let ttt = tasks[task.taskName];
+      let tttOptions = ttt.options || {};
+      let savedCookies =
+        getCookies([command, scheduler.taskKey].join("_")) ||
+        tttOptions.cookies;
+      let request = _request(savedCookies);
+
+      if (tttOptions.init) {
+        if (
+          Object.prototype.toString.call(tttOptions.init) ===
+          "[object AsyncFunction]"
+        ) {
+          let hash = crypto
+            .createHash("md5")
+            .update(tttOptions.init.toString())
+            .digest("hex");
+          if (!(hash in init_funcs)) {
+            init_funcs_result[task.taskName + "_init"] = await tttOptions[
+              "init"
+            ](request, savedCookies);
+            init_funcs[hash] = task.taskName + "_init";
+          } else {
+            init_funcs_result[task.taskName + "_init"] =
+              init_funcs_result[init_funcs[hash]];
+          }
+        } else {
+          console.log("not apply");
+        }
+      } else {
+        init_funcs_result[task.taskName + "_init"] = { request };
+      }
+    }
+    return { init_funcs_result, init_funcs };
   },
 };
 module.exports = {
