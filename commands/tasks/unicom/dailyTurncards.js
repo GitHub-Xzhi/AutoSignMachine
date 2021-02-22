@@ -20,14 +20,19 @@ let dailyTurncards = {
       ...cookies,
       phone,
     });
-    await dailyTurncards.doElementTask(axios, options, {
-      ...cookies,
-      phone,
-    });
-    await dailyTurncards.doMeituanTask(axios, options, {
-      ...cookies,
-      phone,
-    });
+    //todo：判定40积分? 没找到API
+    try {
+      await dailyTurncards.doElementTask(axios, options, {
+        ...cookies,
+        phone,
+      });
+      await dailyTurncards.doMeituanTask(axios, options, {
+        ...cookies,
+        phone,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   },
   doMeituanTask: async (axios, options, { ecs_token, jar1, phone }) => {
     let request = new UnicomRequest(axios, options);
@@ -321,8 +326,7 @@ let dailyTurncards = {
 
     // console.log(result.data);
     if (result.data.code !== 200) {
-      console.log(("❌ something errors: ", result.data));
-      return;
+      throw new Error("❌ something errors: ", result.data);
     }
     console.log("开优惠券");
     result = await request.postMsmds(
