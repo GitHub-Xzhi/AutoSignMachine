@@ -1,4 +1,5 @@
 const path = require("path");
+const tasklist = require("../utils/observersion");
 const { scheduler } = require("../utils/scheduler");
 
 exports.command = "unicom";
@@ -7,6 +8,9 @@ exports.describe = "unicom任务";
 const UNICOM_USERNAME = "UNICOM_USERNAME";
 const UNICOM_PASSWORD = "UNICOM_PASSWORD";
 const UNICOM_APPID = "UNICOM_APPID";
+String.prototype.replaceWithMask = function (start, end) {
+  return this.substr(0, start) + "******" + this.substr(-end, end);
+};
 let env = require("dotenv").config({
   path: path.resolve(process.cwd(), "config", ".env"),
 }).parsed;
@@ -54,29 +58,38 @@ exports.handler = async function (argv) {
   });
   console.log("总账户数", accounts.length);
   for (let account of accounts) {
-    await require(path.join(__dirname, "tasks", command, command))
-      .start({
-        cookies: account.cookies,
-        options: {
-          appid: account.appid,
-          user: account.user,
-          password: account.password,
-        },
-      })
-      .catch((err) => console.log(" unicom任务:", err));
-    let hasTasks = await scheduler.hasWillTask(command, {
-      tryrun: "tryrun" in argv,
-      taskKey: account.user,
-    });
-    if (hasTasks) {
-      scheduler
-        .execTask(command, account.tasks)
-        .catch((err) => console.log("unicom任务:", err))
-        .finally(() => {
-          console.log("当前任务执行完毕！");
-        });
+    if ("leftTasks" in argv) {
+      let tmp = tasklist
+        .getTasks({ command: command, taskKey: account.user })
+        .unfinished()
+        .toString();
+      console.log(`账号${account.user.replaceWithMask(2, 3)}未完成任务汇总: `);
+      console.log(tmp);
     } else {
-      console.log("暂无可执行任务！");
+      await require(path.join(__dirname, "tasks", command, command))
+        .start({
+          cookies: account.cookies,
+          options: {
+            appid: account.appid,
+            user: account.user,
+            password: account.password,
+          },
+        })
+        .catch((err) => console.log(" unicom任务:", err));
+      let hasTasks = await scheduler.hasWillTask(command, {
+        tryrun: "tryrun" in argv,
+        taskKey: account.user,
+      });
+      if (hasTasks) {
+        scheduler
+          .execTask(command, account.tasks)
+          .catch((err) => console.log("unicom任务:", err))
+          .finally(() => {
+            console.log("当前任务执行完毕！");
+          });
+      } else {
+        console.log("暂无可执行任务！");
+      }
     }
   }
 };
