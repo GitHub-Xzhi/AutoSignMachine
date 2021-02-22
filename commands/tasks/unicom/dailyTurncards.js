@@ -321,7 +321,8 @@ let dailyTurncards = {
 
     // console.log(result.data);
     if (result.data.code !== 200) {
-      throw new Error("❌ something errors: ", result.data.msg);
+      console.log(("❌ something errors: ", result.data.msg));
+      return;
     }
     console.log("开优惠券");
     result = await request.postMsmds(
