@@ -118,24 +118,6 @@ let dailyTurncards = {
 
     // console.log(result.data);
     if (result.data.code !== 200) {
-      throw new Error("❌ something errors: ", result.data.msg);
-    }
-    result = await request.postMsmds(
-      "https://wxapp.msmds.cn/jplus/h5/unicomTask/doTask",
-      {
-        phone: phone,
-        type: 6,
-        token: ecs_token,
-      },
-      {
-        referer: ` https://jxbwlsali.kuaizhan.com/0/51/p721841247bc5ac?phone=${options.user}`,
-        origin: "https://jxbwlsali.kuaizhan.com",
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-    );
-
-    // console.log(result.data);
-    if (result.data.code !== 200) {
       if (result.data.code === 502) {
         console.log("后台检测到非法请求，需要验证码。");
         return;
