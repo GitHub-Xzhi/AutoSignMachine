@@ -23,6 +23,10 @@ exports.builder = function (yargs) {
       describe: "剩余任务统计",
       type: "boolean",
     })
+    .option("tasks", {
+      describe: "任务执行项",
+      type: "string",
+    })
     .help()
     .showHelpOnFail(true, "使用--help查看有效选项")
     .epilog("copyright 2020 LunnLew");
