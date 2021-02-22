@@ -136,8 +136,13 @@ let dailyTurncards = {
 
     // console.log(result.data);
     if (result.data.code !== 200) {
+      if (result.data.code === 502) {
+        console.log("后台检测到非法请求，需要验证码。");
+        return;
+      }
       throw new Error("❌ something errors: ", result.data.msg);
     }
+
     console.log("开优惠券");
     result = await request.postMsmds(
       "https://wxapp.msmds.cn/jplus/h5/unicomTask/receiveDouling",
@@ -326,7 +331,11 @@ let dailyTurncards = {
 
     // console.log(result.data);
     if (result.data.code !== 200) {
-      throw new Error("❌ something errors: ", result.data);
+      if (result.data.code === 502) {
+        console.log("后台检测到非法请求，需要验证码。");
+        return;
+      }
+      throw new Error("❌ something errors: ", result.data.msg);
     }
     console.log("开优惠券");
     result = await request.postMsmds(
