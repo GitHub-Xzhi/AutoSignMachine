@@ -29,7 +29,7 @@ const USER_AGENTS_ANDROID = [
   "Mozilla/5.0 (Linux; Android 9; JKM-AL00b Build/HUAWEIJKM-AL00b; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045130 Mobile Safari/537.3; unicom{version:android@%s,desmobile:%s};devicetype{deviceBrand:HUAWEI,deviceModel:JKM-AL00b};{yw_code:}", //华为nova4
   "Mozilla/5.0 (Linux; Android 10; CLT-AL00 Build/HUAWEICLT-AL00; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36; unicom{version:android@%s,desmobile:%s};devicetype{deviceBrand:HUAWEI,deviceModel:HUAWEICLT-AL00};{yw_code:}",
   "Mozilla/5.0 (Linux; Android 8.1.0; PBAM00 Build/OPM1.171019.026; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/76.0.3809.89 Mobile Safari/537.36; unicom{version:android@%s,desmobile:%s};devicetype{deviceBrand:OPPO,deviceModel:PBAM00};{yw_code:}", //OPPO A5
-  "Mozilla/5.0 (Linux; Android 11; MI 9 Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36; unicom{version:android@8.0102,desmobile:13213627586};devicetype{deviceBrand:Xiaomi,deviceModel:MI 9};{yw_code:}", //XiaoMi 9
+  "Mozilla/5.0 (Linux; Android 11; MI 9 Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.141 Mobile Safari/537.36; unicom{version:android@%s,desmobile:%s};devicetype{deviceBrand:Xiaomi,deviceModel:MI 9};{yw_code:}", //XiaoMi 9
 ];
 // eslint-disable-next-line no-unused-vars
 const USER_AGENTS_IOS = [
