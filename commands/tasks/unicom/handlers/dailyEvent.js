@@ -231,6 +231,9 @@ let lookVideoDouble = (params1, params2, title) => {
     }
 
     do {
+      if (num < 0) {
+        break;
+      }
       console.log("🎞 看视频第", num, "次");
       params2["sign"] = AES.sign([
         params2.arguments1,
