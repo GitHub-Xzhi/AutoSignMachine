@@ -52,8 +52,8 @@ var dailylottery = {
         console.log(result.RspMsg)
       }
 
-      console.log('等待15秒再继续')
-      await new Promise((resolve, reject) => setTimeout(resolve, 15 * 1000))
+      console.log('在看视频，不要着急，等待35秒再继续')
+      await new Promise((resolve, reject) => setTimeout(resolve, 35 * 1000))
 
     } while (--usableAcFreq)
   }

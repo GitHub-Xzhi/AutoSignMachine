@@ -7,12 +7,13 @@
   "author": "lunnlew",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "axios-cookiejar-support": "^1.0.1",
     "cheerio": "^1.0.0-rc.3",
     "crypto": "^1.0.1",
     "crypto-js": "^4.0.0",
     "dayjs": "^1.9.6",
+    "dotenv": "^8.2.0",
     "fs-extra": "^9.0.1",
     "iconv-lite": "^0.6.2",
     "moment": "^2.29.1",
@@ -23,6 +24,11 @@
     "yargs": "^16.1.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.12.16",
+    "eslint": "^7.20.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "2.2.1",
     "serverless-tencent-scf": "^0.1.7"
   }
 }
