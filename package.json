@@ -18,7 +18,7 @@
     "iconv-lite": "^0.6.2",
     "moment": "^2.29.1",
     "p-queue": "^6.6.2",
-    "protobufjs": "^6.10.2",
+    "protobufjs": "^6.11.3",
     "qs": "^6.9.4",
     "tough-cookie": "^4.0.0",
     "yargs": "^16.1.0"
